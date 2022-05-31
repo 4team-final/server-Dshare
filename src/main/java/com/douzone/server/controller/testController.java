@@ -24,7 +24,7 @@ public class testController {
     }
      @GetMapping("/test2")
     public ResponseEntity hello2() {
-        return new ResponseEntity("안녕하세요", HttpStatus.OK);
+        return new ResponseEntity("안녕하세요!!!!!@@@@", HttpStatus.OK);
     }
 
     @GetMapping("/profile/server")
