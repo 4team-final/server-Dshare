@@ -1,6 +1,11 @@
 server:
   port: 8082
 spring:
+  profiles:
+    active: local
+---
+spring:
+  profiles: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DB_URL}:3306/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -22,10 +27,10 @@ servlet:
 
 
 logging:
-#  file:
-#    name: ${LOG_PATH}/log/test.log
-#    max-history: 7
-#    max-size: 10MB
+  #  file:
+  #    name: ${LOG_PATH}/log/test.log
+  #    max-history: 7
+  #    max-size: 10MB
   level:
     com.douzone.server: debug
     org:
