@@ -13,10 +13,13 @@ public class testController {
 
     private final TestService testService;
 
-
     @GetMapping("/test")
     public ResponseEntity hello() {
         return new ResponseEntity(testService.findAll(), HttpStatus.OK);
+    }
+     @GetMapping("/test2")
+    public ResponseEntity hello2() {
+        return new ResponseEntity("안녕하세요", HttpStatus.OK);
     }
 
 }
