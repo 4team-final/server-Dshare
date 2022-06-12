@@ -44,3 +44,28 @@ logging:
 jwtSecret: ${JWT_SECRET}
 jwtMs: ${JWT_MS}
 
+jwt:
+  secret-key: ${}
+  header:
+    access: ${}
+    refresh: ${}
+  type:
+    access: ${}
+    refresh: ${}
+  time:
+    access: ${}
+    refresh: ${}
+
+user:
+  url:
+    client: ${}
+    logout: ${}
+  role:
+    employee: ${}
+    admin: ${}
+    permit-all: ${}
+  cors:
+    method: ${}
+    header: ${}
+    pattern: ${}
+    source-pattern: ${}
