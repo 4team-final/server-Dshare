@@ -7,12 +7,18 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+/**
+ * csrf, cors 등 web security 에서 설정하는 전역 필터 설정 클래스
+ *
+ * corsFilter() : cross-origin resource sharing 허용 설정
+ * */
+
 @Configuration
 public class GlobalFilter {
 	@Value("${user.cors.pattern}") private String corsPattern;
 	@Value("${user.cors.header}") private String corsHeader;
 	@Value("${user.cors.method}") private String corsMethod;
-	@Value("${user.cors.source-pattern}") private String corsSource;
+	@Value("${user.cors.source.pattern}") private String corsSource;
 	@Value("${user.url.client}") private String clientURL;
 	@Value("${jwt.header.access}") private String headerAccess;
 	@Value("${jwt.header.refresh}") private String headerRefresh;

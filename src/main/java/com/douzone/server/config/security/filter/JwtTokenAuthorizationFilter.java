@@ -1,6 +1,7 @@
 package com.douzone.server.config.security.filter;
 
 import com.douzone.server.config.jwt.JwtTokenProvider;
+import com.douzone.server.config.jwt.TokenTypeProperties;
 import com.douzone.server.config.security.auth.PrincipalDetailService;
 import com.douzone.server.config.security.handler.ResponseHandler;
 import com.douzone.server.config.utils.Payload;
@@ -34,7 +35,6 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PrincipalDetailService principalDetailService;
 	@Value("${jwt.header.access}") private String headerKeyAccess;
-	@Value("${jwt.type.access}") private String typeKeyAccess;
 	
 	public JwtTokenAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, PrincipalDetailService principalDetailService) {
 		super(authenticationManager);
@@ -75,7 +75,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						log.info("Refresh Token Validation - Success");
 						String accessToken = jwtTokenProvider.generateAccessToken(jwtTokenProvider.getUserPk(token));
 
-						response.addHeader(headerKeyAccess, typeKeyAccess + accessToken);
+						response.addHeader(headerKeyAccess, TokenTypeProperties.TYPE_ACCESS + accessToken);
 
 						response.setContentType("text/html; charset=UTF-8");
 						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Payload.TOKEN_OK));

@@ -30,19 +30,21 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 	private static final String METHOD_NAME = "JwtTokenProvider";
-	@Value("${jwt.secret-key}") private String secretValue;
 	@Value("${jwt.header.access}") private String headerKeyAccess;
-	@Value("${jwt.type.access}") private String typeKeyAccess;
-	@Value("${jwt.type.refresh}") private String typeKeyRefresh;
-	@Value("${jwt.time.access}") private long accessValidTime;
-	@Value("${jwt.time.refresh}") private long refreshValidTime;
 	private final TokenRepository tokenRepository;
 	private final String secretKey;
+	private final long accessValidTime;
+	private final long refreshValidTime;
 
 	@Autowired
-	public JwtTokenProvider(TokenRepository tokenRepository) {
+	public JwtTokenProvider(TokenRepository tokenRepository,
+							@Value("${jwt.secret.key}") String secretValue,
+							@Value("${jwt.time.access}") String accessValidString,
+							@Value("${jwt.time.refresh}") String refreshValidString) {
 		this.tokenRepository = tokenRepository;
 		this.secretKey = Base64.getEncoder().encodeToString(secretValue.getBytes());
+		this.accessValidTime = Long.parseLong(accessValidString)*1000;
+		this.refreshValidTime = Long.parseLong(refreshValidString)*1000;
 	}
 
 	public CommonTokenSet generateToken(String userPk) {
@@ -105,16 +107,16 @@ public class JwtTokenProvider {
 		try {
 			String token = request.getHeader(headerKeyAccess);
 
-			if(token.startsWith(typeKeyAccess)) {
+			if(token.startsWith(TokenTypeProperties.TYPE_ACCESS)) {
 				return TokenResDTO.builder()
 									.code(0)
-									.token(token.replace(typeKeyAccess, ""))
+									.token(token.replace(TokenTypeProperties.TYPE_ACCESS, ""))
 									.build();
 			}
-			if(token.startsWith(typeKeyRefresh)){
+			if(token.startsWith(TokenTypeProperties.TYPE_REFRESH)){
 				return TokenResDTO.builder()
 									.code(1)
-									.token(token.replace(typeKeyRefresh, "")).build();
+									.token(token.replace(TokenTypeProperties.TYPE_REFRESH, "")).build();
 			}
 		} catch (NullPointerException ne) {
 			log.error("요청 값이 비어 있습니다. " + METHOD_NAME);

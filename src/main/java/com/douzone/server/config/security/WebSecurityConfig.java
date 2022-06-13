@@ -21,8 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 	@Value("${user.url.logout}") private String logoutURL;
-	@Value("${user.permit-all}") private String permitAll;
-	@Value("${user.session-id}") private String sessionId;
+	@Value("${user.permit.all}") private String permitAll;
+	@Value("${user.session.id}") private String sessionId;
 	private final GlobalFilter globalFilter;
 	private final UserLogoutHandler userLogoutHandler;
 	private final UserLogoutSuccessHandler logoutSuccessHandler;
