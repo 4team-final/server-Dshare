@@ -1,9 +1,9 @@
 package com.douzone.server.config.jwt;
 
-import com.douzone.server.employee.domain.token.CommonTokenSet;
-import com.douzone.server.employee.domain.token.ReIssuanceTokenSet;
 import com.douzone.server.employee.domain.token.Token;
 import com.douzone.server.employee.domain.token.TokenRepository;
+import com.douzone.server.employee.dto.token.CommonTokenDTO;
+import com.douzone.server.employee.dto.token.ReIssuanceTokenDTO;
 import com.douzone.server.employee.dto.token.TokenResDTO;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class JwtTokenProvider {
 		this.refreshValidTime = Long.parseLong(refreshValidString) * 1000;
 	}
 
-	public CommonTokenSet generateToken(String userPk) {
+	public CommonTokenDTO generateToken(String userPk) {
 		log.info(METHOD_NAME + "- generateToken() ...");
 		Date now = new Date();
 
@@ -66,8 +66,8 @@ public class JwtTokenProvider {
 				.signWith(SignatureAlgorithm.HS512, secretKey)
 				.compact();
 
-		return CommonTokenSet.builder().accessToken(accessToken)
-				.reIssuanceTokenSet(ReIssuanceTokenSet.builder()
+		return CommonTokenDTO.builder().accessToken(accessToken)
+				.reIssuanceTokenDTO(ReIssuanceTokenDTO.builder()
 						.empNo(userPk)
 						.refreshToken(refreshToken)
 						.build()).build();
@@ -135,12 +135,12 @@ public class JwtTokenProvider {
 		return TokenResDTO.builder().code(2).token("").build();
 	}
 
-	public boolean saveRefresh(ReIssuanceTokenSet reIssuanceTokenSet) {
+	public boolean saveRefresh(ReIssuanceTokenDTO reIssuanceTokenDTO) {
 		log.info(METHOD_NAME + "- saveRefresh() ...");
 		try {
 			Token tokenEntity = tokenRepository.save(Token.builder()
-					.empNo(reIssuanceTokenSet.getEmpNo())
-					.refreshToken(reIssuanceTokenSet.getRefreshToken())
+					.empNo(reIssuanceTokenDTO.getEmpNo())
+					.refreshToken(reIssuanceTokenDTO.getRefreshToken())
 					.build());
 			if (tokenEntity.getEmpNo() != null) return true;
 		} catch (NullPointerException ne) {
@@ -165,10 +165,10 @@ public class JwtTokenProvider {
 		return false;
 	}
 
-	public boolean updateRefresh(ReIssuanceTokenSet reIssuanceTokenSet) {
+	public boolean updateRefresh(ReIssuanceTokenDTO reIssuanceTokenDTO) {
 		log.info(METHOD_NAME + "- updateRefresh() ...");
 		try {
-			Integer result = tokenRepository.updateToken(reIssuanceTokenSet.getRefreshToken(), reIssuanceTokenSet.getEmpNo());
+			Integer result = tokenRepository.updateToken(reIssuanceTokenDTO.getRefreshToken(), reIssuanceTokenDTO.getEmpNo());
 			if (result > 0) return true;
 		} catch (NullPointerException ne) {
 			log.error("토큰 저장소가 비어있습니다. " + METHOD_NAME, ne);
