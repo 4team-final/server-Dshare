@@ -2,6 +2,8 @@ package com.douzone.server.config.security.filter;
 
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.auth.PrincipalDetailService;
+import com.douzone.server.config.security.handler.UserLogoutHandler;
+import com.douzone.server.config.security.handler.UserLogoutSuccessHandler;
 import com.douzone.server.employee.domain.token.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +42,12 @@ public class GlobalFilter {
 	private String typeAccess;
 	@Value(value = "${jwt.type.refresh}")
 	private String typeRefresh;
-
+	@Value(value = "${user.url.logout}")
+	private String logoutURL;
+	@Value(value = "${user.permit.all}")
+	private String permitAll;
+	@Value(value = "${user.session.id}")
+	private String sessionId;
 
 	private final UserAuthenticationManager userAuthenticationManager;
 	private final JwtTokenProvider jwtTokenProvider;
@@ -73,11 +80,34 @@ public class GlobalFilter {
 		return userAuthenticationFilter;
 	}
 
+	@Bean
 	public JwtTokenAuthorizationFilter authorizationFilter() {
 		JwtTokenAuthorizationFilter jwtTokenAuthorizationFilter = new JwtTokenAuthorizationFilter(userAuthenticationManager, jwtTokenProvider, principalDetailService);
 		jwtTokenAuthorizationFilter.setHeaderKeyAccess(headerAccess);
 		jwtTokenAuthorizationFilter.setTypeAccess(typeAccess);
 
 		return jwtTokenAuthorizationFilter;
+	}
+
+	public String getLogoutURL() {
+		return logoutURL;
+	}
+
+	public String getPermitAll() {
+		return permitAll;
+	}
+
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	@Bean
+	public UserLogoutHandler logoutHandler() {
+		return new UserLogoutHandler();
+	}
+
+	@Bean
+	public UserLogoutSuccessHandler logoutSuccessHandler() {
+		return new UserLogoutSuccessHandler();
 	}
 }
