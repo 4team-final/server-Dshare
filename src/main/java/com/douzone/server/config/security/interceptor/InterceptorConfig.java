@@ -1,4 +1,23 @@
 package com.douzone.server.config.security.interceptor;
 
-public class InterceptorConfig {
+import com.douzone.server.config.jwt.JwtTokenProvider;
+import com.douzone.server.config.security.handler.DecodeEncodeHandler;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+@RequiredArgsConstructor
+public class InterceptorConfig implements WebMvcConfigurer {
+	private final DecodeEncodeHandler decodeEncodeHandler;
+	private final JwtTokenProvider jwtTokenProvider;
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new RoleInterceptor(decodeEncodeHandler, jwtTokenProvider))
+				.order(1)
+				.addPathPatterns("/**")
+				.excludePathPatterns("/sign");
+	}
 }

@@ -1,9 +1,21 @@
 package com.douzone.server.employee.domain.token;
 
-import com.douzone.server.config.utils.BaseAtTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public class Token extends BaseAtTime {
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-	private Long empNo;
+@Entity(name = "Token")
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Token {
+
+	@Id
+	private String empNo;
 	private String refreshToken;
 }

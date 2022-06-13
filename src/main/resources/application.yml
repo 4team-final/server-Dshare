@@ -45,27 +45,30 @@ jwtSecret: ${JWT_SECRET}
 jwtMs: ${JWT_MS}
 
 jwt:
-  secret-key: ${}
+  secret-key: ${SECRET_KEY}
   header:
-    access: ${}
-    refresh: ${}
+    access: ${HEADER_KEY_ACCESS}
+    refresh: ${HEADER_KEY_REFRESH}
   type:
-    access: ${}
-    refresh: ${}
+    access: ${SECRET_TYPE_ACCESS}
+    refresh: ${SECRET_TYPE_REFRESH}
   time:
-    access: ${}
-    refresh: ${}
+    access: ${SECRET_TIME_ACCESS}
+    refresh: ${SECRET_TIME_REFRESH}
 
 user:
   url:
-    client: ${}
-    logout: ${}
+    client: ${CLIENT_URL}
+    logout: ${LOGOUT_URL}
+    admin: ${ADMIN_URL}
+    employee: ${EMPLOYEE_URL}
   role:
-    employee: ${}
-    admin: ${}
-    permit-all: ${}
+    admin: ${ROLE_ADMIN}
+    employee: ${ROLE_EMPLOYEE}
+  permit-all: ${PERMIT_ALL}
+  session-id: ${SESSION_ID}
   cors:
-    method: ${}
-    header: ${}
-    pattern: ${}
-    source-pattern: ${}
+    method: ${CORS_METHOD}
+    header: ${CORS_HEADER}
+    pattern: ${CORS_PATTERN}
+    source-pattern: ${SOURCE_PATTERN}
