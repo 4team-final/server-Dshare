@@ -24,27 +24,35 @@ import java.util.Date;
  * saveRefresh() :
  * validateExistingToken() : refreshToken 검증 함수
  * updateRefresh() : refreshToken 을 새로 받아 DB에 업데이트
- * */
+ */
 
 @Slf4j
 @Component
 public class JwtTokenProvider {
 	private static final String METHOD_NAME = "JwtTokenProvider";
-	@Value("${jwt.header.access}") private String headerKeyAccess;
 	private final TokenRepository tokenRepository;
+	private final String headerKeyAccess;
+	private final String typeAccess;
+	private final String typeRefresh;
 	private final String secretKey;
 	private final long accessValidTime;
 	private final long refreshValidTime;
 
 	@Autowired
 	public JwtTokenProvider(TokenRepository tokenRepository,
-							@Value("${jwt.secret.key}") String secretValue,
-							@Value("${jwt.time.access}") String accessValidString,
-							@Value("${jwt.time.refresh}") String refreshValidString) {
+							@Value(value = "${jwt.header.access}") String headerKeyAccess,
+							@Value(value = "${jwt.type.access}") String typeAccess,
+							@Value(value = "${jwt.type.refresh}") String typeRefresh,
+							@Value(value = "${jwt.secret.key}") String secretValue,
+							@Value(value = "${jwt.time.access}") String accessValidString,
+							@Value(value = "${jwt.time.refresh}") String refreshValidString) {
 		this.tokenRepository = tokenRepository;
+		this.headerKeyAccess = headerKeyAccess;
+		this.typeAccess = typeAccess;
+		this.typeRefresh = typeRefresh;
 		this.secretKey = Base64.getEncoder().encodeToString(secretValue.getBytes());
-		this.accessValidTime = Long.parseLong(accessValidString)*1000;
-		this.refreshValidTime = Long.parseLong(refreshValidString)*1000;
+		this.accessValidTime = Long.parseLong(accessValidString) * 1000;
+		this.refreshValidTime = Long.parseLong(refreshValidString) * 1000;
 	}
 
 	public CommonTokenSet generateToken(String userPk) {
@@ -53,27 +61,28 @@ public class JwtTokenProvider {
 
 		String accessToken = generateAccessToken(userPk);
 		String refreshToken = Jwts.builder()
-									.setSubject(userPk)
-									.setExpiration(new Date(now.getTime() + refreshValidTime))
-									.signWith(SignatureAlgorithm.HS512, secretKey)
-									.compact();
+				.setSubject(userPk)
+				.setExpiration(new Date(now.getTime() + refreshValidTime))
+				.signWith(SignatureAlgorithm.HS512, secretKey)
+				.compact();
 
 		return CommonTokenSet.builder().accessToken(accessToken)
 				.reIssuanceTokenSet(ReIssuanceTokenSet.builder()
-														.empNo(userPk)
-														.refreshToken(refreshToken)
-														.build()).build();
+						.empNo(userPk)
+						.refreshToken(refreshToken)
+						.build()).build();
 	}
+
 	public String generateAccessToken(String userPk) {
 		log.info(METHOD_NAME + "- generateAccessToken() ...");
 		Date now = new Date();
 
 		return Jwts.builder()
-					.setSubject(userPk)
-					.setIssuedAt(now)
-					.setExpiration(new Date(now.getTime()+ accessValidTime))
-					.signWith(SignatureAlgorithm.HS512, secretKey)
-					.compact();
+				.setSubject(userPk)
+				.setIssuedAt(now)
+				.setExpiration(new Date(now.getTime() + accessValidTime))
+				.signWith(SignatureAlgorithm.HS512, secretKey)
+				.compact();
 	}
 
 	public String getUserPk(String token) {
@@ -107,16 +116,16 @@ public class JwtTokenProvider {
 		try {
 			String token = request.getHeader(headerKeyAccess);
 
-			if(token.startsWith(TokenTypeProperties.TYPE_ACCESS)) {
+			if (token.startsWith(typeAccess)) {
 				return TokenResDTO.builder()
-									.code(0)
-									.token(token.replace(TokenTypeProperties.TYPE_ACCESS, ""))
-									.build();
+						.code(0)
+						.token(token.replace(typeAccess, ""))
+						.build();
 			}
-			if(token.startsWith(TokenTypeProperties.TYPE_REFRESH)){
+			if (token.startsWith(typeRefresh)) {
 				return TokenResDTO.builder()
-									.code(1)
-									.token(token.replace(TokenTypeProperties.TYPE_REFRESH, "")).build();
+						.code(1)
+						.token(token.replace(typeRefresh, "")).build();
 			}
 		} catch (NullPointerException ne) {
 			log.error("요청 값이 비어 있습니다. " + METHOD_NAME);
@@ -130,10 +139,10 @@ public class JwtTokenProvider {
 		log.info(METHOD_NAME + "- saveRefresh() ...");
 		try {
 			Token tokenEntity = tokenRepository.save(Token.builder()
-															.empNo(reIssuanceTokenSet.getEmpNo())
-															.refreshToken(reIssuanceTokenSet.getRefreshToken())
-															.build());
-			if(tokenEntity.getEmpNo() != null) return true;
+					.empNo(reIssuanceTokenSet.getEmpNo())
+					.refreshToken(reIssuanceTokenSet.getRefreshToken())
+					.build());
+			if (tokenEntity.getEmpNo() != null) return true;
 		} catch (NullPointerException ne) {
 			log.error("토큰 셋이 비어있습니다. " + METHOD_NAME, ne);
 		} catch (Exception e) {
@@ -145,10 +154,10 @@ public class JwtTokenProvider {
 	public boolean validateRefreshToken(String token) {
 		log.info(METHOD_NAME + "- validateExistingToken() ...");
 		try {
-			if(this.validateToken(token)) {
+			if (this.validateToken(token)) {
 				String userPk = this.getUserPk(token);
 				String existingToken = tokenRepository.findByEmpNo(userPk).getRefreshToken();
-				if(existingToken.equals(token)) return true;
+				if (existingToken.equals(token)) return true;
 			}
 		} catch (Exception e) {
 			log.error("토큰 저장소 비교 검증 에러 " + METHOD_NAME, e);
@@ -160,7 +169,7 @@ public class JwtTokenProvider {
 		log.info(METHOD_NAME + "- updateRefresh() ...");
 		try {
 			Integer result = tokenRepository.updateToken(reIssuanceTokenSet.getRefreshToken(), reIssuanceTokenSet.getEmpNo());
-			if(result > 0) return true;
+			if (result > 0) return true;
 		} catch (NullPointerException ne) {
 			log.error("토큰 저장소가 비어있습니다. " + METHOD_NAME, ne);
 		} catch (Exception e) {

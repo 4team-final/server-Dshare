@@ -1,15 +1,14 @@
 package com.douzone.server.config.security.filter;
 
 import com.douzone.server.config.jwt.JwtTokenProvider;
-import com.douzone.server.config.jwt.TokenTypeProperties;
 import com.douzone.server.config.security.auth.PrincipalDetailService;
 import com.douzone.server.config.security.handler.ResponseHandler;
 import com.douzone.server.config.utils.Payload;
 import com.douzone.server.employee.dto.token.TokenResDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,21 +26,25 @@ import java.io.IOException;
  * 액세스 토큰 보유를 확인해서 올바른 토큰을 보유하고 있는 경우 doFilter 를 사용하여 다음 필터로 패스
  * 토큰이 올바르지 않을 경우 Fail Response 를 보냄
  * 리프레쉬 토큰을 보유한 경우 리프레쉬 토큰이 올바르면 액세스 토큰을 다시 리턴해 줌
- * */
+ */
 
 @Slf4j
 public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 	private static final String METHOD_NAME = "JwtTokenAuthorizationFilter";
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PrincipalDetailService principalDetailService;
-	@Value("${jwt.header.access}") private String headerKeyAccess;
-	
-	public JwtTokenAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, PrincipalDetailService principalDetailService) {
-		super(authenticationManager);
+	@Value(value = "${jwt.header.access}")
+	private String headerKeyAccess;
+	@Value(value = "${jwt.type.access}")
+	private String typeAccess;
+
+	@Autowired
+	public JwtTokenAuthorizationFilter(UserAuthenticationManager userAuthenticationManager, JwtTokenProvider jwtTokenProvider, PrincipalDetailService principalDetailService) {
+		super(userAuthenticationManager);
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.principalDetailService = principalDetailService;
 	}
-	
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		log.info(METHOD_NAME + "- doFilterInternal() ...");
@@ -49,7 +52,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 			TokenResDTO tokenResDTO = jwtTokenProvider.requestCheckToken(request);
 			String token = tokenResDTO.getToken();
 			switch (tokenResDTO.getCode()) {
-				case 0 :
+				case 0:
 					if (jwtTokenProvider.validateToken(token)) {
 						log.info("Access Token Validation - Success");
 
@@ -70,12 +73,12 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
 					}
 					return;
-				case 1 :
+				case 1:
 					if (jwtTokenProvider.validateRefreshToken(token)) {
 						log.info("Refresh Token Validation - Success");
 						String accessToken = jwtTokenProvider.generateAccessToken(jwtTokenProvider.getUserPk(token));
 
-						response.addHeader(headerKeyAccess, TokenTypeProperties.TYPE_ACCESS + accessToken);
+						response.addHeader(headerKeyAccess, typeAccess + accessToken);
 
 						response.setContentType("text/html; charset=UTF-8");
 						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Payload.TOKEN_OK));
@@ -86,7 +89,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
 					}
 					return;
-				case 2 :
+				case 2:
 				default:
 					log.warn("Access/Refresh Token Validation - Fail");
 			}

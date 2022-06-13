@@ -2,16 +2,21 @@ package com.douzone.server.employee.domain.employee;
 
 import com.douzone.server.config.utils.BaseAtTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
+@DynamicInsert
 @DynamicUpdate
-@Entity(name = "Employee")
+@Entity
+@Table(name = "employee")
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee extends BaseAtTime {
@@ -24,11 +29,9 @@ public class Employee extends BaseAtTime {
 	private String name;
 	private String email;
 	private String tel;
-	private Date birthday;
+	private LocalDateTime birthday;
 	private String profileImg;
 	private String role;
-	private String createBy;
-	private String modifiedBy;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "teamId")

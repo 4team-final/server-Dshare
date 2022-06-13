@@ -7,8 +7,10 @@ import com.douzone.server.config.utils.Payload;
 import com.douzone.server.employee.dto.token.TokenResDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,15 +18,29 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class RoleInterceptor implements HandlerInterceptor {
 	private static final String METHOD_NAME = "RoleInterceptor";
 	private final DecodeEncodeHandler decodeEncodeHandler;
 	private final JwtTokenProvider jwtTokenProvider;
-	@Value("${user.role.admin}") private String adminRole;
-	@Value("${user.role.employee}") private String employeeRole;
-	@Value("${user.url.admin}") private String adminURL;
-	@Value("${user.url.employee}") private String employeeURL;
+	private final String adminRole;
+	private final String employeeRole;
+	private final String adminURL;
+	private final String employeeURL;
+
+	@Autowired
+	public RoleInterceptor(DecodeEncodeHandler decodeEncodeHandler, JwtTokenProvider jwtTokenProvider,
+						   @Value(value = "${user.role.admin}") String adminRole,
+						   @Value(value = "${user.role.employee}") String employeeRole,
+						   @Value(value = "${user.url.admin}") String adminURL,
+						   @Value(value = "${user.url.employee}") String employeeURL) {
+		this.decodeEncodeHandler = decodeEncodeHandler;
+		this.jwtTokenProvider = jwtTokenProvider;
+		this.adminRole = adminRole;
+		this.employeeRole = employeeRole;
+		this.adminURL = adminURL;
+		this.employeeURL = employeeURL;
+	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

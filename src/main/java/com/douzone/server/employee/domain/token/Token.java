@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Entity(name = "Token")
+@Entity
+@Table(name = "token")
 @Getter
 @Builder
 @NoArgsConstructor

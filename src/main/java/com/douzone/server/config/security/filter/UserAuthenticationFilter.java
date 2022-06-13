@@ -1,7 +1,6 @@
 package com.douzone.server.config.security.filter;
 
 import com.douzone.server.config.jwt.JwtTokenProvider;
-import com.douzone.server.config.jwt.TokenTypeProperties;
 import com.douzone.server.config.security.handler.ResponseHandler;
 import com.douzone.server.config.security.handler.UserLoginFailureHandler;
 import com.douzone.server.config.utils.Payload;
@@ -10,8 +9,8 @@ import com.douzone.server.employee.domain.token.CommonTokenSet;
 import com.douzone.server.employee.domain.token.Token;
 import com.douzone.server.employee.domain.token.TokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -30,17 +30,36 @@ import java.io.IOException;
  * URL 이 /login 으로 넘어올 경우 spring security 에서 자동으로 attemptAuthentication() 으로 보내줌
  * attemptAuthentication() 에서 유저 정보를 확인 후 성공하면 successfulAuthentication()
  * 실패할 경우 unsuccessfulAuthentication() 으로 자동 이동 시켜줌
- * */
+ */
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private static final String METHOD_NAME = "UserAuthenticationFilter";
 	private final UserAuthenticationManager userAuthenticationManager;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final TokenRepository tokenRepository;
-	@Value("${jwt.header.access}") private String headerKeyAccess;
-	@Value("${jwt.header.refresh}") private String headerKeyRefresh;
+	private final String headerKeyAccess;
+	private final String headerKeyRefresh;
+	private final String typeAccess;
+	private final String typeRefresh;
+
+	@Autowired
+	public UserAuthenticationFilter(UserAuthenticationManager userAuthenticationManager,
+									JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository,
+									@Value(value = "${jwt.header.access}") String headerKeyAccess,
+									@Value(value = "${jwt.header.refresh}") String headerKeyRefresh,
+									@Value(value = "${jwt.type.access}") String typeAccess,
+									@Value(value = "${jwt.type.refresh}") String typeRefresh) {
+		super(userAuthenticationManager);
+		this.userAuthenticationManager = userAuthenticationManager;
+		this.jwtTokenProvider = jwtTokenProvider;
+		this.tokenRepository = tokenRepository;
+		this.headerKeyAccess = headerKeyAccess;
+		this.headerKeyRefresh = headerKeyRefresh;
+		this.typeAccess = typeAccess;
+		this.typeRefresh = typeRefresh;
+	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -80,24 +99,24 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 					log.info("RefreshToken validate success - AccessToken issuance");
 					String accessToken = jwtTokenProvider.generateAccessToken(principal);
 
-					response.addHeader(headerKeyAccess, TokenTypeProperties.TYPE_ACCESS + accessToken);
-				}
-				else {
+					response.addHeader(headerKeyAccess, typeAccess + accessToken);
+				} else {
 					log.info("RefreshToken Expired - All Token issuance");
 					CommonTokenSet commonTokenSet = jwtTokenProvider.generateToken(principal);
-					if(!jwtTokenProvider.updateRefresh(commonTokenSet.getReIssuanceTokenSet())) log.warn("Token Set Update to Token Repository - Fail");
+					if (!jwtTokenProvider.updateRefresh(commonTokenSet.getReIssuanceTokenSet()))
+						log.warn("Token Set Update to Token Repository - Fail");
 
-					response.addHeader(headerKeyAccess, TokenTypeProperties.TYPE_ACCESS + commonTokenSet.getAccessToken());
-					response.addHeader(headerKeyRefresh, TokenTypeProperties.TYPE_REFRESH + commonTokenSet.getReIssuanceTokenSet().getRefreshToken());
+					response.addHeader(headerKeyAccess, typeAccess + commonTokenSet.getAccessToken());
+					response.addHeader(headerKeyRefresh, typeRefresh + commonTokenSet.getReIssuanceTokenSet().getRefreshToken());
 				}
-			}
-			else {
+			} else {
 				log.info("First Login User - All Token issuance");
 				CommonTokenSet commonTokenSet = jwtTokenProvider.generateToken(principal);
-				if(!jwtTokenProvider.saveRefresh(commonTokenSet.getReIssuanceTokenSet())) log.warn("Token Set Save to Token Repository - Fail");
+				if (!jwtTokenProvider.saveRefresh(commonTokenSet.getReIssuanceTokenSet()))
+					log.warn("Token Set Save to Token Repository - Fail");
 
-				response.addHeader(headerKeyAccess, TokenTypeProperties.TYPE_ACCESS + commonTokenSet.getAccessToken());
-				response.addHeader(headerKeyRefresh,TokenTypeProperties.TYPE_REFRESH + commonTokenSet.getReIssuanceTokenSet().getRefreshToken());
+				response.addHeader(headerKeyAccess, typeAccess + commonTokenSet.getAccessToken());
+				response.addHeader(headerKeyRefresh, typeRefresh + commonTokenSet.getReIssuanceTokenSet().getRefreshToken());
 			}
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Payload.SIGN_IN_OK));
