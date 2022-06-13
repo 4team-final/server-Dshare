@@ -5,15 +5,16 @@ import com.douzone.server.config.security.auth.PrincipalDetailService;
 import com.douzone.server.config.security.handler.ResponseHandler;
 import com.douzone.server.config.utils.Payload;
 import com.douzone.server.employee.dto.token.TokenResDTO;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,13 +30,13 @@ import java.io.IOException;
  */
 
 @Slf4j
+@Setter
+@Component
 public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 	private static final String METHOD_NAME = "JwtTokenAuthorizationFilter";
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PrincipalDetailService principalDetailService;
-	@Value(value = "${jwt.header.access}")
 	private String headerKeyAccess;
-	@Value(value = "${jwt.type.access}")
 	private String typeAccess;
 
 	@Autowired

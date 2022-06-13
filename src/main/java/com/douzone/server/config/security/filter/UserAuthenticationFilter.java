@@ -9,9 +9,9 @@ import com.douzone.server.employee.domain.token.CommonTokenSet;
 import com.douzone.server.employee.domain.token.Token;
 import com.douzone.server.employee.domain.token.TokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,32 +33,24 @@ import java.io.IOException;
  */
 
 @Slf4j
+@Setter
 @Component
 public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private static final String METHOD_NAME = "UserAuthenticationFilter";
-	private final UserAuthenticationManager userAuthenticationManager;
-	private final JwtTokenProvider jwtTokenProvider;
-	private final TokenRepository tokenRepository;
-	private final String headerKeyAccess;
-	private final String headerKeyRefresh;
-	private final String typeAccess;
-	private final String typeRefresh;
+	private UserAuthenticationManager userAuthenticationManager;
+	private JwtTokenProvider jwtTokenProvider;
+	private TokenRepository tokenRepository;
+	private String headerKeyAccess;
+	private String headerKeyRefresh;
+	private String typeAccess;
+	private String typeRefresh;
 
 	@Autowired
-	public UserAuthenticationFilter(UserAuthenticationManager userAuthenticationManager,
-									JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository,
-									@Value(value = "${jwt.header.access}") String headerKeyAccess,
-									@Value(value = "${jwt.header.refresh}") String headerKeyRefresh,
-									@Value(value = "${jwt.type.access}") String typeAccess,
-									@Value(value = "${jwt.type.refresh}") String typeRefresh) {
+	public UserAuthenticationFilter(UserAuthenticationManager userAuthenticationManager, JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository) {
 		super(userAuthenticationManager);
 		this.userAuthenticationManager = userAuthenticationManager;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.tokenRepository = tokenRepository;
-		this.headerKeyAccess = headerKeyAccess;
-		this.headerKeyRefresh = headerKeyRefresh;
-		this.typeAccess = typeAccess;
-		this.typeRefresh = typeRefresh;
 	}
 
 	@Override
