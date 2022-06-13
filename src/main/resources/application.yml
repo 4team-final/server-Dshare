@@ -8,17 +8,21 @@ spring:
   profiles: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_URL}:3306/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    url: jdbc:mysql://team4-database.cwmjuw9z0gli.ap-northeast-2.rds.amazonaws.com:3306/DevDB?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: admin
+    password: qwer1234!!
   jpa:
     hibernate:
       ddl-auto: update
       use-new-id-generator-mappings: true
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
   devtools:
     restart:
       enabled: false
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 
 servlet:
   multipart:
@@ -41,6 +45,32 @@ logging:
             sql:
               BasicBinder: TRACE
 
-jwtSecret: ${JWT_SECRET}
-jwtMs: ${JWT_MS}
+jwt:
+  header:
+    access: Authorization
+    refresh: RefreshToken
+  time:
+    access: 1800
+    refresh: 604800
+  secret:
+    key: NeohagoNahagoWehago
 
+user:
+  url:
+    client: http://localhost:3000
+    logout: /logout
+    admin: /admin
+    employee: /emp
+  role:
+    admin: ROLE_ADMIN
+    employee: ROLE_EMPLOYEE
+  permit:
+    all: '/**'
+  session:
+    id: 'JSESSIONID'
+  cors:
+    method: '*'
+    header: '*'
+    pattern: '*'
+    source:
+      pattern: '/**'
