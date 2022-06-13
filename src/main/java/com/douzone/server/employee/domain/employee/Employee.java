@@ -41,3 +41,4 @@ public class Employee extends BaseAtTime {
     @JoinColumn(name = "positionId")
     private Position position;
 }
+

@@ -19,7 +19,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Team extends BaseAtTime {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,3 +29,4 @@ public class Team extends BaseAtTime {
 
     private String name;
 }
+
