@@ -1,7 +1,7 @@
 package com.douzone.server.config.security.auth;
 
-import com.douzone.server.employee.domain.employee.Employee;
-import com.douzone.server.employee.domain.employee.EmployeeRepository;
+import com.douzone.server.entity.Employee;
+import com.douzone.server.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +23,7 @@ public class PrincipalDetailService implements UserDetailsService {
 		log.info(METHOD_NAME + "- loadUserByUsername() ...");
 		Employee employee = employeeRepository.findByEmpNo(username);
 
-		if(employee == null) {
+		if (employee == null) {
 			log.error("유저가 존재하지 않습니다. " + METHOD_NAME);
 		}
 		return new PrincipalDetails(employee);

@@ -1,6 +1,6 @@
 package com.douzone.server.config.security.auth;
 
-import com.douzone.server.employee.domain.employee.Employee;
+import com.douzone.server.entity.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

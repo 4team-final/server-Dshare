@@ -2,7 +2,11 @@ package com.douzone.server.test;
 
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.employee.domain.employee.*;
+import com.douzone.server.entity.Department;
+import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.Position;
+import com.douzone.server.entity.Team;
+import com.douzone.server.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class Test {
 
 	private final EmployeeRepository employeeRepository;
 	private final DecodeEncodeHandler decodeEncodeHandler;
+
 	@PostMapping("/sign")
 	public void sign(@RequestBody Model model) {
 		log.info("UserController join method ...");
@@ -39,10 +42,12 @@ public class Test {
 		return new ResponseDTO().of(HttpStatus.OK, "hi", model);
 	}
 }
+
 @Getter
 @AllArgsConstructor
 class Model {
 	private String empNo, password, name, email, tel;
+
 	public Employee toEntity(String pw) {
 		return Employee.builder()
 				.empNo(empNo)
