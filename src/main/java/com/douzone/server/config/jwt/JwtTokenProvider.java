@@ -1,10 +1,10 @@
 package com.douzone.server.config.jwt;
 
-import com.douzone.server.employee.domain.token.Token;
-import com.douzone.server.employee.domain.token.TokenRepository;
-import com.douzone.server.employee.dto.token.CommonTokenDTO;
-import com.douzone.server.employee.dto.token.ReIssuanceTokenDTO;
-import com.douzone.server.employee.dto.token.TokenResDTO;
+import com.douzone.server.dto.token.CommonTokenDTO;
+import com.douzone.server.dto.token.ReIssuanceTokenDTO;
+import com.douzone.server.dto.token.TokenResDTO;
+import com.douzone.server.entity.Token;
+import com.douzone.server.repository.TokenRepository;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

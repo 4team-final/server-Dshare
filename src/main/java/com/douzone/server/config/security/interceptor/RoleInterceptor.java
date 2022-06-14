@@ -3,8 +3,8 @@ package com.douzone.server.config.security.interceptor;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.security.handler.ResponseHandler;
-import com.douzone.server.config.utils.Payload;
-import com.douzone.server.employee.dto.token.TokenResDTO;
+import com.douzone.server.config.utils.Message;
+import com.douzone.server.dto.token.TokenResDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +15,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+/**
+ * 지정되지 않은 모든 URL 을 가져와 검사
+ * URL 이 /admin, /emp 인지 그 외인지 검사하여 boolean 리턴
+ */
 
 @Slf4j
 @Component
@@ -42,7 +47,7 @@ public class RoleInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws MissMatchEndPointException, Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info(METHOD_NAME + "- preHandle() ...");
         boolean result = false;
         try {
@@ -65,7 +70,7 @@ public class RoleInterceptor implements HandlerInterceptor {
                             } else {
                                 log.warn("ADMIN role validate - Fail");
                                 response.setContentType("text/html; charset=UTF-8");
-                                response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.USER_ROLE_CHECK_FAIL));
+                                response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
                             }
                             break Outer;
                         }
@@ -77,7 +82,7 @@ public class RoleInterceptor implements HandlerInterceptor {
                             } else {
                                 log.warn("USER role validate - Fail");
                                 response.setContentType("text/html; charset=UTF-8");
-                                response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.USER_ROLE_CHECK_FAIL));
+                                response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
                             }
                             break Outer;
                         }
@@ -86,15 +91,14 @@ public class RoleInterceptor implements HandlerInterceptor {
                     } else {
                         log.warn("Request User is not exist " + METHOD_NAME);
                         response.setContentType("text/html; charset=UTF-8");
-                        response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.USER_ROLE_CHECK_FAIL));
+                        response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
                     }
                 } else {
                     log.warn("Token validate - Fail");
                     response.setContentType("text/html; charset=UTF-8");
-                    response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.TOKEN_FAIL));
+                    response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.TOKEN_FAIL));
                 }
             }
-
             return result;
         } catch (IOException ie) {
             log.error("역할이 입력되지 않았습니다. " + METHOD_NAME, ie);
@@ -103,7 +107,6 @@ public class RoleInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             log.error("SERVER ERROR " + METHOD_NAME, e);
         }
-
         return false;
     }
 }

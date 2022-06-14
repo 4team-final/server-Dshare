@@ -1,6 +1,6 @@
 package com.douzone.server.config.utils;
 
-import com.douzone.server.admin.exception.ErrorCode;
+import com.douzone.server.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Getter;

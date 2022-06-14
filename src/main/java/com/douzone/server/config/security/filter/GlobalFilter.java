@@ -4,7 +4,7 @@ import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.auth.PrincipalDetailService;
 import com.douzone.server.config.security.handler.UserLogoutHandler;
 import com.douzone.server.config.security.handler.UserLogoutSuccessHandler;
-import com.douzone.server.employee.domain.token.TokenRepository;
+import com.douzone.server.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

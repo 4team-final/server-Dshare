@@ -3,11 +3,11 @@ package com.douzone.server.config.security.filter;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.handler.ResponseHandler;
 import com.douzone.server.config.security.handler.UserLoginFailureHandler;
-import com.douzone.server.config.utils.Payload;
-import com.douzone.server.employee.domain.employee.Employee;
-import com.douzone.server.employee.domain.token.Token;
-import com.douzone.server.employee.domain.token.TokenRepository;
-import com.douzone.server.employee.dto.token.CommonTokenDTO;
+import com.douzone.server.config.utils.Message;
+import com.douzone.server.dto.token.CommonTokenDTO;
+import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.Token;
+import com.douzone.server.repository.TokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -104,7 +104,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 				response.addHeader(headerKeyRefresh, typeRefresh + commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken());
 			}
 			response.setContentType("text/html; charset=UTF-8");
-			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Payload.SIGN_IN_OK));
+			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Message.SIGN_IN_OK));
 		} catch (IOException ie) {
 			log.error("유저 정보를 읽지 못했습니다. " + METHOD_NAME, ie);
 		} catch (NullPointerException ne) {
@@ -124,7 +124,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 			String message = new UserLoginFailureHandler().onAuthenticationFailure(failed);
 
 			response.setContentType("text/html; charset=UTF-8");
-			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.SIGN_IN_FAIL + message));
+			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.SIGN_IN_FAIL + message));
 		} catch (IOException ie) {
 			log.error("전달받은 정보를 읽지 못했습니다. " + METHOD_NAME, ie);
 		} catch (Exception e) {
@@ -142,7 +142,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 			String message = new UserLoginFailureHandler().onAuthenticationFailure(exception);
 
 			response.setContentType("text/html; charset=UTF-8");
-			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.SIGN_IN_FAIL + message));
+			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.SIGN_IN_FAIL + message));
 		} catch (IOException ie) {
 			log.error("전달받은 정보를 읽지 못했습니다. " + METHOD_NAME, ie);
 		} catch (Exception e) {

@@ -1,16 +1,17 @@
 package com.douzone.server.test;
 
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
-import com.douzone.server.config.utils.Payload;
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.employee.domain.employee.*;
+import com.douzone.server.entity.Department;
+import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.Position;
+import com.douzone.server.entity.Team;
+import com.douzone.server.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,11 +23,6 @@ public class Test {
 
     private final EmployeeRepository employeeRepository;
     private final DecodeEncodeHandler decodeEncodeHandler;
-
-    @GetMapping("/test")
-    public ResponseEntity<ResponseDTO> test() {
-        return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Payload.SUCCESS_ADMIN_REGISTER, "성공?"));
-    }
 
     @PostMapping("/sign")
     public void sign(@RequestBody Model model) {
