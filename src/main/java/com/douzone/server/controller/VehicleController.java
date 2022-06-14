@@ -81,7 +81,7 @@ public class VehicleController {
 	}
 
 	@PostMapping(path = "/create_bookmark")
-	public ResponseDTO createBookmark(@RequestBody VehicleBookmarkDTO vehicleBookmarkDTO) {
+	public ResponseDTO createBookmark() {
 		log.info(METHOD_NAME + "- createBookmark");
 		Integer result = vehicleService.createBookmark();
 

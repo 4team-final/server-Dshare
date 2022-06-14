@@ -68,13 +68,13 @@ public class VehicleService {
 	public Integer createReservation(VehicleReservationDTO vehicleReservationDTO) {
 		log.info(METHOD_NAME + "-createReservation");
 		try {
-//			VehicleReservation vehicleReservation = VehicleReservation.builder()
-//					.vehicle(Vehicle.builder().id(1L).build())
-//					.employee(Employee.builder().id(1L).build())
-//					.reason("사유")
-//					.title("제목")
-//					.build();
-			VehicleReservation result = vehicleReservationRepository.save(vehicleReservationDTO);
+			VehicleReservation vehicleReservation = VehicleReservation.builder()
+																		.vehicle(Vehicle.builder().id(1L).build())
+																		.employee(Employee.builder().id(1L).build())
+																		.reason(vehicleReservationDTO.getReason())
+																		.title(vehicleReservationDTO.getTitle())
+																		.build();
+			VehicleReservation result = vehicleReservationRepository.save(vehicleReservation);
 			if(result.getId() == null) return 0;
 			return 1;
 		} catch (Exception e) {
@@ -84,7 +84,7 @@ public class VehicleService {
 		return null;
 	}
 
-	public Integer createBookmark( ) {
+	public Integer createBookmark() {
 		log.info(METHOD_NAME + "-createBookmark");
 
 		try {

@@ -4,7 +4,9 @@ package com.douzone.server.controller;
 import com.douzone.server.config.utils.Message;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.service.AdminService;
+import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,4 +37,11 @@ public class AdminController {
         return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못해합니다."));
     }
 
+    @PostMapping("/vehicle/create_reservation")
+    public ResponseDTO createVehicleReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
+        Integer result = adminService.createVehicleReservation(vehicleReservationDTO);
+        if(result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+        return new ResponseDTO().of(HttpStatus.OK, "");
+    }
 }
