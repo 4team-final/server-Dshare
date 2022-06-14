@@ -33,6 +33,7 @@ import java.io.IOException;
 @Setter
 @Component
 public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
+
 	private static final String METHOD_NAME = JwtTokenAuthorizationFilter.class.getName();
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PrincipalDetailService principalDetailService;
@@ -80,11 +81,6 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						String accessToken = jwtTokenProvider.generateAccessToken(jwtTokenProvider.getUserPk(token));
 
 						response.addHeader(headerKeyAccess, typeAccess + accessToken);
-
-						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Message.TOKEN_OK));
-					} else {
-						log.info("Refresh Token Validation - Fail");
 
 						response.setContentType("text/html; charset=UTF-8");
 						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.ACCESS_FAIL + Message.TOKEN_FAIL));

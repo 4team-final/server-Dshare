@@ -87,7 +87,6 @@ public class RoleInterceptor implements HandlerInterceptor {
 							break Outer;
 						}
 						log.warn("Unverified role ACCESS ... ");
-
 					} else {
 						log.warn("Request User is not exist " + METHOD_NAME);
 						response.setContentType("text/html; charset=UTF-8");
