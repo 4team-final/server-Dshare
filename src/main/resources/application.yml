@@ -1,11 +1,7 @@
 server:
   port: 8082
+
 spring:
-  profiles:
-    active: local
----
-spring:
-  profiles: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://team4-database.cwmjuw9z0gli.ap-northeast-2.rds.amazonaws.com:3306/DevDB?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -23,6 +19,40 @@ spring:
       enabled: false
   jackson:
     property-naming-strategy: SNAKE_CASE
+  main:
+    allow-circular-references: true
+
+jwt:
+  header:
+    access: Authorization
+    refresh: RefreshToken
+  type:
+    access: "Bearer "
+    refresh: "Refresh "
+  time:
+    access: 1800
+    refresh: 604800
+  secret:
+    key: NeohagoNahagoWehago
+user:
+  url:
+    client: http://localhost:3000
+    logout: /logout
+    admin: /admin
+    employee: /emp
+  role:
+    admin: ROLE_ADMIN
+    employee: ROLE_USER
+  permit:
+    all: '/**'
+  session:
+    id: 'JSESSIONID'
+  cors:
+    method: '*'
+    header: '*'
+    pattern: '*'
+    source:
+      pattern: '/**'
 
 servlet:
   multipart:
@@ -45,32 +75,6 @@ logging:
             sql:
               BasicBinder: TRACE
 
-jwt:
-  header:
-    access: Authorization
-    refresh: RefreshToken
-  time:
-    access: 1800
-    refresh: 604800
-  secret:
-    key: NeohagoNahagoWehago
+year:
+  current: 22
 
-user:
-  url:
-    client: http://localhost:3000
-    logout: /logout
-    admin: /admin
-    employee: /emp
-  role:
-    admin: ROLE_ADMIN
-    employee: ROLE_EMPLOYEE
-  permit:
-    all: '/**'
-  session:
-    id: 'JSESSIONID'
-  cors:
-    method: '*'
-    header: '*'
-    pattern: '*'
-    source:
-      pattern: '/**'

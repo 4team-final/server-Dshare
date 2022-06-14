@@ -40,5 +40,6 @@ public class Employee extends BaseAtTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "positionId")
     private Position position;
+    
 }
 

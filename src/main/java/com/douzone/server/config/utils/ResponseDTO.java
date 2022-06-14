@@ -18,15 +18,15 @@ public class ResponseDTO {
         this.message = message;
     }
 
-    public ResponseDTO of(HttpStatus status, String message, Object value) {
+    public static ResponseDTO of(HttpStatus status, String message, Object value) {
         return new ResponseDTO(status, message, value);
     }
 
-    public ResponseDTO of(HttpStatus status, String message) {
+    public static ResponseDTO of(HttpStatus status, String message) {
         return new ResponseDTO(status, message);
     }
 
-    public ResponseDTO fail(HttpStatus status, String message) {
+    public static ResponseDTO fail(HttpStatus status, String message) {
         return new ResponseDTO(status, message, null);
     }
 }

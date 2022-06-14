@@ -30,75 +30,76 @@ import java.io.IOException;
 
 @Slf4j
 public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
-	private static final String METHOD_NAME = "JwtTokenAuthorizationFilter";
-	private final JwtTokenProvider jwtTokenProvider;
-	private final PrincipalDetailService principalDetailService;
-	@Value(value = "${jwt.header.access}")
-	private String headerKeyAccess;
-	@Value(value = "${jwt.type.access}")
-	private String typeAccess;
+    private static final String METHOD_NAME = "JwtTokenAuthorizationFilter";
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PrincipalDetailService principalDetailService;
+    @Value(value = "${jwt.header.access}")
+    private String headerKeyAccess;
+    @Value(value = "${jwt.type.access}")
+    private String typeAccess;
 
-	@Autowired
-	public JwtTokenAuthorizationFilter(UserAuthenticationManager userAuthenticationManager, JwtTokenProvider jwtTokenProvider, PrincipalDetailService principalDetailService) {
-		super(userAuthenticationManager);
-		this.jwtTokenProvider = jwtTokenProvider;
-		this.principalDetailService = principalDetailService;
-	}
+    @Autowired
+    public JwtTokenAuthorizationFilter(UserAuthenticationManager userAuthenticationManager, JwtTokenProvider jwtTokenProvider, PrincipalDetailService principalDetailService) {
+        super(userAuthenticationManager);
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.principalDetailService = principalDetailService;
+    }
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		log.info(METHOD_NAME + "- doFilterInternal() ...");
-		try {
-			TokenResDTO tokenResDTO = jwtTokenProvider.requestCheckToken(request);
-			String token = tokenResDTO.getToken();
-			switch (tokenResDTO.getCode()) {
-				case 0:
-					if (jwtTokenProvider.validateToken(token)) {
-						log.info("Access Token Validation - Success");
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info(METHOD_NAME + "- doFilterInternal() ...");
+        try {
+            TokenResDTO tokenResDTO = jwtTokenProvider.requestCheckToken(request);
+            String token = tokenResDTO.getToken();
+            switch (tokenResDTO.getCode()) {
+                case 0:
+                    if (jwtTokenProvider.validateToken(token)) {
+                        log.info("Access Token Validation - Success");
 
-						String userPk = jwtTokenProvider.getUserPk(token);
+                        String userPk = jwtTokenProvider.getUserPk(token);
 
-						UserDetails userDetails = principalDetailService.loadUserByUsername(userPk);
-						UsernamePasswordAuthenticationToken authenticationToken =
-								new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        UserDetails userDetails = principalDetailService.loadUserByUsername(userPk);
+                        UsernamePasswordAuthenticationToken authenticationToken =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-						authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-						SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-						filterChain.doFilter(request, response);
-					} else {
-						log.info("Access Token Validation - Fail");
+                        filterChain.doFilter(request, response);
+                    } else {
+                        log.info("Access Token Validation - Fail");
 
-						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
-					}
-					return;
-				case 1:
-					if (jwtTokenProvider.validateRefreshToken(token)) {
-						log.info("Refresh Token Validation - Success");
-						String accessToken = jwtTokenProvider.generateAccessToken(jwtTokenProvider.getUserPk(token));
+                        response.setContentType("text/html; charset=UTF-8");
+                        response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
+                    }
+                    return;
+                case 1:
+                    if (jwtTokenProvider.validateRefreshToken(token)) {
+                        log.info("Refresh Token Validation - Success");
+                        String accessToken = jwtTokenProvider.generateAccessToken(jwtTokenProvider.getUserPk(token));
 
-						response.addHeader(headerKeyAccess, typeAccess + accessToken);
+                        response.addHeader(headerKeyAccess, typeAccess + accessToken);
 
-						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Payload.TOKEN_OK));
-					} else {
-						log.info("Refresh Token Validation - Fail");
+                        response.setContentType("text/html; charset=UTF-8");
+                        response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Payload.TOKEN_OK));
+                    } else {
+                        log.info("Refresh Token Validation - Fail");
 
-						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
-					}
-					return;
-				case 2:
-				default:
-					log.warn("Access/Refresh Token Validation - Fail");
-			}
-		} catch (NullPointerException ne) {
-			log.error("토큰 값이 비어있습니다. " + METHOD_NAME);
-		} catch (Exception e) {
-			log.error("사용자 인증을 확인하지 못해 인가할 수 없습니다. " + METHOD_NAME, e);
-		}
+                        response.setContentType("text/html; charset=UTF-8");
+                        response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
+                    }
+                    return;
+                case 2:
+                default:
+                    log.warn("Access/Refresh Token Validation - Fail");
+            }
+        } catch (NullPointerException ne) {
+            log.error("토큰 값이 비어있습니다. " + METHOD_NAME);
+        } catch (Exception e) {
+            log.error("사용자 인증을 확인하지 못해 인가할 수 없습니다. " + METHOD_NAME, e);
+        }
+        response.setContentType("text/html; charset=UTF-8");
+        response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
 
-		filterChain.doFilter(request, response);
-	}
+    }
 }
