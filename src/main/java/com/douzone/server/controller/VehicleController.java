@@ -25,8 +25,6 @@ import java.util.List;
  * findRecentVehicle - 최근 예약된 차량 조회 /recent
  * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /mark
  * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best_mark
- * Update:
- * updateReserved - 내 차량 예약 현황 수정 /update
  */
 
 @Slf4j
@@ -42,9 +40,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findAllReserved");
 		List<Vehicle> result = vehicleService.findAllReserved();
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@GetMapping(path = "/list_un")
@@ -52,9 +50,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findAllUnreserved");
 		List<Vehicle> result = vehicleService.findAllUnreserved();
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@PostMapping(path = "/list_type")
@@ -62,9 +60,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findTypeReserved");
 		List<Vehicle> result = vehicleService.findTypeReserved(model);
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@PostMapping(path = "/list_date")
@@ -72,9 +70,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findDateReserved");
 		List<Vehicle> result = vehicleService.findDateReserved(date);
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@PostMapping(path = "/list_pre")
@@ -82,9 +80,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findEmpBefore");
 		List<VehicleReservation> result = vehicleService.findEmpBefore(id, new Date());
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@PostMapping(path = "/list_post")
@@ -92,9 +90,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findEmpAfter");
 		List<VehicleReservation> result = vehicleService.findEmpAfter(id, new Date());
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@GetMapping(path = "/best_vehicle")
@@ -102,9 +100,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findWeekVehicle");
 		Vehicle result = vehicleService.findWeekVehicle();
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@GetMapping(path = "/best_time")
@@ -112,9 +110,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findWeekDate");
 		Integer result = vehicleService.findWeekDate();
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@GetMapping(path = "/recent")
@@ -122,9 +120,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findRecentVehicle");
 		Vehicle result = vehicleService.findRecentVehicle();
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@GetMapping(path = "/mark")
@@ -132,9 +130,9 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findMarkVehicle");
 		List<Vehicle> result = vehicleService.findMarkVehicle(empNo);
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 
 	@GetMapping(path = "/best_mark")
@@ -142,8 +140,8 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findMarkBest");
 		List<Vehicle> result = vehicleService.findMarkBest();
 
-		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
-		return new ResponseDTO().of(HttpStatus.OK, "", result);
+		return ResponseDTO.of(HttpStatus.OK, "", result);
 	}
 }
