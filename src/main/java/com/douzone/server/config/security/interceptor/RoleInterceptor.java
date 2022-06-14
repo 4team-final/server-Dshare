@@ -3,9 +3,8 @@ package com.douzone.server.config.security.interceptor;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.security.handler.ResponseHandler;
-import com.douzone.server.config.utils.Payload;
-import com.douzone.server.employee.dto.token.TokenResDTO;
-import lombok.RequiredArgsConstructor;
+import com.douzone.server.config.utils.Message;
+import com.douzone.server.dto.token.TokenResDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +16,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 지정되지 않은 모든 URL 을 가져와 검사
+ * URL 이 /admin, /emp 인지 그 외인지 검사하여 boolean 리턴
+ */
+
 @Slf4j
 @Component
 public class RoleInterceptor implements HandlerInterceptor {
-	private static final String METHOD_NAME = "RoleInterceptor";
+	private static final String METHOD_NAME = RoleInterceptor.class.getName();
 	private final DecodeEncodeHandler decodeEncodeHandler;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final String adminRole;
@@ -53,11 +57,11 @@ public class RoleInterceptor implements HandlerInterceptor {
 			{
 				if (jwtTokenProvider.validateToken(token)) {
 					log.info("Token validate - success");
-					String email = jwtTokenProvider.getUserPk(token);
+					String empNo = jwtTokenProvider.getUserPk(token);
 
-					if (decodeEncodeHandler.empNoValid(email)) {
+					if (decodeEncodeHandler.empNoValid(empNo)) {
 						log.info("User validate - Success");
-						String role = decodeEncodeHandler.roleValid(email);
+						String role = decodeEncodeHandler.roleValid(empNo);
 						if (request.getRequestURI().startsWith(adminURL)) {
 							log.info("ADMIN role validate ...");
 							if (role != null && role.equals(adminRole)) {
@@ -66,7 +70,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 							} else {
 								log.warn("ADMIN role validate - Fail");
 								response.setContentType("text/html; charset=UTF-8");
-								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.USER_ROLE_CHECK_FAIL));
+								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
 							}
 							break Outer;
 						}
@@ -78,21 +82,20 @@ public class RoleInterceptor implements HandlerInterceptor {
 							} else {
 								log.warn("USER role validate - Fail");
 								response.setContentType("text/html; charset=UTF-8");
-								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.USER_ROLE_CHECK_FAIL));
+								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
 							}
 							break Outer;
 						}
 						log.warn("Unverified role ACCESS ... ");
-
 					} else {
 						log.warn("Request User is not exist " + METHOD_NAME);
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.USER_ROLE_CHECK_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
 					}
 				} else {
 					log.warn("Token validate - Fail");
 					response.setContentType("text/html; charset=UTF-8");
-					response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.TOKEN_FAIL));
+					response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.TOKEN_FAIL));
 				}
 			}
 			return result;

@@ -14,14 +14,15 @@ import org.springframework.stereotype.Component;
  * 여기서 사번과 비밀번호의 값이 비어 있는지 잘못된 값을 들고 있는지 DB 값과 비교해서
  * 올바른 값을 가진 경우만 리턴
  * 나머지 경우는 에러에 맞게 Exception 처리를 해줌
- * */
+ */
 
-@Component
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class UserAuthenticationManager implements AuthenticationManager {
-	private static final String METHOD_NAME = "UserAuthenticationManager";
+	private static final String METHOD_NAME = UserAuthenticationManager.class.getName();
 	private final DecodeEncodeHandler decodeEncodeHandler;
+
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		log.info(METHOD_NAME + "- authenticate() ...");
@@ -29,16 +30,14 @@ public class UserAuthenticationManager implements AuthenticationManager {
 			String empNo = String.valueOf(authentication.getPrincipal());
 			String password = String.valueOf(authentication.getCredentials());
 
-			if(empNo == null || empNo.equals("")) {
+			if (empNo == null || empNo.equals("")) {
 				log.warn("Employee EmpNo validate - Empty or null");
 				throw new NullPointerException();
-			}
-			else if(password == null || password.equals("")) {
+			} else if (password == null || password.equals("")) {
 				log.warn("Employee password validate - Empty or null");
 				throw new NullPointerException();
-			}
-			else {
-				if(decodeEncodeHandler.empNoValid(empNo)) {
+			} else {
+				if (decodeEncodeHandler.empNoValid(empNo)) {
 					if (decodeEncodeHandler.passwordValid(empNo, password))
 						return new UsernamePasswordAuthenticationToken(empNo, password);
 				}

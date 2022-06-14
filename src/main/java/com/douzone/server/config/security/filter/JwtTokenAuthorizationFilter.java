@@ -3,17 +3,18 @@ package com.douzone.server.config.security.filter;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.auth.PrincipalDetailService;
 import com.douzone.server.config.security.handler.ResponseHandler;
-import com.douzone.server.config.utils.Payload;
-import com.douzone.server.employee.dto.token.TokenResDTO;
+import com.douzone.server.config.utils.Message;
+import com.douzone.server.dto.token.TokenResDTO;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,13 +30,14 @@ import java.io.IOException;
  */
 
 @Slf4j
+@Setter
+@Component
 public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
-	private static final String METHOD_NAME = "JwtTokenAuthorizationFilter";
+
+	private static final String METHOD_NAME = JwtTokenAuthorizationFilter.class.getName();
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PrincipalDetailService principalDetailService;
-	@Value(value = "${jwt.header.access}")
 	private String headerKeyAccess;
-	@Value(value = "${jwt.type.access}")
 	private String typeAccess;
 
 	@Autowired
@@ -70,7 +72,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						log.info("Access Token Validation - Fail");
 
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
 					}
 					return;
 				case 1:
@@ -81,12 +83,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						response.addHeader(headerKeyAccess, typeAccess + accessToken);
 
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Payload.TOKEN_OK));
-					} else {
-						log.info("Refresh Token Validation - Fail");
-
-						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Payload.ACCESS_FAIL + Payload.TOKEN_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
 					}
 					return;
 				case 2:
@@ -98,7 +95,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 		} catch (Exception e) {
 			log.error("사용자 인증을 확인하지 못해 인가할 수 없습니다. " + METHOD_NAME, e);
 		}
-
-		filterChain.doFilter(request, response);
+		response.setContentType("text/html; charset=UTF-8");
+		response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
 	}
 }
