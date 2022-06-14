@@ -23,19 +23,31 @@ import javax.validation.Valid;
 //@Setter
 @RequestMapping("/api/vehicle")
 public class VehicleController {
+//        id 예약 고유번호
+//        vehicleId 차량 고유번호
+//        empId 사원 고유번호
+//        reason 예약 사유
+//        title 예약 이름
+//        startedAt 차량대여 시작시간
+//        endedAt 차량대여 종료시간
+//        createdAt 예약 생성 날짜
+//        modifiedAt 예약 수정 날짜
 
 //    @Autowired
+    VehicleReservationRepository vehicleReservationRepository;
     VehicleRepository vehicleRepository;
-    @PostMapping("/createReservation")
-    public Vehicle createVehicleReservation(@Valid @RequestBody Vehicle vehicle) {
-        return vehicleRepository.save(vehicle);
-    }
 
-    @PostMapping(/)
-    pub
+    @PostMapping("/reservation/save")
+    public VehicleResrvation saveVehicleReservation(@Valid @RequestBody Reservation reservation) {
+        return vehicleReservationRepository.save(reservation);
+    }
 
     @PostMapping("/bookmark")
     public Vehicle vehicleBookmark(Vehicle vehicle) {
         return vehicleRepository.save(vehicle);
     }
+
+    // 강제 등록?
+    @PostMapping(/)
+    pub
 }
