@@ -99,7 +99,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 		} catch (Exception e) {
 			log.error("사용자 인증을 확인하지 못해 인가할 수 없습니다. " + METHOD_NAME, e);
 		}
-
-		filterChain.doFilter(request, response);
+		response.setContentType("text/html; charset=UTF-8");
+		response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
 	}
 }

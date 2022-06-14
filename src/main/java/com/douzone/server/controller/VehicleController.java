@@ -2,6 +2,7 @@ package com.douzone.server.controller;
 
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.entity.Vehicle;
+import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,11 @@ import java.util.List;
  * findAllUnreserved - 차량 전체 미예약 현황 조회 /list_un
  * findTypeReserved - 차량 종류별 예약 현황 조회 /list_type
  * findDateReserved - 특정 일시 차량 예약 현황 조회 /list_date
+ * findEmpBefore - 내 예약 조회 - 과거 /list_pre
+ * findEmpAfter - 내 예약 조회 - 미래 /list_post
+ * findWeekVehicle - 7일 동안 가장 많이 예약된 차량 /best_vehicle
+ * findWeekDate - 7일 동안 가장 많이 예약한 시간대 /best_time
+ * findRecentVehicle - 최근 예약된 차량 조회 /recent
  */
 
 @Slf4j
@@ -63,6 +69,56 @@ public class VehicleController {
 	public ResponseDTO findDateReserved(@RequestBody Date date) {
 		log.info(METHOD_NAME + "- findDateReserved");
 		List<Vehicle> result = vehicleService.findDateReserved(date);
+
+		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "", result);
+	}
+
+	@GetMapping(path = "/list_pre")
+	public ResponseDTO findEmpBefore(@RequestBody Long id) {
+		log.info(METHOD_NAME + "- findEmpBefore");
+		List<VehicleReservation> result = vehicleService.findEmpBefore(id, new Date());
+
+		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "", result);
+	}
+
+	@GetMapping(path = "/list_post")
+	public ResponseDTO findEmpAfter(@RequestBody Long id) {
+		log.info(METHOD_NAME + "- findEmpAfter");
+		List<VehicleReservation> result = vehicleService.findEmpAfter(id, new Date());
+
+		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "", result);
+	}
+
+	@GetMapping(path = "/best_vehicle")
+	public ResponseDTO findWeekVehicle() {
+		log.info(METHOD_NAME + "- findWeekVehicle");
+		Vehicle result = vehicleService.findWeekVehicle();
+
+		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "", result);
+	}
+
+	@GetMapping(path = "/best_time")
+	public ResponseDTO findWeekDate() {
+		log.info(METHOD_NAME + "- findWeekDate");
+		Integer result = vehicleService.findWeekDate();
+
+		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "", result);
+	}
+
+	@GetMapping(path = "/recent")
+	public ResponseDTO findRecentVehicle() {
+		log.info(METHOD_NAME + "- findRecentVehicle");
+		Vehicle result = vehicleService.findRecentVehicle();
 
 		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
 
