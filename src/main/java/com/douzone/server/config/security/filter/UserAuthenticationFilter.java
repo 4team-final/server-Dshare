@@ -5,13 +5,13 @@ import com.douzone.server.config.security.handler.ResponseHandler;
 import com.douzone.server.config.security.handler.UserLoginFailureHandler;
 import com.douzone.server.config.utils.Payload;
 import com.douzone.server.employee.domain.employee.Employee;
-import com.douzone.server.employee.domain.token.CommonTokenSet;
 import com.douzone.server.employee.domain.token.Token;
 import com.douzone.server.employee.domain.token.TokenRepository;
+import com.douzone.server.employee.dto.token.CommonTokenDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,32 +33,24 @@ import java.io.IOException;
  */
 
 @Slf4j
+@Setter
 @Component
 public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private static final String METHOD_NAME = "UserAuthenticationFilter";
-	private final UserAuthenticationManager userAuthenticationManager;
-	private final JwtTokenProvider jwtTokenProvider;
-	private final TokenRepository tokenRepository;
-	private final String headerKeyAccess;
-	private final String headerKeyRefresh;
-	private final String typeAccess;
-	private final String typeRefresh;
+	private UserAuthenticationManager userAuthenticationManager;
+	private JwtTokenProvider jwtTokenProvider;
+	private TokenRepository tokenRepository;
+	private String headerKeyAccess;
+	private String headerKeyRefresh;
+	private String typeAccess;
+	private String typeRefresh;
 
 	@Autowired
-	public UserAuthenticationFilter(UserAuthenticationManager userAuthenticationManager,
-									JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository,
-									@Value(value = "${jwt.header.access}") String headerKeyAccess,
-									@Value(value = "${jwt.header.refresh}") String headerKeyRefresh,
-									@Value(value = "${jwt.type.access}") String typeAccess,
-									@Value(value = "${jwt.type.refresh}") String typeRefresh) {
+	public UserAuthenticationFilter(UserAuthenticationManager userAuthenticationManager, JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository) {
 		super(userAuthenticationManager);
 		this.userAuthenticationManager = userAuthenticationManager;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.tokenRepository = tokenRepository;
-		this.headerKeyAccess = headerKeyAccess;
-		this.headerKeyRefresh = headerKeyRefresh;
-		this.typeAccess = typeAccess;
-		this.typeRefresh = typeRefresh;
 	}
 
 	@Override
@@ -95,28 +87,21 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 
 			Token token = tokenRepository.findByEmpNo(principal);
 			if (token != null) {
-				if (jwtTokenProvider.validateToken(token.getRefreshToken())) {
-					log.info("RefreshToken validate success - AccessToken issuance");
-					String accessToken = jwtTokenProvider.generateAccessToken(principal);
+				log.info("Token Set Existed - Token issuance");
+				CommonTokenDTO commonTokenDTO = jwtTokenProvider.generateToken(principal);
+				if (!jwtTokenProvider.updateRefresh(commonTokenDTO.getReIssuanceTokenDTO()))
+					log.warn("Token Set Update to Token Repository - Fail");
 
-					response.addHeader(headerKeyAccess, typeAccess + accessToken);
-				} else {
-					log.info("RefreshToken Expired - All Token issuance");
-					CommonTokenSet commonTokenSet = jwtTokenProvider.generateToken(principal);
-					if (!jwtTokenProvider.updateRefresh(commonTokenSet.getReIssuanceTokenSet()))
-						log.warn("Token Set Update to Token Repository - Fail");
-
-					response.addHeader(headerKeyAccess, typeAccess + commonTokenSet.getAccessToken());
-					response.addHeader(headerKeyRefresh, typeRefresh + commonTokenSet.getReIssuanceTokenSet().getRefreshToken());
-				}
+				response.addHeader(headerKeyAccess, typeAccess + commonTokenDTO.getAccessToken());
+				response.addHeader(headerKeyRefresh, typeRefresh + commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken());
 			} else {
-				log.info("First Login User - All Token issuance");
-				CommonTokenSet commonTokenSet = jwtTokenProvider.generateToken(principal);
-				if (!jwtTokenProvider.saveRefresh(commonTokenSet.getReIssuanceTokenSet()))
+				log.info("First Login User - Token issuance");
+				CommonTokenDTO commonTokenDTO = jwtTokenProvider.generateToken(principal);
+				if (!jwtTokenProvider.saveRefresh(commonTokenDTO.getReIssuanceTokenDTO()))
 					log.warn("Token Set Save to Token Repository - Fail");
 
-				response.addHeader(headerKeyAccess, typeAccess + commonTokenSet.getAccessToken());
-				response.addHeader(headerKeyRefresh, typeRefresh + commonTokenSet.getReIssuanceTokenSet().getRefreshToken());
+				response.addHeader(headerKeyAccess, typeAccess + commonTokenDTO.getAccessToken());
+				response.addHeader(headerKeyRefresh, typeRefresh + commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken());
 			}
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Payload.SIGN_IN_OK));
