@@ -29,9 +29,18 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 	@Query("select vr from VehicleReservation vr left join Employee e on vr.employee.id = e.id where e.id = :id and vr.startedAt > :date")
 	List<VehicleReservation> findEmpAfter(@Param("id") Long id, @Param("date") Date date);
 
-	@Query(nativeQuery = true, value = "select count(v) as c from VehicleReservation vr left join Vehicle v on vr.vehicle.id = v.id group by v.id order by c desc limit 1")
+	@Query(nativeQuery = true, value = "select count(v) as vc from VehicleReservation vr left join Vehicle v on vr.vehicle.id = v.id group by v.id order by vc desc limit 1")
 	Vehicle findWeekVehicle();
 
-	@Query(nativeQuery = true, value = "select date from dual")
+	@Query(nativeQuery = true, value = "select count(hour(vr.startedAt)) as h from VehicleReservation vr order by h desc limit 1")
 	Integer findWeekDate();
+
+	@Query(nativeQuery = true, value = "select v from Vehicle v left join VehicleReservation vr on v.id = vr.vehicle.id order by vr.startedAt desc limit 1")
+	Vehicle findRecentVehicle();
+
+	@Query("select v from VehicleBookmark vb left join Vehicle v on vb.vehicle.id = v.id where vb.employee.empNo = :empNo")
+	List<Vehicle> findMarkVehicle(@Param("empNo") String empNo);
+
+	@Query(nativeQuery = true, value = "select count(v) as vc from VehicleBookmark vb left join Vehicle v on vb.vehicle.id = v.id order by vc desc limit 3")
+	List<Vehicle> findMarkBest();
 }
