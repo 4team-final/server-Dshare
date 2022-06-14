@@ -9,7 +9,7 @@ import java.io.IOException;
 
 @Slf4j
 public class ResponseHandler {
-	private static final String METHOD_NAME = "ResponseHandler";
+	private static final String METHOD_NAME = ResponseHandler.class.getName();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public String convertResult(HttpStatus httpStatus, String message) {
@@ -17,9 +17,9 @@ public class ResponseHandler {
 		String result = "메시지 변환 에러";
 		try {
 			result = objectMapper.writeValueAsString(ResponseDTO.builder()
-																.status(httpStatus)
-																.message(message)
-																.build());
+					.status(httpStatus)
+					.message(message)
+					.build());
 		} catch (IOException ie) {
 			log.error("입력 값을 읽어오지 못했습니다. " + METHOD_NAME, ie);
 		} catch (Exception e) {

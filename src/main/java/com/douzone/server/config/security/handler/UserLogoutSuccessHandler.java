@@ -15,7 +15,7 @@ import java.io.IOException;
 @Service
 @Slf4j
 public class UserLogoutSuccessHandler implements LogoutSuccessHandler {
-	private static final String METHOD_NAME = "UserLogoutSuccessHandler";
+	private static final String METHOD_NAME = UserLogoutSuccessHandler.class.getName();
 
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

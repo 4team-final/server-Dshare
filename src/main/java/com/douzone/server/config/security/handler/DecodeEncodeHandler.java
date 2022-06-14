@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class DecodeEncodeHandler {
-	private static final String METHOD_NAME = "DecodeEncodeHandler";
+	private static final String METHOD_NAME = DecodeEncodeHandler.class.getName();
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	private final EmployeeRepository employeeRepository;
 
