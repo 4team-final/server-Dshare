@@ -27,6 +27,9 @@ import java.util.List;
  * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best_mark
  * Update:
  * updateReserved - 내 차량 예약 현황 수정 /update
+ * delete:
+ * deleteReserved - 내 차량 예약 삭제 /delete
+ * deleteReserved - 내 즐겨찾기 차량 삭제 /delete_mark
  */
 
 @Slf4j
