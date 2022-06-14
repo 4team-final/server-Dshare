@@ -21,7 +21,7 @@ import javax.validation.Valid;
 @AllArgsConstructor
 //@Getter
 //@Setter
-@RequestMapping("/api/vehicle")
+@RequestMapping("/admin/vehicle")
 public class VehicleController {
 //        id 예약 고유번호
 //        vehicleId 차량 고유번호
@@ -37,7 +37,7 @@ public class VehicleController {
     VehicleReservationRepository vehicleReservationRepository;
     VehicleRepository vehicleRepository;
 
-    @PostMapping("/reservation/save")
+    @PostMapping("/create")
     public VehicleResrvation saveVehicleReservation(@Valid @RequestBody Reservation reservation) {
         return vehicleReservationRepository.save(reservation);
     }
