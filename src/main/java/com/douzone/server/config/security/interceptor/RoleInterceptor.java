@@ -24,7 +24,7 @@ import java.io.IOException;
 @Slf4j
 @Component
 public class RoleInterceptor implements HandlerInterceptor {
-	private static final String METHOD_NAME = "RoleInterceptor";
+	private static final String METHOD_NAME = RoleInterceptor.class.getName();
 	private final DecodeEncodeHandler decodeEncodeHandler;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final String adminRole;
@@ -57,11 +57,11 @@ public class RoleInterceptor implements HandlerInterceptor {
 			{
 				if (jwtTokenProvider.validateToken(token)) {
 					log.info("Token validate - success");
-					String email = jwtTokenProvider.getUserPk(token);
+					String empNo = jwtTokenProvider.getUserPk(token);
 
-					if (decodeEncodeHandler.empNoValid(email)) {
+					if (decodeEncodeHandler.empNoValid(empNo)) {
 						log.info("User validate - Success");
-						String role = decodeEncodeHandler.roleValid(email);
+						String role = decodeEncodeHandler.roleValid(empNo);
 						if (request.getRequestURI().startsWith(adminURL)) {
 							log.info("ADMIN role validate ...");
 							if (role != null && role.equals(adminRole)) {

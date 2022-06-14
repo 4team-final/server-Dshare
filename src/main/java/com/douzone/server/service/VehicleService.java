@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class VehicleService {
-	private static final String METHOD_NAME = "VehicleService";
+	private static final String METHOD_NAME = VehicleService.class.getName();
 	private final VehicleRepository vehicleRepository;
 
 	public List<Vehicle> findAllReserved() {
@@ -102,6 +102,26 @@ public class VehicleService {
 		log.info(METHOD_NAME + "-findRecentVehicle");
 		try {
 			return vehicleRepository.findRecentVehicle();
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return null;
+	}
+
+	public List<Vehicle> findMarkVehicle(String empNo) {
+		log.info(METHOD_NAME + "-findMarkVehicle");
+		try {
+			return vehicleRepository.findMarkVehicle(empNo);
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return null;
+	}
+
+	public List<Vehicle> findMarkBest() {
+		log.info(METHOD_NAME + "-findMarkBest");
+		try {
+			return vehicleRepository.findMarkBest();
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class UserAuthenticationManager implements AuthenticationManager {
-	private static final String METHOD_NAME = "UserAuthenticationManager";
+	private static final String METHOD_NAME = UserAuthenticationManager.class.getName();
 	private final DecodeEncodeHandler decodeEncodeHandler;
 
 	@Override

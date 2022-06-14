@@ -33,7 +33,7 @@ import java.io.IOException;
 @Setter
 @Component
 public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
-	private static final String METHOD_NAME = "JwtTokenAuthorizationFilter";
+	private static final String METHOD_NAME = JwtTokenAuthorizationFilter.class.getName();
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PrincipalDetailService principalDetailService;
 	private String headerKeyAccess;

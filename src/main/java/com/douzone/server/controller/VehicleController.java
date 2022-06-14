@@ -7,10 +7,7 @@ import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +22,8 @@ import java.util.List;
  * findWeekVehicle - 7일 동안 가장 많이 예약된 차량 /best_vehicle
  * findWeekDate - 7일 동안 가장 많이 예약한 시간대 /best_time
  * findRecentVehicle - 최근 예약된 차량 조회 /recent
+ * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /mark
+ * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best_mark
  */
 
 @Slf4j
@@ -32,7 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/emp/vehicle")
 public class VehicleController {
-	private static final String METHOD_NAME = "VehicleController";
+	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final VehicleService vehicleService;
 
 	@GetMapping(path = "/list_all")
@@ -55,7 +54,7 @@ public class VehicleController {
 		return new ResponseDTO().of(HttpStatus.OK, "", result);
 	}
 
-	@GetMapping(path = "/list_type")
+	@PostMapping(path = "/list_type")
 	public ResponseDTO findTypeReserved(@RequestBody String model) {
 		log.info(METHOD_NAME + "- findTypeReserved");
 		List<Vehicle> result = vehicleService.findTypeReserved(model);
@@ -65,7 +64,7 @@ public class VehicleController {
 		return new ResponseDTO().of(HttpStatus.OK, "", result);
 	}
 
-	@GetMapping(path = "/list_date")
+	@PostMapping(path = "/list_date")
 	public ResponseDTO findDateReserved(@RequestBody Date date) {
 		log.info(METHOD_NAME + "- findDateReserved");
 		List<Vehicle> result = vehicleService.findDateReserved(date);
@@ -75,7 +74,7 @@ public class VehicleController {
 		return new ResponseDTO().of(HttpStatus.OK, "", result);
 	}
 
-	@GetMapping(path = "/list_pre")
+	@PostMapping(path = "/list_pre")
 	public ResponseDTO findEmpBefore(@RequestBody Long id) {
 		log.info(METHOD_NAME + "- findEmpBefore");
 		List<VehicleReservation> result = vehicleService.findEmpBefore(id, new Date());
@@ -85,7 +84,7 @@ public class VehicleController {
 		return new ResponseDTO().of(HttpStatus.OK, "", result);
 	}
 
-	@GetMapping(path = "/list_post")
+	@PostMapping(path = "/list_post")
 	public ResponseDTO findEmpAfter(@RequestBody Long id) {
 		log.info(METHOD_NAME + "- findEmpAfter");
 		List<VehicleReservation> result = vehicleService.findEmpAfter(id, new Date());
@@ -119,6 +118,26 @@ public class VehicleController {
 	public ResponseDTO findRecentVehicle() {
 		log.info(METHOD_NAME + "- findRecentVehicle");
 		Vehicle result = vehicleService.findRecentVehicle();
+
+		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "", result);
+	}
+
+	@GetMapping(path = "/mark")
+	public ResponseDTO findMarkVehicle(@RequestBody String empNo) {
+		log.info(METHOD_NAME + "- findMarkVehicle");
+		List<Vehicle> result = vehicleService.findMarkVehicle(empNo);
+
+		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "", result);
+	}
+
+	@GetMapping(path = "/best_mark")
+	public ResponseDTO findMarkBest() {
+		log.info(METHOD_NAME + "- findMarkBest");
+		List<Vehicle> result = vehicleService.findMarkBest();
 
 		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
 

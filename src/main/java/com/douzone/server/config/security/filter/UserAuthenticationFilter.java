@@ -36,7 +36,7 @@ import java.io.IOException;
 @Setter
 @Component
 public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-	private static final String METHOD_NAME = "UserAuthenticationFilter";
+	private static final String METHOD_NAME = UserAuthenticationFilter.class.getName();
 	private UserAuthenticationManager userAuthenticationManager;
 	private JwtTokenProvider jwtTokenProvider;
 	private TokenRepository tokenRepository;
