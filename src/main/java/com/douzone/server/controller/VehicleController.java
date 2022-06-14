@@ -25,6 +25,8 @@ import java.util.List;
  * findRecentVehicle - 최근 예약된 차량 조회 /recent
  * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /mark
  * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best_mark
+ * Update:
+ * updateReserved - 내 차량 예약 현황 수정 /update
  */
 
 @Slf4j
