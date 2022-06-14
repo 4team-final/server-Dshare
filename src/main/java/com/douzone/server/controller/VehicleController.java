@@ -1,15 +1,14 @@
 package com.douzone.server.controller;
 
 import com.douzone.server.config.utils.ResponseDTO;
+//import com.douzone.server.dto.vehicle.VehicleRegisterDTO;
+import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.List;
  * findAllUnreserved - 차량 전체 미예약 현황 조회 /list_un
  * findTypeReserved - 차량 종류별 예약 현황 조회 /list_type
  * findDateReserved - 특정 일시 차량 예약 현황 조회 /list_date
+ * createReservation - 차량 예약 등록 /create_reservation
  */
 
 @Slf4j
@@ -28,6 +28,7 @@ import java.util.List;
 public class VehicleController {
 	private static final String METHOD_NAME = "VehicleController";
 	private final VehicleService vehicleService;
+
 
 	@GetMapping(path = "/list_all")
 	public ResponseDTO findAllReserved() {
@@ -67,5 +68,25 @@ public class VehicleController {
 		if (result == null) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
 
 		return new ResponseDTO().of(HttpStatus.OK, "", result);
+	}
+
+	@PostMapping(path = "/create_reservation")
+	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
+		log.info(METHOD_NAME + "- createReservation");
+		Integer result = vehicleService.createReservation(vehicleReservationDTO);
+
+		if(result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "");
+	}
+
+	@PostMapping(path = "/create_bookmark")
+	public ResponseDTO createBookmark(@RequestBody VehicleBookmarkDTO vehicleBookmarkDTO) {
+		log.info(METHOD_NAME + "- createBookmark");
+		Integer result = vehicleService.createBookmark();
+
+		if(result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "");
 	}
 }
