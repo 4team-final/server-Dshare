@@ -1,7 +1,7 @@
 package com.douzone.server.config.security.handler;
 
-import com.douzone.server.employee.domain.employee.Employee;
-import com.douzone.server.employee.domain.employee.EmployeeRepository;
+import com.douzone.server.entity.Employee;
+import com.douzone.server.repository.EmployeeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +25,7 @@ public class DecodeEncodeHandler {
 
 	public String roleValid(String email) {
 		log.info(METHOD_NAME + "- roleValid() ...");
-		if(employeeRepository.existsByEmpNo(email)) {
+		if (employeeRepository.existsByEmpNo(email)) {
 			log.info("Employee EmpNo Validate - Success");
 			Employee employee = employeeRepository.findByEmpNo(email);
 
@@ -41,7 +41,7 @@ public class DecodeEncodeHandler {
 			Employee employee = employeeRepository.findByEmpNo(empNo);
 			if (employee != null) {
 				log.info("Employee Validate - Success");
-				if(employee.getEmail() != null) {
+				if (employee.getEmail() != null) {
 					log.info("Employee EmpNo Validate - Success");
 					return true;
 				} else log.warn("Employee EmpNo Validate - Fail");
