@@ -40,7 +40,6 @@ public class VehicleService {
 	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId,Long vId) {
 		log.info(METHOD_NAME + "-createReservation");
 		try {
-
 			VehicleReservation vehicleReservation =
 					VehicleReservation.builder()
 					.vehicle(Vehicle.builder().id(vId).build())
