@@ -1,10 +1,6 @@
 package com.douzone.server.entity;
 
-import com.douzone.server.config.utils.BaseAtTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -16,18 +12,19 @@ import javax.persistence.*;
 @Table(name="meeting_room")
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Room extends BaseAtTime {
-
+public class ReservationAttend {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String content;
-    private String categoryName;
-    private int roomNo;
-    private int capacity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empId")
+    private Employee employee;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservationId")
+    private RoomReservation roomReservation;
 
 }

@@ -49,5 +49,6 @@ public class AdminService {
     }
 
     public Long uploadProfileImg(MultipartFile file) {
+        return null;
     }
 }

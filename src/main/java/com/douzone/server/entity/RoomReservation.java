@@ -11,32 +11,26 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @DynamicUpdate
 @Entity
-@Table(name = "employee")
+@Table(name = "room_reservation")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Employee extends BaseAtTime {
-
+public class RoomReservation extends BaseAtTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String empNo;
-    private String password;
-    private String name;
-    private String email;
-    private String tel;
-    private LocalDateTime birthday;
-    private String profileImg;
-    private String role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teamId")
-    private Team team;
+    @JoinColumn(name = "meetId")
+    private Room room;
 
-    @ManyToOne
-    @JoinColumn(name = "positionId")
-    private Position position;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empId")
+    private Employee employee;
 
+    private String reason;
+    private String title;
+    private LocalDateTime startedAt;
+    private LocalDateTime endedAt;
 }
-
