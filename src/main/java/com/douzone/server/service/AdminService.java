@@ -4,12 +4,16 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.douzone.server.config.s3.AwsS3;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.Vehicle;
+import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.exception.EmpAlreadyExistException;
 import com.douzone.server.exception.EmpNotFoundException;
 import com.douzone.server.exception.ErrorCode;
 import com.douzone.server.exception.ImgFileNotFoundException;
 import com.douzone.server.repository.EmployeeRepository;
+import com.douzone.server.repository.VehicleReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminService {
     private final EmployeeRepository employeeRepository;
+    private final VehicleReservationRepository vehicleReservationRepository;
     private final DecodeEncodeHandler decodeEncodeHandler;
     private final AwsS3 awsS3;
 
@@ -104,7 +109,23 @@ public class AdminService {
             log.error("Exception : AdminService - uploadProfileImg " + e.getMessage());
             e.printStackTrace();
         }
+        return null;
+    }
 
+    public Integer createVehicleReservation(VehicleReservationDTO vehicleReservationDTO) {
+        try {
+            VehicleReservation vehicleReservation = VehicleReservation.builder()
+                    .vehicle(Vehicle.builder().id(1L).build())
+                    .employee(Employee.builder().id(1L).build())
+                    .reason(vehicleReservationDTO.getReason())
+                    .title(vehicleReservationDTO.getTitle())
+                    .build();
+            VehicleReservation result = vehicleReservationRepository.save(vehicleReservation);
+            if (result.getId() == null) return 0;
+            return 1;
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
         return null;
     }
 }
