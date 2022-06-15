@@ -35,4 +35,6 @@ public class AdminController {
         return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));
     }
 
+
+
 }

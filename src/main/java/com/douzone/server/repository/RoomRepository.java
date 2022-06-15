@@ -1,4 +1,9 @@
 package com.douzone.server.repository;
 
-public interface RoomRepository {
+import com.douzone.server.entity.Employee;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RoomRepository extends JpaRepository<, Long> {
+
+
 }
