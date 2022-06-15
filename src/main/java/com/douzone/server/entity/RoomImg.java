@@ -21,7 +21,7 @@ public class RoomImg extends BaseAtTime {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roomId")
-    private Room room;
+    private MeetingRoom meetingRoom;
     private String path;
     private String type;
     private String imgSize;

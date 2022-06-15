@@ -18,7 +18,7 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Room extends BaseAtTime {
+public class MeetingRoom extends BaseAtTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

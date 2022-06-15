@@ -27,5 +27,5 @@ public class RoomBookmark extends BaseAtTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roomId")
-    private Room room;
+    private MeetingRoom meetingRoom;
 }

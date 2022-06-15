@@ -9,7 +9,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Entity
-@Table(name="meeting_room")
+@Table(name="reservation_attend")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

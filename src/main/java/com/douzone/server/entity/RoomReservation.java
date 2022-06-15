@@ -22,8 +22,8 @@ public class RoomReservation extends BaseAtTime {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meetId")
-    private Room room;
+    @JoinColumn(name = "roomId")
+    private MeetingRoom meetingRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empId")
