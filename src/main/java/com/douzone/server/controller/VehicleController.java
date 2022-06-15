@@ -1,6 +1,8 @@
 package com.douzone.server.controller;
 
 import com.douzone.server.config.utils.ResponseDTO;
+//import com.douzone.server.dto.vehicle.VehicleRegisterDTO;
+import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.service.VehicleService;
@@ -18,6 +20,9 @@ import java.util.List;
  * findAllUnreserved - 차량 전체 미예약 현황 조회 /list_un
  * findTypeReserved - 차량 종류별 예약 현황 조회 /list_type
  * findDateReserved - 특정 일시 차량 예약 현황 조회 /list_date
+<<<<<<< HEAD
+ * createReservation - 차량 예약 등록 /create_reservation
+=======
  * findEmpBefore - 내 예약 조회 - 과거 /list_pre
  * findEmpAfter - 내 예약 조회 - 미래 /list_post
  * findWeekVehicle - 7일 동안 가장 많이 예약된 차량 /best_vehicle
@@ -25,6 +30,7 @@ import java.util.List;
  * findRecentVehicle - 최근 예약된 차량 조회 /recent
  * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /mark
  * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best_mark
+>>>>>>> upstream/dev
  */
 
 @Slf4j
@@ -34,6 +40,7 @@ import java.util.List;
 public class VehicleController {
 	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final VehicleService vehicleService;
+
 
 	@GetMapping(path = "/list_all")
 	public ResponseDTO findAllReserved() {
@@ -143,5 +150,25 @@ public class VehicleController {
 		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
 
 		return ResponseDTO.of(HttpStatus.OK, "", result);
+	}
+
+	@PostMapping(path = "/create_reservation")
+	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
+		log.info(METHOD_NAME + "- createReservation");
+		Integer result = vehicleService.createReservation(vehicleReservationDTO);
+
+		if(result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "");
+	}
+
+	@PostMapping(path = "/create_bookmark")
+	public ResponseDTO createBookmark() {
+		log.info(METHOD_NAME + "- createBookmark");
+		Integer result = vehicleService.createBookmark();
+
+		if(result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "");
 	}
 }
