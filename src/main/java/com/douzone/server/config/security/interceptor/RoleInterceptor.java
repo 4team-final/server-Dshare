@@ -3,7 +3,7 @@ package com.douzone.server.config.security.interceptor;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.security.handler.ResponseHandler;
-import com.douzone.server.config.utils.Message;
+import com.douzone.server.config.utils.Msg;
 import com.douzone.server.dto.token.TokenResDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 							} else {
 								log.warn("ADMIN role validate - Fail");
 								response.setContentType("text/html; charset=UTF-8");
-								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
+								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Msg.FAIL_USER_ROLE));
 							}
 							break Outer;
 						}
@@ -82,7 +82,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 							} else {
 								log.warn("USER role validate - Fail");
 								response.setContentType("text/html; charset=UTF-8");
-								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
+								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Msg.FAIL_USER_ROLE));
 							}
 							break Outer;
 						}
@@ -90,12 +90,12 @@ public class RoleInterceptor implements HandlerInterceptor {
 					} else {
 						log.warn("Request User is not exist " + METHOD_NAME);
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Msg.FAIL_USER_ROLE));
 					}
 				} else {
 					log.warn("Token validate - Fail");
 					response.setContentType("text/html; charset=UTF-8");
-					response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.TOKEN_FAIL));
+					response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Msg.FAIL_TOKEN_VALIDATE));
 				}
 			}
 			return result;

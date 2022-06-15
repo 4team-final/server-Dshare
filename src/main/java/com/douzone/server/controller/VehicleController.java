@@ -1,8 +1,8 @@
 package com.douzone.server.controller;
 
+import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.entity.Vehicle;
-import com.douzone.server.entity.VehicleReservation;
+import com.douzone.server.dto.vehicle.VehicleResDTO;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Read:
@@ -43,110 +42,176 @@ public class VehicleController {
 	@GetMapping(path = "/list_all")
 	public ResponseDTO findAllReserved() {
 		log.info(METHOD_NAME + "- findAllReserved");
-		List<Vehicle> result = vehicleService.findAllReserved();
+		VehicleResDTO result = vehicleService.findAllReserved();
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_ALL, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_ALL);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_ALL);
+		}
 	}
 
 	@GetMapping(path = "/list_un")
 	public ResponseDTO findAllUnreserved() {
 		log.info(METHOD_NAME + "- findAllUnreserved");
-		List<Vehicle> result = vehicleService.findAllUnreserved();
+		VehicleResDTO result = vehicleService.findAllUnreserved();
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_NONE, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_NONE);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_NONE);
+		}
 	}
 
 	@PostMapping(path = "/list_type")
 	public ResponseDTO findTypeReserved(@RequestBody String model) {
 		log.info(METHOD_NAME + "- findTypeReserved");
-		List<Vehicle> result = vehicleService.findTypeReserved(model);
+		VehicleResDTO result = vehicleService.findTypeReserved(model);
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_TYPE, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_TYPE);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_TYPE);
+		}
 	}
 
 	@PostMapping(path = "/list_date")
 	public ResponseDTO findDateReserved(@RequestBody Date date) {
 		log.info(METHOD_NAME + "- findDateReserved");
-		List<Vehicle> result = vehicleService.findDateReserved(date);
+		VehicleResDTO result = vehicleService.findDateReserved(date);
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_DATE, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_DATE);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_DATE);
+		}
 	}
 
 	@PostMapping(path = "/list_pre")
 	public ResponseDTO findEmpBefore(@RequestBody Long id) {
 		log.info(METHOD_NAME + "- findEmpBefore");
-		List<VehicleReservation> result = vehicleService.findEmpBefore(id, new Date());
+		VehicleResDTO result = vehicleService.findEmpBefore(id, new Date());
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEFORE, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEFORE);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEFORE);
+		}
 	}
 
 	@PostMapping(path = "/list_post")
 	public ResponseDTO findEmpAfter(@RequestBody Long id) {
 		log.info(METHOD_NAME + "- findEmpAfter");
-		List<VehicleReservation> result = vehicleService.findEmpAfter(id, new Date());
+		VehicleResDTO result = vehicleService.findEmpAfter(id, new Date());
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_AFTER, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_AFTER);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_AFTER);
+		}
 	}
 
 	@GetMapping(path = "/best_vehicle")
 	public ResponseDTO findWeekVehicle() {
 		log.info(METHOD_NAME + "- findWeekVehicle");
-		Vehicle result = vehicleService.findWeekVehicle();
+		VehicleResDTO result = vehicleService.findWeekVehicle();
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_WEEK, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_WEEK);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_WEEK);
+		}
 	}
 
 	@GetMapping(path = "/best_time")
 	public ResponseDTO findWeekDate() {
 		log.info(METHOD_NAME + "- findWeekDate");
-		Integer result = vehicleService.findWeekDate();
+		VehicleResDTO result = vehicleService.findWeekDate();
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_DATE, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_DATE);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_DATE);
+		}
 	}
 
 	@GetMapping(path = "/recent")
 	public ResponseDTO findRecentVehicle() {
 		log.info(METHOD_NAME + "- findRecentVehicle");
-		Vehicle result = vehicleService.findRecentVehicle();
+		VehicleResDTO result = vehicleService.findRecentVehicle();
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_RECENT, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_RECENT);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RECENT);
+		}
 	}
 
 	@GetMapping(path = "/mark")
 	public ResponseDTO findMarkVehicle(@RequestBody String empNo) {
 		log.info(METHOD_NAME + "- findMarkVehicle");
-		List<Vehicle> result = vehicleService.findMarkVehicle(empNo);
+		VehicleResDTO result = vehicleService.findMarkVehicle(empNo);
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_MARK, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_MARK);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_MARK);
+		}
 	}
 
 	@GetMapping(path = "/best_mark")
 	public ResponseDTO findMarkBest() {
 		log.info(METHOD_NAME + "- findMarkBest");
-		List<Vehicle> result = vehicleService.findMarkBest();
+		VehicleResDTO result = vehicleService.findMarkBest();
 
-		if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-		return ResponseDTO.of(HttpStatus.OK, "", result);
+		switch (result.getCode()) {
+			case 0:
+				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_MARK, result);
+			case 1:
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_MARK);
+			case 2:
+			default:
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_MARK);
+		}
 	}
 }
