@@ -1,5 +1,6 @@
 package com.douzone.server.service;
 
+import com.douzone.server.config.s3.AwsS3;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.dto.employee.SignupReqDTO;
 import com.douzone.server.entity.Employee;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminService {
     private final EmployeeRepository employeeRepository;
     private final DecodeEncodeHandler decodeEncodeHandler;
+    private final AwsS3 awsS3;
+
     @Value(value = "${year.current}")
     private String year;
 
@@ -42,5 +46,8 @@ public class AdminService {
         long id = employeeRepository.save(signupReqDTO.of(empNo, password)).getId();
 
         return id;
+    }
+
+    public Long uploadProfileImg(MultipartFile file) {
     }
 }
