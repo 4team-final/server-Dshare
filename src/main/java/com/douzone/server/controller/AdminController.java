@@ -1,32 +1,35 @@
 package com.douzone.server.controller;
 
-
+import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Message;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminController {
 
     private final AdminService adminService;
 
-    /**
-     * 6/14 : 관리자 사원등록
-     * 정재빈
-     */
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> signup(@RequestBody @Valid SignupReqDTO signupReqDTO) {
+    public ResponseEntity<ResponseDTO> register(@RequestBody @Valid SignupReqDTO signupReqDTO) {
         return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, adminService.register(signupReqDTO)));
     }
 
@@ -36,5 +39,17 @@ public class AdminController {
     }
 
 
+    @PostMapping("/image/upload")
+    public ResponseEntity<ResponseDTO> uploadProfileImg(@NotNull List<MultipartFile> files, long TargetEmpId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
+    }
+
+    @PostMapping("/vehicle/create_reservation")
+    public ResponseDTO createVehicleReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
+        Integer result = adminService.createVehicleReservation(vehicleReservationDTO);
+        if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+        return new ResponseDTO().of(HttpStatus.OK, "");
+    }
 
 }
