@@ -1,6 +1,7 @@
 package com.douzone.server.controller;
 
 
+import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Message;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignupReqDTO;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,6 +23,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AdminController {
 
+    private static final String METHOD_NAME = VehicleController.class.getName();
     private final AdminService adminService;
 
     /**
@@ -37,11 +40,12 @@ public class AdminController {
         return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못해합니다."));
     }
 
-    @PostMapping("/vehicle/create_reservation")
-    public ResponseDTO createVehicleReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
-        Integer result = adminService.createVehicleReservation(vehicleReservationDTO);
-        if(result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+    @PostMapping(path = "/create_reservation")
+    public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
+                                         @RequestParam(value ="vId") Long vId,
+                                         @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long empId = principalDetails.getEmployee().getId();
 
-        return new ResponseDTO().of(HttpStatus.OK, "");
+        return adminService.createReservation(vehicleReservationDTO, empId,vId);
     }
 }

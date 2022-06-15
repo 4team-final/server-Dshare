@@ -48,19 +48,21 @@ public class VehicleController {
 
 	@PostMapping(path = "/create_reservation")
 	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
+										 @RequestParam(value ="vId") Long vId,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createReservation");
-		Long id = principalDetails.getEmployee().getId();
+		Long empId = principalDetails.getEmployee().getId();
 
-		return vehicleService.createReservation(vehicleReservationDTO, id);
+		return vehicleService.createReservation(vehicleReservationDTO, empId,vId);
 	}
 
 	@PostMapping(path = "/create_bookmark")
-	public ResponseDTO createBookmark(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseDTO createBookmark(@RequestParam(value ="vId") Long vId,
+									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createBookmark");
-		Long id = principalDetails.getEmployee().getId();
+		Long empId = principalDetails.getEmployee().getId();
 
-		return vehicleService.createBookmark(id);
+		return vehicleService.createBookmark(empId, vId);
 	}
 
 	@GetMapping(path = "/list_all")

@@ -19,9 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import static java.time.LocalDateTime.now;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,21 +37,21 @@ public class VehicleService {
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 	private final EmployeeRepository employeeRepository;
 
-	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long id) {
+	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId,Long vId) {
 		log.info(METHOD_NAME + "-createReservation");
 		try {
-			Optional<Employee> eData = employeeRepository.findById(id);
-			Optional<Vehicle> vData = vehicleRepository.findById(id);
 
-			if(!eData.isPresent()) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_RESERVE + "");
-			if(!vData.isPresent()) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_RESERVE + "");
-
-			VehicleReservation vehicleReservation = VehicleReservation.builder()
-					.vehicle(vData.get())
-					.employee(eData.get())
+			VehicleReservation vehicleReservation =
+					VehicleReservation.builder()
+					.vehicle(Vehicle.builder().id(vId).build())
+					.employee(Employee.builder().id(empId).build())
 					.reason(vehicleReservationDTO.getReason())
 					.title(vehicleReservationDTO.getTitle())
+							.startedAt(vehicleReservationDTO.getStartedAt())
+							.endedAt(vehicleReservationDTO.getEndedAt())
 					.build();
+
+			vehicleReservationRepository.save(vehicleReservation);
 
 			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_RESERVE);
 		} catch (Exception e) {
@@ -57,20 +60,17 @@ public class VehicleService {
 		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);
 	}
 
-	public ResponseDTO createBookmark(Long id) {
+	public ResponseDTO createBookmark(Long empId, Long vId) {
 		log.info(METHOD_NAME + "-createBookmark");
 
 		try {
-			Optional<Employee> eData = employeeRepository.findById(id);
-			Optional<Vehicle> vData = vehicleRepository.findById(id);
+			VehicleBookmark vehicleBookmark =
+					VehicleBookmark.builder()
+							.vehicle(Vehicle.builder().id(vId).build())
+							.employee(Employee.builder().id(empId).build())
+							.build();
 
-			if(!eData.isPresent()) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BOOKMARK + "");
-			if(!vData.isPresent()) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BOOKMARK + "");
-
-			VehicleReservation vehicleReservation = VehicleReservation.builder()
-					.vehicle(vData.get())
-					.employee(eData.get())
-					.build();
+			vehicleBookmarkRepository.save(vehicleBookmark);
 
 			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BOOKMARK);
 		} catch (Exception e) {
