@@ -3,6 +3,7 @@ package com.douzone.server.controller;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.VehicleResDTO;
+import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 /**
+ * Create:
+ * createReservation - 차량 예약 등록 /create_reservation
  * Read:
  * findAllReserved - 차량 전체 예약 현황 조회 /list_all
  * findAllUnreserved - 차량 전체 미예약 현황 조회 /list_un
@@ -38,6 +41,7 @@ import java.util.Date;
 public class VehicleController {
 	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final VehicleService vehicleService;
+
 
 	@GetMapping(path = "/list_all")
 	public ResponseDTO findAllReserved() {
@@ -213,5 +217,25 @@ public class VehicleController {
 			default:
 				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_MARK);
 		}
+	}
+
+	@PostMapping(path = "/create_reservation")
+	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
+		log.info(METHOD_NAME + "- createReservation");
+		Integer result = vehicleService.createReservation(vehicleReservationDTO);
+
+		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "");
+	}
+
+	@PostMapping(path = "/create_bookmark")
+	public ResponseDTO createBookmark() {
+		log.info(METHOD_NAME + "- createBookmark");
+		Integer result = vehicleService.createBookmark();
+
+		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "");
 	}
 }
