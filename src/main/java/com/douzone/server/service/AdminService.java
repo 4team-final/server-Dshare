@@ -104,7 +104,7 @@ public class AdminService {
             return employee.getId();
 
         } catch (IllegalStateException e) {
-            log.error("IllegalStateException : AdminService - uploadProfileImg " + e.getMessage())
+            log.error("IllegalStateException : AdminService - uploadProfileImg " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
             log.error("Exception : AdminService - uploadProfileImg " + e.getMessage());
@@ -113,6 +113,7 @@ public class AdminService {
         return null;
     }
 
+    @Transactional
     public Integer createVehicleReservation(VehicleReservationDTO vehicleReservationDTO) {
         try {
             VehicleReservation vehicleReservation = VehicleReservation.builder()
