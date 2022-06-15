@@ -41,5 +41,9 @@ public class Employee extends BaseAtTime {
     @JoinColumn(name = "positionId")
     private Position position;
 
+    public void updateProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
 }
 
