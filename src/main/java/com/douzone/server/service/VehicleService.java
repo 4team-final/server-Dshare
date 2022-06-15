@@ -72,7 +72,7 @@ public class VehicleService {
 	public ResponseDTO findAllReserved() {
 		log.info(METHOD_NAME + "- findAllReserved");
 		try {
-			List<Vehicle> list = vehicleRepository.findAllReserved();
+			List<Object[]> list = vehicleReservationRepository.findAllReserved();
 
 			if (list == null)
 				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_ALL);
