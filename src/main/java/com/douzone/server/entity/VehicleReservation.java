@@ -1,6 +1,7 @@
 package com.douzone.server.entity;
 
 import com.douzone.server.config.utils.BaseAtTime;
+import com.douzone.server.dto.vehicle.VehicleReqDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,4 +38,13 @@ public class VehicleReservation extends BaseAtTime {
 	private String title;
 	private LocalDateTime startedAt;
 	private LocalDateTime endedAt;
+
+	public void updateReserved(VehicleReqDTO vehicleReqDTO) {
+		this.vehicle = Vehicle.builder().id(vehicleReqDTO.getVehicleId()).build();
+		this.employee = Employee.builder().id(vehicleReqDTO.getEmpId()).build();
+		this.reason = vehicleReqDTO.getReason();
+		this.title = vehicleReqDTO.getTitle();
+		this.startedAt = vehicleReqDTO.getStartedAt();
+		this.endedAt = vehicleReqDTO.getEndedAt();
+	}
 }

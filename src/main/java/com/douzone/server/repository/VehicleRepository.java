@@ -1,7 +1,6 @@
 package com.douzone.server.repository;
 
 import com.douzone.server.entity.Vehicle;
-import com.douzone.server.entity.VehicleReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,12 +21,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
 	@Query("select v from VehicleReservation vr left join Vehicle v on v.id = vr.vehicle.id where vr.startedAt < :date and vr.endedAt > :date")
 	List<Vehicle> findDateReserved(@Param("date") Date date);
-
-	@Query("select vr from VehicleReservation vr left join Employee e on vr.employee.id = e.id where e.id = :id and vr.endedAt < :date")
-	List<VehicleReservation> findEmpBefore(@Param("id") Long id, @Param("date") Date date);
-
-	@Query("select vr from VehicleReservation vr left join Employee e on vr.employee.id = e.id where e.id = :id and vr.startedAt > :date")
-	List<VehicleReservation> findEmpAfter(@Param("id") Long id, @Param("date") Date date);
 
 	@Query(nativeQuery = true, value = "select count(v) as vc from VehicleReservation vr left join Vehicle v on vr.vehicle.id = v.id group by v.id order by vc desc limit 1")
 	Vehicle findWeekVehicle();
