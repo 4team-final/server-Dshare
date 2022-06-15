@@ -1,13 +1,12 @@
 package com.douzone.server.service;
 
-//import com.douzone.server.dto.vehicle.VehicleRegisterDTO;
+import com.douzone.server.dto.vehicle.VehicleResDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
 import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.repository.VehicleBookmarkRepository;
-import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,61 +25,21 @@ public class VehicleService {
 	private final VehicleReservationRepository vehicleReservationRepository;
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 
-	public List<Vehicle> findAllReserved() {
-		log.info(METHOD_NAME + "-findAllReserved");
-		try {
-			return vehicleRepository.findAllReserved();
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return null;
-	}
-
-	public List<Vehicle> findAllUnreserved() {
-		log.info(METHOD_NAME + "-findAllUnreserved");
-		try {
-			return vehicleRepository.findAllUnreserved();
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return null;
-	}
-
-	public List<Vehicle> findTypeReserved(String model) {
-		log.info(METHOD_NAME + "-findTypeReserved");
-		try {
-			return vehicleRepository.findTypeReserved(model);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return null;
-	}
-
-	public List<Vehicle> findDateReserved(Date date) {
-		log.info(METHOD_NAME + "-findTypeReserved");
-		try {
-			return vehicleRepository.findDateReserved(date);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return null;
-	}
 	public Integer createReservation(VehicleReservationDTO vehicleReservationDTO) {
 		log.info(METHOD_NAME + "-createReservation");
 		try {
 			VehicleReservation vehicleReservation = VehicleReservation.builder()
-																		.vehicle(Vehicle.builder().id(1L).build())
-																		.employee(Employee.builder().id(1L).build())
-																		.reason(vehicleReservationDTO.getReason())
-																		.title(vehicleReservationDTO.getTitle())
-																		.build();
+					.vehicle(Vehicle.builder().id(1L).build())
+					.employee(Employee.builder().id(1L).build())
+					.reason(vehicleReservationDTO.getReason())
+					.title(vehicleReservationDTO.getTitle())
+					.build();
 			VehicleReservation result = vehicleReservationRepository.save(vehicleReservation);
-			if(result.getId() == null) return 0;
+			if (result.getId() == null) return 0;
 			return 1;
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-
 		return null;
 	}
 
@@ -93,81 +52,165 @@ public class VehicleService {
 					.vehicle(Vehicle.builder().id(1L).build())
 					.build();
 			VehicleBookmark result = vehicleBookmarkRepository.save(vehicleBookmark);
-			if(result.getId() == null) return 0;
+			if (result.getId() == null) return 0;
 			return 1;
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
 		return null;
 	}
-	public List<VehicleReservation> findEmpBefore(Long id, Date date) {
+
+	public VehicleResDTO findAllReserved() {
+		log.info(METHOD_NAME + "-findAllReserved");
+		try {
+			List<Vehicle> list = vehicleRepository.findAllReserved();
+
+			if (list == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(list).build();
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return VehicleResDTO.builder().code(2).build();
+	}
+
+	public VehicleResDTO findAllUnreserved() {
+		log.info(METHOD_NAME + "-findAllUnreserved");
+		try {
+			List<Vehicle> list = vehicleRepository.findAllUnreserved();
+
+			if (list == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(list).build();
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return VehicleResDTO.builder().code(2).build();
+	}
+
+	public VehicleResDTO findTypeReserved(String model) {
+		log.info(METHOD_NAME + "-findTypeReserved");
+		try {
+			List<Vehicle> list = vehicleRepository.findTypeReserved(model);
+
+			if (list == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(list).build();
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return VehicleResDTO.builder().code(2).build();
+	}
+
+	public VehicleResDTO findDateReserved(Date date) {
+		log.info(METHOD_NAME + "-findTypeReserved");
+		try {
+			List<Vehicle> list = vehicleRepository.findDateReserved(date);
+
+			if (list == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(list).build();
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return VehicleResDTO.builder().code(2).build();
+	}
+
+	public VehicleResDTO findEmpBefore(Long id, Date date) {
 		log.info(METHOD_NAME + "-findEmpBefore");
 		try {
-			return vehicleRepository.findEmpBefore(id, date);
+			List<VehicleReservation> list = vehicleRepository.findEmpBefore(id, date);
+
+			if (list == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(list).build();
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return VehicleResDTO.builder().code(2).build();
 	}
 
-	public List<VehicleReservation> findEmpAfter(Long id,
-												 Date date) {
+	public VehicleResDTO findEmpAfter(Long id, Date date) {
 		log.info(METHOD_NAME + "-findEmpAfter");
 		try {
-			return vehicleRepository.findEmpAfter(id, date);
+			List<VehicleReservation> list = vehicleRepository.findEmpAfter(id, date);
+
+			if (list == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(list).build();
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return VehicleResDTO.builder().code(2).build();
 	}
 
-	public Vehicle findWeekVehicle() {
+	public VehicleResDTO findWeekVehicle() {
 		log.info(METHOD_NAME + "-findWeekVehicle");
 		try {
-			return vehicleRepository.findWeekVehicle();
+			Vehicle vehicle = vehicleRepository.findWeekVehicle();
+
+			if (vehicle == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(vehicle).build();
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return VehicleResDTO.builder().code(2).build();
 	}
 
-	public Integer findWeekDate() {
+	public VehicleResDTO findWeekDate() {
 		log.info(METHOD_NAME + "-findWeekDate");
 		try {
-			return vehicleRepository.findWeekDate();
+			Integer result = vehicleRepository.findWeekDate();
+
+			if (result == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(result).build();
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return VehicleResDTO.builder().code(2).build();
 	}
 
-	public Vehicle findRecentVehicle() {
+	public VehicleResDTO findRecentVehicle() {
 		log.info(METHOD_NAME + "-findRecentVehicle");
 		try {
-			return vehicleRepository.findRecentVehicle();
+			Vehicle vehicle = vehicleRepository.findRecentVehicle();
+
+			if (vehicle == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(vehicle).build();
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return VehicleResDTO.builder().code(2).build();
 	}
 
-	public List<Vehicle> findMarkVehicle(String empNo) {
+	public VehicleResDTO findMarkVehicle(String empNo) {
 		log.info(METHOD_NAME + "-findMarkVehicle");
 		try {
-			return vehicleRepository.findMarkVehicle(empNo);
+			List<Vehicle> list = vehicleRepository.findMarkVehicle(empNo);
+
+			if (list == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(list).build();
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return VehicleResDTO.builder().code(2).build();
 	}
 
-	public List<Vehicle> findMarkBest() {
+	public VehicleResDTO findMarkBest() {
 		log.info(METHOD_NAME + "-findMarkBest");
 		try {
-			return vehicleRepository.findMarkBest();
+			List<Vehicle> list = vehicleRepository.findMarkBest();
+
+			if (list == null) return VehicleResDTO.builder().code(1).build();
+
+			return VehicleResDTO.builder().code(0).data(list).build();
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return VehicleResDTO.builder().code(2).build();
 	}
 }

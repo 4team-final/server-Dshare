@@ -3,7 +3,7 @@ package com.douzone.server.config.security.filter;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.auth.PrincipalDetailService;
 import com.douzone.server.config.security.handler.ResponseHandler;
-import com.douzone.server.config.utils.Message;
+import com.douzone.server.config.utils.Msg;
 import com.douzone.server.dto.token.TokenResDTO;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +72,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						log.info("Access Token Validation - Fail");
 
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Msg.FAIL_ACCESS + Msg.FAIL_TOKEN_VALIDATE));
 					}
 					return;
 				case 1:
@@ -83,7 +83,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						response.addHeader(headerKeyAccess, typeAccess + accessToken);
 
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Msg.FAIL_ACCESS + Msg.FAIL_TOKEN_VALIDATE));
 					}
 					return;
 				case 2:
@@ -96,6 +96,6 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 			log.error("사용자 인증을 확인하지 못해 인가할 수 없습니다. " + METHOD_NAME, e);
 		}
 		response.setContentType("text/html; charset=UTF-8");
-		response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
+		response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_ACCESS + Msg.FAIL_TOKEN_VALIDATE));
 	}
 }
