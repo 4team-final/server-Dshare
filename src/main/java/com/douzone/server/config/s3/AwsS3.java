@@ -61,6 +61,7 @@ public class AwsS3 {
         objectMetadata.setContentLength(contentLength);
         PutObjectRequest putObjectRequest = new PutObjectRequest(this.bucketName, key, multipartFile.getInputStream(), objectMetadata);
         uploadToS3(putObjectRequest);
+        log.info("데이터 베이스에 들어갈 key값 " + putObjectRequest.getKey());
         return putObjectRequest.getKey();
     }
 
