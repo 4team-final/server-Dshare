@@ -25,6 +25,41 @@ public class VehicleService {
 	private final VehicleReservationRepository vehicleReservationRepository;
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 
+	public Integer createReservation(VehicleReservationDTO vehicleReservationDTO) {
+		log.info(METHOD_NAME + "-createReservation");
+		try {
+			VehicleReservation vehicleReservation = VehicleReservation.builder()
+					.vehicle(Vehicle.builder().id(1L).build())
+					.employee(Employee.builder().id(1L).build())
+					.reason(vehicleReservationDTO.getReason())
+					.title(vehicleReservationDTO.getTitle())
+					.build();
+			VehicleReservation result = vehicleReservationRepository.save(vehicleReservation);
+			if (result.getId() == null) return 0;
+			return 1;
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return null;
+	}
+
+	public Integer createBookmark() {
+		log.info(METHOD_NAME + "-createBookmark");
+
+		try {
+			VehicleBookmark vehicleBookmark = VehicleBookmark.builder()
+					.employee(Employee.builder().id(1L).build())
+					.vehicle(Vehicle.builder().id(1L).build())
+					.build();
+			VehicleBookmark result = vehicleBookmarkRepository.save(vehicleBookmark);
+			if (result.getId() == null) return 0;
+			return 1;
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return null;
+	}
+
 	public VehicleResDTO findAllReserved() {
 		log.info(METHOD_NAME + "-findAllReserved");
 		try {
@@ -79,41 +114,6 @@ public class VehicleService {
 			log.error("SERVER ERROR", e);
 		}
 		return VehicleResDTO.builder().code(2).build();
-	}
-
-	public Integer createReservation(VehicleReservationDTO vehicleReservationDTO) {
-		log.info(METHOD_NAME + "-createReservation");
-		try {
-			VehicleReservation vehicleReservation = VehicleReservation.builder()
-					.vehicle(Vehicle.builder().id(1L).build())
-					.employee(Employee.builder().id(1L).build())
-					.reason(vehicleReservationDTO.getReason())
-					.title(vehicleReservationDTO.getTitle())
-					.build();
-			VehicleReservation result = vehicleReservationRepository.save(vehicleReservation);
-			if (result.getId() == null) return 0;
-			return 1;
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return null;
-	}
-
-	public Integer createBookmark() {
-		log.info(METHOD_NAME + "-createBookmark");
-
-		try {
-			VehicleBookmark vehicleBookmark = VehicleBookmark.builder()
-					.employee(Employee.builder().id(1L).build())
-					.vehicle(Vehicle.builder().id(1L).build())
-					.build();
-			VehicleBookmark result = vehicleBookmarkRepository.save(vehicleBookmark);
-			if (result.getId() == null) return 0;
-			return 1;
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return null;
 	}
 
 	public VehicleResDTO findEmpBefore(Long id, Date date) {

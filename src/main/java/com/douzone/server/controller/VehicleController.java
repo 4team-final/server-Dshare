@@ -1,5 +1,6 @@
 package com.douzone.server.controller;
 
+import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.VehicleResDTO;
@@ -8,6 +9,7 @@ import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -15,6 +17,7 @@ import java.util.Date;
 /**
  * Create:
  * createReservation - 차량 예약 등록 /create_reservation
+ * createBookmark - 차량 즐겨찾기 등록 /create_bookmark
  * Read:
  * findAllReserved - 차량 전체 예약 현황 조회 /list_all
  * findAllUnreserved - 차량 전체 미예약 현황 조회 /list_un
@@ -42,6 +45,25 @@ public class VehicleController {
 	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final VehicleService vehicleService;
 
+	@PostMapping(path = "/create_reservation")
+	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
+		log.info(METHOD_NAME + "- createReservation");
+		Integer result = vehicleService.createReservation(vehicleReservationDTO);
+
+		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "");
+	}
+
+	@PostMapping(path = "/create_bookmark")
+	public ResponseDTO createBookmark() {
+		log.info(METHOD_NAME + "- createBookmark");
+		Integer result = vehicleService.createBookmark();
+
+		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
+
+		return new ResponseDTO().of(HttpStatus.OK, "");
+	}
 
 	@GetMapping(path = "/list_all")
 	public ResponseDTO findAllReserved() {
@@ -108,8 +130,9 @@ public class VehicleController {
 	}
 
 	@PostMapping(path = "/list_pre")
-	public ResponseDTO findEmpBefore(@RequestBody Long id) {
+	public ResponseDTO findEmpBefore(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findEmpBefore");
+		Long id = principalDetails.getEmployee().getId();
 		VehicleResDTO result = vehicleService.findEmpBefore(id, new Date());
 
 		switch (result.getCode()) {
@@ -124,8 +147,9 @@ public class VehicleController {
 	}
 
 	@PostMapping(path = "/list_post")
-	public ResponseDTO findEmpAfter(@RequestBody Long id) {
+	public ResponseDTO findEmpAfter(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findEmpAfter");
+		Long id = principalDetails.getEmployee().getId();
 		VehicleResDTO result = vehicleService.findEmpAfter(id, new Date());
 
 		switch (result.getCode()) {
@@ -188,8 +212,9 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/mark")
-	public ResponseDTO findMarkVehicle(@RequestBody String empNo) {
+	public ResponseDTO findMarkVehicle(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findMarkVehicle");
+		String empNo = principalDetails.getEmployee().getEmpNo();
 		VehicleResDTO result = vehicleService.findMarkVehicle(empNo);
 
 		switch (result.getCode()) {
@@ -219,23 +244,4 @@ public class VehicleController {
 		}
 	}
 
-	@PostMapping(path = "/create_reservation")
-	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
-		log.info(METHOD_NAME + "- createReservation");
-		Integer result = vehicleService.createReservation(vehicleReservationDTO);
-
-		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
-
-		return new ResponseDTO().of(HttpStatus.OK, "");
-	}
-
-	@PostMapping(path = "/create_bookmark")
-	public ResponseDTO createBookmark() {
-		log.info(METHOD_NAME + "- createBookmark");
-		Integer result = vehicleService.createBookmark();
-
-		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
-
-		return new ResponseDTO().of(HttpStatus.OK, "");
-	}
 }
