@@ -20,9 +20,7 @@ import java.util.List;
  * findAllUnreserved - 차량 전체 미예약 현황 조회 /list_un
  * findTypeReserved - 차량 종류별 예약 현황 조회 /list_type
  * findDateReserved - 특정 일시 차량 예약 현황 조회 /list_date
-<<<<<<< HEAD
  * createReservation - 차량 예약 등록 /create_reservation
-=======
  * findEmpBefore - 내 예약 조회 - 과거 /list_pre
  * findEmpAfter - 내 예약 조회 - 미래 /list_post
  * findWeekVehicle - 7일 동안 가장 많이 예약된 차량 /best_vehicle
@@ -30,7 +28,11 @@ import java.util.List;
  * findRecentVehicle - 최근 예약된 차량 조회 /recent
  * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /mark
  * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best_mark
->>>>>>> upstream/dev
+ * Update:
+ * updateReserved - 내 차량 예약 현황 수정 /update
+ * delete:
+ * deleteReserved - 내 차량 예약 삭제 /delete
+ * deleteReserved - 내 즐겨찾기 차량 삭제 /delete_mark
  */
 
 @Slf4j
