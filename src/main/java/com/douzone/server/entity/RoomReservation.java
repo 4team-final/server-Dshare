@@ -17,20 +17,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class RoomReservation extends BaseAtTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meetId")
-    private Room room;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "roomId")
+	private Room room;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empId")
-    private Employee employee;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "empId")
+	private Employee employee;
 
-    private String reason;
-    private String title;
-    private LocalDateTime startedAt;
-    private LocalDateTime endedAt;
+	private String reason;
+	private String title;
+	private LocalDateTime startedAt;
+	private LocalDateTime endedAt;
 }
