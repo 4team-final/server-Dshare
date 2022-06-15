@@ -10,6 +10,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Entity
 @Table(name = "reservation_attend")
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

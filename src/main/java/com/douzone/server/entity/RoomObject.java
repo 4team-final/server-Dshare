@@ -22,7 +22,7 @@ public class RoomObject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roomId")
-    private Room room;
+    private MeetingRoom meetingRoom;
 
     private String name;
 
