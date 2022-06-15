@@ -28,7 +28,6 @@ public class DecodeEncodeHandler {
 		if (employeeRepository.existsByEmpNo(email)) {
 			log.info("Employee EmpNo Validate - Success");
 			Employee employee = employeeRepository.findByEmpNo(email);
-
 			return employee.getRole();
 		}
 		log.warn("Employee EmpNo Validate - Fail");
