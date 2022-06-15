@@ -26,6 +26,8 @@ public class ResponseDTO {
         return new ResponseDTO(status, message);
     }
 
+
+
     public static ResponseDTO fail(HttpStatus status, String message) {
         return new ResponseDTO(status, message, null);
     }
