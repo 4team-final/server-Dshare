@@ -49,61 +49,64 @@ public class AwsS3 {
         this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider()).withRegion(clientRegion).build();
     }
 
-//    //File과 key로 PutObjectRequest
-//    public void upload(File file, String key) {
-//        uploadToS3(new PutObjectRequest(this.bucketName, key, file));
-//    }
-//
-//    //MultipartFile로 InputStream을 이용하여 PutObjectRequest
-//    public String upload(MultipartFile multipartFile, String key, String contentType, long contentLength) throws IOException {
-//        ObjectMetadata objectMetadata = new ObjectMetadata();
-//        objectMetadata.setContentType(contentType);
-//        objectMetadata.setContentLength(contentLength);
-//        PutObjectRequest putObjectRequest = new PutObjectRequest(this.bucketName, key, multipartFile.getInputStream(), objectMetadata);
-//        uploadToS3(putObjectRequest);
-//        return putObjectRequest.getKey();
-//    }
-//
-//    //S3Client로 aws S3 버킷에 업로드
-//    private void uploadToS3(PutObjectRequest putObjectRequest) {
-//        try {
-//            this.s3Client.putObject(putObjectRequest);
-//            log.info(putObjectRequest.getKey() + "upload complete");
-//            System.out.println(String.format("[%s] upload complete", putObjectRequest.getKey()));
-//        } catch (AmazonServiceException e) {
-//            e.printStackTrace();
-//        } catch (SdkClientException e) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void copy(String orgKey, String copyKey) {
-//        try {
-//            //Copy 객체 생성
-//            CopyObjectRequest copyObjRequest = new CopyObjectRequest(this.bucketName, orgKey, this.bucketName, copyKey);
-//            this.s3Client.copyObject(copyObjRequest);
-//            log.info("Finish copying" + orgKey + "to" + copyKey);
-//            System.out.println(String.format("Finish copying [%s] to [%s]", orgKey, copyKey));
-//        } catch (AmazonServiceException e) {
-//            e.printStackTrace();
-//        } catch (SdkClientException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void delete(String key) {
-//        try {
-//            //Delete 객체 생성
-//            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(this.bucketName, key);
-//            this.s3Client.deleteObject(deleteObjectRequest);
-//            log.info(key + "deletion complete");
-//            System.out.println(String.format("[%s] deletion complete", key));
-//        } catch (AmazonServiceException e) {
-//            e.printStackTrace();
-//        } catch (SdkClientException e) {
-//            e.printStackTrace();
-//        }
-//    }
+
+    //File과 key로 PutObjectRequest
+    public void upload(File file, String key) {
+        uploadToS3(new PutObjectRequest(this.bucketName, key, file));
+    }
+
+    //MultipartFile로 InputStream을 이용하여 PutObjectRequest
+    public String upload(MultipartFile multipartFile, String key, String contentType, long contentLength) throws IOException {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(contentType);
+        objectMetadata.setContentLength(contentLength);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(this.bucketName, key, multipartFile.getInputStream(), objectMetadata);
+        uploadToS3(putObjectRequest);
+        log.info("데이터 베이스에 들어갈 key값 " + putObjectRequest.getKey());
+        return putObjectRequest.getKey();
+    }
+
+    //S3Client로 aws S3 버킷에 업로드
+    private void uploadToS3(PutObjectRequest putObjectRequest) {
+        try {
+            this.s3Client.putObject(putObjectRequest);
+            log.info(putObjectRequest.getKey() + "upload complete");
+            System.out.println(String.format("[%s] upload complete", putObjectRequest.getKey()));
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void copy(String orgKey, String copyKey) {
+        try {
+            //Copy 객체 생성
+            CopyObjectRequest copyObjRequest = new CopyObjectRequest(this.bucketName, orgKey, this.bucketName, copyKey);
+            this.s3Client.copyObject(copyObjRequest);
+            log.info("Finish copying" + orgKey + "to" + copyKey);
+            System.out.println(String.format("Finish copying [%s] to [%s]", orgKey, copyKey));
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(String key) {
+        try {
+            //Delete 객체 생성
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(this.bucketName, key);
+            this.s3Client.deleteObject(deleteObjectRequest);
+            log.info(key + "deletion complete");
+            System.out.println(String.format("[%s] deletion complete", key));
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
