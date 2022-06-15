@@ -5,6 +5,7 @@ import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.VehicleResDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
+import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,23 +47,20 @@ public class VehicleController {
 	private final VehicleService vehicleService;
 
 	@PostMapping(path = "/create_reservation")
-	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
+	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
+										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createReservation");
-		Integer result = vehicleService.createReservation(vehicleReservationDTO);
+		Long id = principalDetails.getEmployee().getId();
 
-		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
-
-		return new ResponseDTO().of(HttpStatus.OK, "");
+		return vehicleService.createReservation(vehicleReservationDTO, id);
 	}
 
 	@PostMapping(path = "/create_bookmark")
-	public ResponseDTO createBookmark() {
+	public ResponseDTO createBookmark(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createBookmark");
-		Integer result = vehicleService.createBookmark();
+		Long id = principalDetails.getEmployee().getId();
 
-		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
-
-		return new ResponseDTO().of(HttpStatus.OK, "");
+		return vehicleService.createBookmark(id);
 	}
 
 	@GetMapping(path = "/list_all")
@@ -244,4 +242,15 @@ public class VehicleController {
 		}
 	}
 
+	@PostMapping(path = "/delete_reserved")
+	public ResponseDTO deleteReserved(@RequestBody Long id) {
+		log.info(METHOD_NAME + "-deleteReserved");
+		return vehicleService.deleteReserved(id);
+	}
+
+	@PostMapping(path = "/delete_bookmark")
+	public ResponseDTO deleteBookmark(@RequestBody Long id) {
+		log.info(METHOD_NAME + "-deleteReserved");
+		return vehicleService.deleteBookmark(id);
+	}
 }

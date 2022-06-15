@@ -1,69 +1,88 @@
 package com.douzone.server.service;
 
+import com.douzone.server.config.utils.Msg;
+import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.VehicleResDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
 import com.douzone.server.entity.VehicleReservation;
+import com.douzone.server.repository.EmployeeRepository;
 import com.douzone.server.repository.VehicleBookmarkRepository;
 import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class VehicleService {
 	private static final String METHOD_NAME = VehicleService.class.getName();
 	private final VehicleRepository vehicleRepository;
 	private final VehicleReservationRepository vehicleReservationRepository;
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
+	private final EmployeeRepository employeeRepository;
 
-	public Integer createReservation(VehicleReservationDTO vehicleReservationDTO) {
+	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long id) {
 		log.info(METHOD_NAME + "-createReservation");
 		try {
+			Optional<Employee> eData = employeeRepository.findById(id);
+			Optional<Vehicle> vData = vehicleRepository.findById(id);
+
+			if(!eData.isPresent()) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_RESERVE + "");
+			if(!vData.isPresent()) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_RESERVE + "");
+
 			VehicleReservation vehicleReservation = VehicleReservation.builder()
-					.vehicle(Vehicle.builder().id(1L).build())
-					.employee(Employee.builder().id(1L).build())
+					.vehicle(vData.get())
+					.employee(eData.get())
 					.reason(vehicleReservationDTO.getReason())
 					.title(vehicleReservationDTO.getTitle())
 					.build();
-			VehicleReservation result = vehicleReservationRepository.save(vehicleReservation);
-			if (result.getId() == null) return 0;
-			return 1;
+
+			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_RESERVE);
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);
 	}
 
-	public Integer createBookmark() {
+	public ResponseDTO createBookmark(Long id) {
 		log.info(METHOD_NAME + "-createBookmark");
 
 		try {
-			VehicleBookmark vehicleBookmark = VehicleBookmark.builder()
-					.employee(Employee.builder().id(1L).build())
-					.vehicle(Vehicle.builder().id(1L).build())
+			Optional<Employee> eData = employeeRepository.findById(id);
+			Optional<Vehicle> vData = vehicleRepository.findById(id);
+
+			if(!eData.isPresent()) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BOOKMARK + "");
+			if(!vData.isPresent()) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BOOKMARK + "");
+
+			VehicleReservation vehicleReservation = VehicleReservation.builder()
+					.vehicle(vData.get())
+					.employee(eData.get())
 					.build();
-			VehicleBookmark result = vehicleBookmarkRepository.save(vehicleBookmark);
-			if (result.getId() == null) return 0;
-			return 1;
+
+			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BOOKMARK);
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BOOKMARK);
 	}
 
 	public VehicleResDTO findAllReserved() {
 		log.info(METHOD_NAME + "-findAllReserved");
 		try {
-			List<Vehicle> list = vehicleRepository.findAllReserved();
+			List<VehicleReservation> list = vehicleReservationRepository.findAllReserved();
 
 			if (list == null) return VehicleResDTO.builder().code(1).build();
 
@@ -213,4 +232,31 @@ public class VehicleService {
 		}
 		return VehicleResDTO.builder().code(2).build();
 	}
+
+	public ResponseDTO deleteReserved(Long id) {
+		log.info(METHOD_NAME + "-deleteReserved");
+		vehicleReservationRepository.deleteById(id);
+		return null;
+	}
+
+	public ResponseDTO deleteBookmark(Long id) {
+		log.info(METHOD_NAME + "-deleteBookmark");
+		vehicleBookmarkRepository.deleteById(id);
+		return null;
+	}
+
+//			log.info(METHOD_NAME + "-createBookmark");
+//
+//		try {
+//		VehicleBookmark vehicleBookmark = VehicleBookmark.builder()
+//				.employee(Employee.builder().id(1L).build())
+//				.vehicle(Vehicle.builder().id(1L).build())
+//				.build();
+//		VehicleBookmark result = vehicleBookmarkRepository.save(vehicleBookmark);
+//		if (result.getId() == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BOOKMARK);
+//		return new ResponseDTO().of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK);
+//	} catch (Exception e) {
+//		log.error("SERVER ERROR", e);
+//	}
+//		return null;
 }
