@@ -49,6 +49,7 @@ public class AwsS3 {
         this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider()).withRegion(clientRegion).build();
     }
 
+
     //File과 key로 PutObjectRequest
     public void upload(File file, String key) {
         uploadToS3(new PutObjectRequest(this.bucketName, key, file));
@@ -107,4 +108,5 @@ public class AwsS3 {
             e.printStackTrace();
         }
     }
+
 }

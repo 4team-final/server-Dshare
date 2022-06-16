@@ -63,6 +63,7 @@ public class AdminService {
         return id;
     }
 
+
     @Transactional
     public Long uploadProfileImg(List<MultipartFile> files, long id) {
 
@@ -112,6 +113,7 @@ public class AdminService {
         return null;
     }
 
+    @Transactional
     public Integer createVehicleReservation(VehicleReservationDTO vehicleReservationDTO) {
         try {
             VehicleReservation vehicleReservation = VehicleReservation.builder()
