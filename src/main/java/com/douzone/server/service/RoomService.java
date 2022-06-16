@@ -29,7 +29,7 @@ public class RoomService {
 					.build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()));
 			return recentResDTO;
 		}).collect(Collectors.toList());
-		return null;
+		return recentResDTOList;
 	}
 
 	public LocalDateTime timeDiff(LocalDateTime startedAt, LocalDateTime endedAt) {

@@ -12,16 +12,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @Slf4j
-@RequestMapping("/emp")
+@RequestMapping("/emp/room")
 @RequiredArgsConstructor
 public class RoomController {
 
 	private final RoomService roomService;
 
 	@GetMapping("/recent/reservation")
-	public ResponseEntity<ResponseDTO> recentReservation(@RequestParam(value = "limit") int limit) {
+	public ResponseEntity<ResponseDTO> recentReservation(@RequestParam(value = "limit") @Valid int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RECENT, roomService.recentReservation(limit)));
 	}
 }

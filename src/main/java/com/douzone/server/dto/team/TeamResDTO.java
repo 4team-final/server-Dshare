@@ -23,6 +23,6 @@ public class TeamResDTO {
 	}
 
 	public TeamResDTO of(Team team) {
-		return TeamResDTO.builder().teamId(team.getId()).department(DepartmentResDTO.builder().build().of(team.getDept())).teamName(team.getName()).build();
+		return TeamResDTO.builder().teamId(team.getId()).department(DepartmentResDTO.builder().build().of(team.getDepartment())).teamName(team.getName()).build();
 	}
 }

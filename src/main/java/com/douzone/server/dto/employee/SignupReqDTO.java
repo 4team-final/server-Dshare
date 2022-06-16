@@ -68,6 +68,6 @@ public class SignupReqDTO {
 	public Employee of(String empNo, String password) {
 		return Employee.builder().empNo(empNo).password(password).name(name).email(email).tel(tel).birthday(birthday)
 				.team(Team.builder().id((teamId))
-						.dept(Department.builder().id(deptId).build()).build()).position(Position.builder().id(positionId).build()).build();
+						.department(Department.builder().id(deptId).build()).build()).position(Position.builder().id(positionId).build()).build();
 	}
 }

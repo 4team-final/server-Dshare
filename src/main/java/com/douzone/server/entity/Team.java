@@ -19,14 +19,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Team extends BaseAtTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deptId")
-    private Department dept;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "deptId")
+	private Department department;
 
-    private String name;
+	private String name;
 }
 
