@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "room_reservation")
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class RoomReservation extends BaseAtTime {
     @Id
