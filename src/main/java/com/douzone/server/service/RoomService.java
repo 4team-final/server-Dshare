@@ -1,6 +1,7 @@
 package com.douzone.server.service;
 
-import com.douzone.server.dto.reservation.RecentResDTO;
+import com.douzone.server.dto.reservation.MyReservationResDTO;
+import com.douzone.server.dto.reservation.ReservationResDTO;
 import com.douzone.server.dto.reservation.SoonAndIngResDTO;
 import com.douzone.server.entity.RoomReservation;
 import com.douzone.server.repository.RoomRepository;
@@ -26,13 +27,13 @@ public class RoomService {
 	private final RoomReservationQueryDSL reservationQueryDSL;
 
 	@Transactional
-	public List<RecentResDTO> recentReservation(int limit) {
+	public List<ReservationResDTO> recentReservation(int limit) {
 		List<RoomReservation> roomReservationList = reservationQueryDSL.findRecentReservation(limit);
-		List<RecentResDTO> recentResDTOList = roomReservationList.stream().map(roomReservation -> {
-			RecentResDTO recentResDTO = RecentResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()));
-			return recentResDTO;
+		List<ReservationResDTO> reservationResDTOList = roomReservationList.stream().map(roomReservation -> {
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()));
+			return reservationResDTO;
 		}).collect(Collectors.toList());
-		return recentResDTOList;
+		return reservationResDTOList;
 	}
 
 	public LocalDateTime timeDiff(LocalDateTime startedAt, LocalDateTime endedAt) {
@@ -47,17 +48,17 @@ public class RoomService {
 		}
 		LocalDateTime now = LocalDateTime.now();
 
-		LocalDateTime soonTime = reservationQueryDSL.findByUserSoonReservationTime(now, empId);
-		LocalDateTime ingEndTime = reservationQueryDSL.findByUserEndReservationTime(now, empId);
+		LocalDateTime soonStartTime = reservationQueryDSL.findBySoonStartTime(now, empId);
+		LocalDateTime ingEndTime = reservationQueryDSL.findByIngEndTime(now, empId);
 		SoonAndIngResDTO soonAndIngResDTO;
 
 		// Long으로 보내기로 결정
-		Long d_s = ChronoUnit.SECONDS.between(now, soonTime);
+		Long d_s = ChronoUnit.SECONDS.between(now, soonStartTime);
 		Long d_i = ChronoUnit.SECONDS.between(now, ingEndTime);
 
-		if (soonTime != null && ingEndTime != null) {
+		if (soonStartTime != null && ingEndTime != null) {
 			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(d_s, d_i);
-		} else if (soonTime == null) {
+		} else if (soonStartTime == null) {
 			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(null, d_i);
 		} else if (ingEndTime == null) {
 			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(d_s, null);
@@ -67,4 +68,22 @@ public class RoomService {
 		return soonAndIngResDTO;
 	}
 
+	@Transactional
+	public MyReservationResDTO myReservation(Long empId) {
+		List<RoomReservation> beforeReservationList = reservationQueryDSL.findByBeforeReservation(empId);
+		List<RoomReservation> afterReservationList = reservationQueryDSL.findByAfterReservation(empId);
+
+		List<ReservationResDTO> beforeList = beforeReservationList.stream().map(roomReservation -> {
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()));
+			return reservationResDTO;
+		}).collect(Collectors.toList());
+
+		List<ReservationResDTO> afterList = afterReservationList.stream().map(roomReservation -> {
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()));
+			return reservationResDTO;
+		}).collect(Collectors.toList());
+
+		return MyReservationResDTO.builder().build().of(beforeList, afterList);
+
+	}
 }

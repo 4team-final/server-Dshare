@@ -21,17 +21,27 @@ public class RoomReservationQueryDSL {
 		return jpaQueryFactory.select(roomReservation).from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom).fetchJoin().innerJoin(roomReservation.employee, employee).fetchJoin().where(roomReservation.startedAt.gt(LocalDateTime.now())).orderBy(roomReservation.modifiedAt.desc()).limit(limit).fetch();
 	}
 
-	public LocalDateTime findByUserSoonReservationTime(LocalDateTime now, long empId) {
+	public LocalDateTime findBySoonStartTime(LocalDateTime now, long empId) {
 		return jpaQueryFactory.select(roomReservation.startedAt)
 				.from(roomReservation).innerJoin(roomReservation.employee, employee)
 				.where(roomReservation.startedAt.gt(now).and(employee.id.eq(empId))).orderBy(roomReservation.startedAt.asc()).limit(1).fetchOne();
 	}
 
-	public LocalDateTime findByUserEndReservationTime(LocalDateTime now, long empId) {
+	public LocalDateTime findByIngEndTime(LocalDateTime now, long empId) {
 		return jpaQueryFactory.select(roomReservation.endedAt)
 				.from(roomReservation).innerJoin(roomReservation.employee, employee)
-				.on(employee.id.eq(empId))
 				.where(roomReservation.startedAt.lt(now).and(roomReservation.endedAt.gt(now)).and(employee.id.eq(empId))).orderBy(roomReservation.startedAt.asc()).limit(1).fetchOne();
 	}
 
+	public List<RoomReservation> findByBeforeReservation(Long empId) {
+		return jpaQueryFactory.select(roomReservation)
+				.from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom).fetchJoin().innerJoin(roomReservation.employee, employee).fetchJoin()
+				.where(roomReservation.startedAt.gt(LocalDateTime.now()).and(employee.id.eq(empId))).orderBy(roomReservation.modifiedAt.desc()).fetch();
+	}
+
+	public List<RoomReservation> findByAfterReservation(Long empId) {
+		return jpaQueryFactory.select(roomReservation)
+				.from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom).fetchJoin().innerJoin(roomReservation.employee, employee).fetchJoin()
+				.where(roomReservation.startedAt.lt(LocalDateTime.now()).and(employee.id.eq(empId))).orderBy(roomReservation.modifiedAt.desc()).fetch();
+	}
 }

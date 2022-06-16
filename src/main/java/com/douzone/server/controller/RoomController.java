@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+/**
+ * recentReservation() - 최근에 예약된 회의실 TOP 조회
+ * soonAndIngReservationMyTime() - 내가 예약한 회의실 남은 시간 조회 (회의전 - 곧 시작할,회의중 -회의가 끝나는)
+ * myReservation() - 내 예약 현황 조회 (과거 예약, 현재 예약)
+ */
+
 @RestController
 @Slf4j
 @RequestMapping("/emp/room")
@@ -32,5 +38,10 @@ public class RoomController {
 	@GetMapping("/reservation/soon/my/time")
 	public ResponseEntity<ResponseDTO> soonAndIngReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_SOON_MY_TIME, roomService.soonAndIngReservationMyTime(principalDetails.getEmployee().getId())));
+	}
+
+	@GetMapping("/reservation/my")
+	public ResponseEntity<ResponseDTO> myReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_MY, roomService.myReservation(principalDetails.getEmployee().getId())));
 	}
 }

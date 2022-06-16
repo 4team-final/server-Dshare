@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecentResDTO {
+public class ReservationResDTO {
 	// 예약
 	private long id;
 	private RoomResDTO room;
@@ -27,7 +27,7 @@ public class RecentResDTO {
 	private LocalDateTime modifiedAt;
 
 	@Builder
-	public RecentResDTO(long id, RoomResDTO room, EmpResDTO emp, String reason, String title, LocalDateTime rPeriod, LocalDateTime startedAt, LocalDateTime endedAt, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+	public ReservationResDTO(long id, RoomResDTO room, EmpResDTO emp, String reason, String title, LocalDateTime rPeriod, LocalDateTime startedAt, LocalDateTime endedAt, LocalDateTime createdAt, LocalDateTime modifiedAt) {
 		this.id = id;
 		this.room = room;
 		this.emp = emp;
@@ -40,8 +40,8 @@ public class RecentResDTO {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public RecentResDTO of(RoomReservation reservation, LocalDateTime rPeriod) {
-		return RecentResDTO.builder()
+	public ReservationResDTO of(RoomReservation reservation, LocalDateTime rPeriod) {
+		return ReservationResDTO.builder()
 				.id(reservation.getId())
 				.room(RoomResDTO.builder().build().of(reservation.getMeetingRoom()))
 				.emp(EmpResDTO.builder().build().of(reservation.getEmployee()))
