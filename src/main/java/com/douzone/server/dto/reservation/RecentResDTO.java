@@ -2,6 +2,8 @@ package com.douzone.server.dto.reservation;
 
 import com.douzone.server.dto.employee.EmpResDTO;
 import com.douzone.server.dto.room.RoomResDTO;
+import com.douzone.server.entity.RoomReservation;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RecentResDTO {
 	// 예약
-	private int id;
+	private long id;
 	private RoomResDTO room;
 	private EmpResDTO emp;
 	private String reason;
@@ -24,4 +26,32 @@ public class RecentResDTO {
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 
+	@Builder
+	public RecentResDTO(long id, RoomResDTO room, EmpResDTO emp, String reason, String title, LocalDateTime rPeriod, LocalDateTime startedAt, LocalDateTime endedAt, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+		this.id = id;
+		this.room = room;
+		this.emp = emp;
+		this.reason = reason;
+		this.title = title;
+		this.rPeriod = rPeriod;
+		this.startedAt = startedAt;
+		this.endedAt = endedAt;
+		this.createdAt = createdAt;
+		this.modifiedAt = modifiedAt;
+	}
+
+	public RecentResDTO of(RoomReservation reservation, LocalDateTime rPeriod) {
+		return RecentResDTO.builder()
+				.id(reservation.getId())
+				.room(RoomResDTO.builder().build().of(reservation.getMeetingRoom()))
+				.emp(EmpResDTO.builder().build().of(reservation.getEmployee()))
+				.reason(reservation.getReason())
+				.title(reservation.getTitle())
+				.rPeriod(rPeriod)
+				.startedAt(reservation.getStartedAt())
+				.endedAt(reservation.getEndedAt())
+				.createdAt(reservation.getCreatedAt())
+				.modifiedAt(reservation.getModifiedAt())
+				.build();
+	}
 }
