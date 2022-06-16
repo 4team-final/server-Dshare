@@ -1,20 +1,16 @@
 package com.douzone.server.dto.employee;
 
 
-import com.douzone.server.entity.Department;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Position;
-import com.douzone.server.entity.Team;
-import javafx.geometry.Pos;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Builder
 public class ProfileDto {
@@ -60,4 +56,5 @@ public class ProfileDto {
 				.dept(employee.getTeam().getDept().getName())
 				.build();
 	}
+
 }
