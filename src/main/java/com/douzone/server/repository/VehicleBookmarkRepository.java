@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface VehicleBookmarkRepository extends JpaRepository<VehicleBookmark, Long> {
 
-    @Query("select v from VehicleBookmark vb left join fetch Vehicle v on vb.vehicle.id = v.id where vb.employee.empNo = :empNo")
+    @Query("select v from VehicleBookmark vb join fetch Vehicle v on vb.vehicle.id = v.id where vb.employee.empNo = :empNo")
     List<Vehicle> findMarkVehicle(@Param("empNo") String empNo);
 
-    @Query("select v, count(vb) from VehicleBookmark vb left join fetch Vehicle v on vb.vehicle.id = v.id group by vb.vehicle order by count(vb) DESC")
+    @Query("select v, count(vb) as vcount  from VehicleBookmark vb join fetch Vehicle v on vb.vehicle.id = v.id group by vb.vehicle order by vcount DESC")
     List<Vehicle> findMarkBest(Pageable pageable);
 }

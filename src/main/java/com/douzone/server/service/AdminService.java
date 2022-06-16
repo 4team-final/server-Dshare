@@ -60,7 +60,8 @@ public class AdminService {
     public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId,Long vId) {
         log.info(METHOD_NAME + "-createReservation");
         try {
-
+            if (vehicleReservationDTO == null) {return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);}
+            if (!empId.equals(vId)) {return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);}
             VehicleReservation vehicleReservation =
                     VehicleReservation.builder()
                             .vehicle(Vehicle.builder().id(vId).build())

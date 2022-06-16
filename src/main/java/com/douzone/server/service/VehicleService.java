@@ -27,7 +27,6 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class VehicleService {
 	private static final String METHOD_NAME = VehicleService.class.getName();
 	private final VehicleRepository vehicleRepository;
@@ -36,9 +35,11 @@ public class VehicleService {
 	private final EmployeeRepository employeeRepository;
 
 	@Transactional
-	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId,Long vId) {
+	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId, Long vId) {
 		log.info(METHOD_NAME + "-createReservation");
 		try {
+			if (vehicleReservationDTO == null) {return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);}
+			if (!empId.equals(vId)) {return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);}
 			VehicleReservation vehicleReservation =
 					VehicleReservation.builder()
 					.vehicle(Vehicle.builder().id(vId).build())
