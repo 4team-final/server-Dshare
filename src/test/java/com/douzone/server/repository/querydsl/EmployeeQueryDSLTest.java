@@ -19,13 +19,6 @@ class EmployeeQueryDSLTest {
 	@Autowired
 	private EmployeeQueryDSL employeeQueryDSL;
 
-	@Test
-	void 가장최근예약3개조회() {
-		for (int i = 0; i < 3; i++) {
-			System.out.println(employeeQueryDSL.reservedLatestRoomTop3(3).get(i).getMeetingRoom().getRoomNo());
-		}
-	}
-
 	/**
 	 * 임의로 사원/팀/부서까지 다만들기 힘들어서 given에 임의로 조회 값을 넣어서 테스트 했습니다.
 	 */
