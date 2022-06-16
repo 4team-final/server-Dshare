@@ -3,6 +3,7 @@ package com.douzone.server.service;
 import com.douzone.server.dto.reservation.MyReservationResDTO;
 import com.douzone.server.dto.reservation.ReservationResDTO;
 import com.douzone.server.dto.reservation.SoonAndIngResDTO;
+import com.douzone.server.dto.room.RoomWeekReservationCountDTO;
 import com.douzone.server.entity.RoomReservation;
 import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;
@@ -25,6 +26,7 @@ public class RoomService {
 	private final RoomRepository roomRepository;
 	private final RoomReservationRepository roomReservationRepository;
 	private final RoomReservationQueryDSL reservationQueryDSL;
+
 
 	@Transactional
 	public List<ReservationResDTO> recentReservation(int limit) {
@@ -85,5 +87,31 @@ public class RoomService {
 
 		return MyReservationResDTO.builder().build().of(beforeList, afterList);
 
+	}
+
+	@Transactional
+	public List<RoomWeekReservationCountDTO> weekReservationCount() {
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime nowMinusWeek = now.minusDays(7);
+
+		List<RoomWeekReservationCountDTO> roomWeekReservationCountDTOList = reservationQueryDSL.findByWeekReservationCount(now, nowMinusWeek);
+		roomWeekReservationCountDTOList.stream().map(roomWeekReservationCountDTO -> {
+
+			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(roomWeekReservationCountDTO.getRoomId(), now, nowMinusWeek);
+
+			roomWeekReservationCountDTO.setReservationResDTOList(reservationResDTOList);
+			return roomWeekReservationCountDTO;
+		}).collect(Collectors.toList());
+		return roomWeekReservationCountDTOList;
+	}
+
+	@Transactional
+	public List<ReservationResDTO> findByMeetingRoom_Id(Long roomId, LocalDateTime now, LocalDateTime nowMinusWeek) {
+		List<RoomReservation> roomReservationList = reservationQueryDSL.findByMeetingRoomIdAndWeek(roomId, now, nowMinusWeek);
+		List<ReservationResDTO> reservationResDTOList = roomReservationList.stream().map(roomReservation -> {
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()));
+			return reservationResDTO;
+		}).collect(Collectors.toList());
+		return reservationResDTOList;
 	}
 }

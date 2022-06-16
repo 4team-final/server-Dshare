@@ -44,7 +44,11 @@ public class RoomController {
 
 	@GetMapping("/reservation/{empId}")
 	public ResponseEntity<ResponseDTO> myReservation(@PathVariable("empId") @Valid Long empId) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_MY, roomService.myReservation(empId)));
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_EMP, roomService.myReservation(empId)));
 	}
 
+	@GetMapping("/reservation/week/count")
+	public ResponseEntity<ResponseDTO> weekReservationCount() {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_BEST_WEEK, roomService.weekReservationCount()));
+	}
 }
