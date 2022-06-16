@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,25 +50,21 @@ public class RoomService {
 		LocalDateTime soonTime = reservationQueryDSL.findByUserSoonReservationTime(now, empId);
 		LocalDateTime ingEndTime = reservationQueryDSL.findByUserEndReservationTime(now, empId);
 		SoonAndIngResDTO soonAndIngResDTO;
-		LocalDateTime soonRemainTime;
-		LocalDateTime ingRemainTime;
 
+		// Long으로 보내기로 결정
+		Long d_s = ChronoUnit.SECONDS.between(now, soonTime);
+		Long d_i = ChronoUnit.SECONDS.between(now, ingEndTime);
 
 		if (soonTime != null && ingEndTime != null) {
-			soonRemainTime = now.minusHours(soonTime.getHour()).minusMinutes(soonTime.getMinute());
-			ingRemainTime = ingEndTime.minusHours(now.getHour()).minusMinutes(now.getMinute());
-			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(soonRemainTime, ingRemainTime);
-
+			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(d_s, d_i);
 		} else if (soonTime == null) {
-			ingRemainTime = ingEndTime.minusHours(now.getHour()).minusMinutes(now.getMinute());
-			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(null, ingRemainTime);
-
+			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(null, d_i);
 		} else if (ingEndTime == null) {
-			soonRemainTime = now.minusHours(soonTime.getHour()).minusMinutes(soonTime.getMinute());
-			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(soonRemainTime, null);
+			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(d_s, null);
 		} else {
 			return null;
 		}
 		return soonAndIngResDTO;
 	}
+
 }

@@ -28,7 +28,7 @@ public class RoomReservationQueryDSL {
 	}
 
 	public LocalDateTime findByUserEndReservationTime(LocalDateTime now, long empId) {
-		return jpaQueryFactory.select(roomReservation.startedAt)
+		return jpaQueryFactory.select(roomReservation.endedAt)
 				.from(roomReservation).innerJoin(roomReservation.employee, employee)
 				.on(employee.id.eq(empId))
 				.where(roomReservation.startedAt.lt(now).and(roomReservation.endedAt.gt(now)).and(employee.id.eq(empId))).orderBy(roomReservation.startedAt.asc()).limit(1).fetchOne();

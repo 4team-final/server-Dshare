@@ -5,23 +5,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
 public class SoonAndIngResDTO {
 
-	private LocalDateTime soonRemainTime;
-	private LocalDateTime ingRemainTime;
+	private Long soonRemainTime;
+	private Long ingRemainTime;
 
 	@Builder
-	public SoonAndIngResDTO(LocalDateTime soonRemainTime, LocalDateTime ingRemainTime) {
+	public SoonAndIngResDTO(Long soonRemainTime, Long ingRemainTime) {
 		this.soonRemainTime = soonRemainTime;
 		this.ingRemainTime = ingRemainTime;
 	}
 
-	public SoonAndIngResDTO of(LocalDateTime soonTime, LocalDateTime remainTime) {
+
+	public SoonAndIngResDTO of(Long soonTime, Long remainTime) {
 		return SoonAndIngResDTO.builder().soonRemainTime(soonTime).ingRemainTime(remainTime).build();
 	}
 }
