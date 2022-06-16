@@ -14,6 +14,7 @@ import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +82,7 @@ public class VehicleService {
 	public ResponseDTO findAllReserved() {
 		log.info(METHOD_NAME + "- findAllReserved");
 		try {
-			List<Object[]> list = vehicleReservationRepository.findAllReserved();
+			List<VehicleReservation> list = vehicleReservationRepository.findAll();
 
 			if (list == null)
 				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_ALL);
@@ -225,7 +226,7 @@ public class VehicleService {
 	public ResponseDTO findMarkVehicle(String empNo) {
 		log.info(METHOD_NAME + "- findMarkVehicle");
 		try {
-			List<Vehicle> list = vehicleRepository.findMarkVehicle(empNo);
+			List<Vehicle> list = vehicleBookmarkRepository.findMarkVehicle(empNo);
 
 			if (list == null)
 				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_MARK);
@@ -241,7 +242,7 @@ public class VehicleService {
 	public ResponseDTO findMarkBest() {
 		log.info(METHOD_NAME + "- findMarkBest");
 		try {
-			List<Vehicle> list = vehicleRepository.findMarkBest();
+			List<Vehicle> list = vehicleBookmarkRepository.findMarkBest(PageRequest.of(0,3));
 
 			if (list == null)
 				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_MARK);
