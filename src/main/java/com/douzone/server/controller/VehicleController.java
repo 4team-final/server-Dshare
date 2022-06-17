@@ -29,6 +29,8 @@ import java.util.Map;
  * findRecentVehicle - 최근 예약된 차량 조회 /list/recent
  * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /list/own/mark
  * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best/mark
+ * findVehicleReserved - 수정 전 차량 단일 조회 /reservation
+ * soonAndIngReservationMyTime - 동적 타이머 /own/reservation
  * Update:
  * updateReserved - 내 차량 예약 현황 수정 /modification
  * Delete:
@@ -44,7 +46,7 @@ public class VehicleController {
 	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final VehicleService vehicleService;
 
-	@PostMapping(path = "/creation/reservation")
+	@PostMapping(path = "/creation/reservation/{vId}")
 	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
 										 @RequestParam(value = "vId") Long vId,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
