@@ -46,7 +46,7 @@ public class VehicleController {
 	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final VehicleService vehicleService;
 
-	@PostMapping(path = "/creation/reservation/{vId}")
+	@PostMapping(path = "/creation/reservation")
 	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
 										 @RequestParam(value = "vId") Long vId,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -151,6 +151,15 @@ public class VehicleController {
 
 		return vehicleService.findMarkBest();
 	}
+
+	@GetMapping(path = "/reservation")
+	public ResponseDTO findVehicleReserved(@RequestParam(value = "vrId") Long vrId,
+										   @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- findVehicleReserved");
+
+		return vehicleService.findVehicleReserved(vrId);
+	}
+
 
 	@PostMapping(path = "/modification")
 	public ResponseDTO updateReserved(@RequestBody VehicleReqDTO vehicleReqDTO) {

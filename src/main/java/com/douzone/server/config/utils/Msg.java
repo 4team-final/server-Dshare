@@ -79,6 +79,7 @@ public interface Msg {
 	String SUCCESS_VEHICLE_BEFORE = "사용 후 차량 예약 기록 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_AFTER = "사용 전 차량 예약 내역 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_MARK = "내가 즐겨찾기한 차량 조회에 성공하였습니다.";
+	String SUCCESS_VEHICLE_FIND_RESERVED = "예약된 특정 차량 예약 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_UPDATE = "차량 예약 정보 수정에 성공하였습니다.";
 	String SUCCESS_VEHICLE_DELETE = "차량 예약 삭제에 성공하였습니다.";
 	String SUCCESS_VEHICLE_DELETE_MARK = "차량 즐겨찾기 삭제에 성공하였습니다.";
@@ -96,6 +97,7 @@ public interface Msg {
 	String FAIL_VEHICLE_BEFORE = "사용 후 차량 예약 기록 조회에 실패하였습니다.";
 	String FAIL_VEHICLE_AFTER = "사용 전 차량 예약 내역 조회에 실패하였습니다.";
 	String FAIL_VEHICLE_FIND_MARK = "내가 즐겨찾기한 차량 조회에 실패하였습니다.";
+	String FAIL_VEHICLE_FIND_RESERVED = "예약된 특정 차량 예약 조회에 실패하였습니다.";
 	String FAIL_VEHICLE_UPDATE = "차량 예약 정보 수정에 실패하였습니다.";
 	String FAIL_VEHICLE_DELETE = "차량 예약 삭제에 실패하였습니다.";
 	String FAIL_VEHICLE_DELETE_MARK = "차량 즐겨찾기 삭제에 실패하였습니다.";

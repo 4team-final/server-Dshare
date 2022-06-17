@@ -9,6 +9,7 @@ import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.repository.VehicleBookmarkRepository;
 import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionFailedException;
@@ -390,6 +391,36 @@ public class VehicleService {
 			log.error("SERVER ERROR", e);
 		}
 		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_BEST_MARK);
+	}
+
+	@Transactional
+	public ResponseDTO findVehicleReserved(Long vrId) {
+		log.info(METHOD_NAME + "- findVehicleReserved");
+		try {
+			if(vrId==null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_RESERVED + "결과값을 조회에 실패하였습니다.");
+//			VehicleReservation data = vehicleReservationRepository.findVehicleReserved(vrId);
+//			Optional<VehicleReservation> data = vehicleReservationRepository.findById(vrId);
+
+			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_RESERVED, vehicleReservationRepository.findById(vrId));
+
+		} catch (DataAccessException dae) {
+			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
+		} catch (TransactionSystemException tse) {
+			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
+		} catch (ConversionFailedException cfe) {
+			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
+		} catch (Exception e) {
+			log.error("SERVER ERROR", e);
+		}
+		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_FIND_RESERVED);
+	}
+
+	@Transactional
+	public ResponseDTO soonAndIngReservationMyTime() {
+		Long soon;
+		Long ing;
+
+		return ResponseDTO.of(HttpStatus.OK, )
 	}
 
 	@Transactional
