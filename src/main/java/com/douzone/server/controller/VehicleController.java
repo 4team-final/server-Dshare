@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -46,14 +47,13 @@ public class VehicleController {
 	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final VehicleService vehicleService;
 
-	@PostMapping(path = "/creation/reservation/{vId}")
-	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
-										 @RequestParam(value = "vId") Long vId,
+	@PostMapping(path = "/creation/reservation")
+	public ResponseDTO createReservation(@RequestBody @Valid VehicleReservationDTO vehicleReservationDTO,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createReservation");
 		Long empId = principalDetails.getEmployee().getId();
 
-		return vehicleService.createReservation(vehicleReservationDTO, empId, vId);
+		return vehicleService.createReservation(vehicleReservationDTO, empId);
 	}
 
 	@PostMapping(path = "/creation/bookmark")
@@ -153,10 +153,13 @@ public class VehicleController {
 	}
 
 	@PostMapping(path = "/modification")
-	public ResponseDTO updateReserved(@RequestBody VehicleReqDTO vehicleReqDTO) {
+	public ResponseDTO updateReserved(@RequestBody @Valid VehicleReqDTO vehicleReqDTO,
+									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- updateReserved");
 
-		return vehicleService.updateReserved(vehicleReqDTO);
+		Long id = principalDetails.getEmployee().getId();
+
+		return vehicleService.updateReserved(vehicleReqDTO, id);
 	}
 
 	@PostMapping(path = "/elimination")

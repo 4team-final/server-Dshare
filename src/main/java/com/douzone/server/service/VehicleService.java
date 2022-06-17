@@ -33,49 +33,42 @@ public class VehicleService {
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 
 	@Transactional
-	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId, Long vId) {
-		log.info(METHOD_NAME + "-createReservation");
-		if (vehicleReservationDTO.getReason() == null) {
-			return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패1");
-		}
-		if (vehicleReservationDTO.getTitle() == null) {
-			return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패2");
-		}
-		if (vehicleReservationDTO.getStartedAt() == null) {
-			return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패3");
-		}
-		if (vehicleReservationDTO.getEndedAt() == null) {
-			return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패4");
-		}
+	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId) {
+		log.info(METHOD_NAME + "- createReservation");
 
-
-		VehicleReservation vehicleReservation =
-				VehicleReservation.builder()
-						.vehicle(Vehicle.builder().id(vId).build())
-						.employee(Employee.builder().id(empId).build())
-						.reason(vehicleReservationDTO.getReason())
-						.title(vehicleReservationDTO.getTitle())
-						.startedAt(vehicleReservationDTO.getStartedAt())
-						.endedAt(vehicleReservationDTO.getEndedAt())
-						.build();
-
-		vehicleReservationRepository.save(vehicleReservation);
-
-		return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESERVE);
+		return Optional.of(new ResponseDTO())
+				.filter(u -> empId > 0)
+				.map(res -> {
+					vehicleReservationRepository.save(
+							VehicleReservation.builder()
+									.vehicle(Vehicle.builder().id((long) vehicleReservationDTO.getVehicleId()).build())
+									.employee(Employee.builder().id((long) vehicleReservationDTO.getEmpId()).build())
+									.reason(vehicleReservationDTO.getReason())
+									.title(vehicleReservationDTO.getTitle())
+									.startedAt(vehicleReservationDTO.getStartedAt())
+									.endedAt(vehicleReservationDTO.getEndedAt())
+									.build()
+					);
+					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESERVE);
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RESERVE));
 	}
 
 	@Transactional
 	public ResponseDTO createBookmark(Long empId, Long vId) {
-		log.info(METHOD_NAME + "-createBookmark");
-		VehicleBookmark vehicleBookmark =
-				VehicleBookmark.builder()
-						.vehicle(Vehicle.builder().id(vId).build())
-						.employee(Employee.builder().id(empId).build())
-						.build();
+		log.info(METHOD_NAME + "- createBookmark");
 
-		vehicleBookmarkRepository.save(vehicleBookmark);
-
-		return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK);
+		return Optional.of(new ResponseDTO())
+				.filter(u -> empId > 0)
+				.filter(v -> vId > 0)
+				.map(v -> {
+					vehicleBookmarkRepository.save(
+							VehicleBookmark.builder()
+									.vehicle(Vehicle.builder().id(vId).build())
+									.employee(Employee.builder().id(empId).build())
+									.build()
+					);
+					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK);
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BOOKMARK));
 	}
 
 	@Transactional(readOnly = true)
@@ -205,20 +198,18 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO updateReserved(VehicleReqDTO vehicleReqDTO) {
+	public ResponseDTO updateReserved(VehicleReqDTO vehicleReqDTO, Long id) {
 		log.info(METHOD_NAME + "- updateReserved");
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> Optional.ofNullable(vehicleReqDTO).map(VehicleReqDTO::getId))
 				.filter(Optional::isPresent)
 				.map(v -> vehicleReservationRepository.findById(vehicleReqDTO.getId()))
-				.map(res -> {
-					if (res.isPresent()) {
-						VehicleReservation vehicleReservation = res.get();
-						vehicleReservation.updateReserved(vehicleReqDTO);
-						return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_UPDATE);
-					}
-					return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_UPDATE + "결과값을 조회에 실패하였습니다.");
+				.filter(Optional::isPresent)
+				.filter(res -> res.get().getEmployee().getId() == id)
+				.map(ans -> {
+					ans.get().updateReserved(vehicleReqDTO);
+					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_UPDATE);
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_UPDATE + "결과값이 존재하지 않습니다."));
 	}
 
