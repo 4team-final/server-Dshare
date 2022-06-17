@@ -19,13 +19,6 @@ class EmployeeQueryDSLTest {
 	@Autowired
 	private EmployeeQueryDSL employeeQueryDSL;
 
-	@Test
-	void 가장최근예약3개조회() {
-		for (int i = 0; i < 3; i++) {
-			System.out.println(employeeQueryDSL.reservedLatestRoomTop3(3).get(i).getMeetingRoom().getRoomNo());
-		}
-	}
-
 	/**
 	 * 임의로 사원/팀/부서까지 다만들기 힘들어서 given에 임의로 조회 값을 넣어서 테스트 했습니다.
 	 */
@@ -41,7 +34,7 @@ class EmployeeQueryDSLTest {
 		//then
 		assertThat(list.get(0).getEmpNo()).isEqualTo(empNo);
 		assertThat(list.get(0).getTeam().getName()).isEqualTo(team);
-		assertThat(list.get(0).getTeam().getDept().getName()).isEqualTo(dept);
+		assertThat(list.get(0).getTeam().getDepartment().getName()).isEqualTo(dept);
 		assertThat(list.get(0).getPosition().getName()).isEqualTo(position);
 //		System.out.println(employeeQueryDSL.findEmployeeList(1).get(0));
 	}

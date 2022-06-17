@@ -54,4 +54,17 @@ public class ReservationResDTO {
 				.modifiedAt(reservation.getModifiedAt())
 				.build();
 	}
+	public ReservationResDTO of(RoomReservation reservation) {
+		return ReservationResDTO.builder()
+				.id(reservation.getId())
+				.room(RoomResDTO.builder().build().of(reservation.getMeetingRoom()))
+				.emp(EmpResDTO.builder().build().of(reservation.getEmployee()))
+				.reason(reservation.getReason())
+				.title(reservation.getTitle())
+				.startedAt(reservation.getStartedAt())
+				.endedAt(reservation.getEndedAt())
+				.createdAt(reservation.getCreatedAt())
+				.modifiedAt(reservation.getModifiedAt())
+				.build();
+	}
 }
