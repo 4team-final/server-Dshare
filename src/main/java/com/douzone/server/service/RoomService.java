@@ -91,10 +91,14 @@ public class RoomService {
 
 	}
 
+	public LocalDateTime now() {
+		return LocalDateTime.now();
+	}
+
 	@Transactional
 	public List<WeekCountResDTO> weekAndMonthReservationCount(int datetime) {
 
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = this.now();
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
@@ -119,9 +123,9 @@ public class RoomService {
 	}
 
 	@Transactional
-	public Object weekReservationCountHour(int datetime) {
+	public List<WeekCountHourResDTO> weekAndMonthReservationCountHour(int datetime) {
 
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = this.now();
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountHourResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCountHour(now, nowMinusWeek);
@@ -133,6 +137,23 @@ public class RoomService {
 			return weekCountHourResDTO;
 		}).collect(Collectors.toList());
 		return weekCountHourResDTOList;
-
 	}
+
+	@Transactional
+	public List<WeekCountHourResDTO> weekAndMonthMeetingCountHour(int datetime) {
+
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime nowMinusWeek = now.minusDays(datetime);
+
+		List<WeekCountHourResDTO> weekCountHourResDTOList = reservationQueryDSL.findByWeekAndMonthMeetingCountHour(now, nowMinusWeek);
+		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
+
+			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
+
+			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+			return weekCountHourResDTO;
+		}).collect(Collectors.toList());
+		return weekCountHourResDTOList;
+	}
+
 }

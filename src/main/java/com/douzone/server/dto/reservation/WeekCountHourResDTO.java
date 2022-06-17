@@ -38,4 +38,5 @@ public class WeekCountHourResDTO {
 		this.count = count;
 		this.hour = hour;
 	}
+
 }
