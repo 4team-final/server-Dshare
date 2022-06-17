@@ -2,8 +2,8 @@ package com.douzone.server.service;
 
 import com.douzone.server.dto.reservation.MyReservationResDTO;
 import com.douzone.server.dto.reservation.ReservationResDTO;
+import com.douzone.server.dto.reservation.RoomWeekReservationCountDTO;
 import com.douzone.server.dto.reservation.SoonAndIngResDTO;
-import com.douzone.server.dto.room.RoomWeekReservationCountDTO;
 import com.douzone.server.entity.RoomReservation;
 import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;

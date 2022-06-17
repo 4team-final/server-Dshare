@@ -1,7 +1,7 @@
 package com.douzone.server.repository.querydsl;
 
+import com.douzone.server.dto.reservation.RoomWeekReservationCountDTO;
 import com.douzone.server.dto.room.QRoomWeekReservationCountDTO;
-import com.douzone.server.dto.room.RoomWeekReservationCountDTO;
 import com.douzone.server.entity.RoomReservation;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,5 @@
-package com.douzone.server.dto.room;
+package com.douzone.server.dto.reservation;
 
-import com.douzone.server.dto.reservation.ReservationResDTO;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
