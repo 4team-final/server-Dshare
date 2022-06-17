@@ -34,6 +34,9 @@ public interface Msg {
 	String SUCCESS_ROOM_FIND_DATE = "특정 시간대 회의실 예약 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_BEST_MARK = "즐겨찾기된 회의실 TOP3 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_RECENT = "최근 예약된 회의실 조회에 성공하였습니다.";
+	String SUCCESS_ROOM_SOON_MY_TIME = "나의 다가오는 회의실 시간 및 남은 회의 시간 조회에 성공하였습니다.";
+	String SUCCESS_ROOM_RESERVE_MY = "나의 예약 현황 조회에 성공하였습니다.";
+	String SUCCESS_ROOM_RESERVE_EMP = "해당 회원 예약 현황 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_BEST_WEEK = "일주일간 가장 많이 예약된 회의실 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_BEST_DATE = "일주일간 가장 많이 예약한 시간대 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_BEFORE = "사용 후 회의실 예약 기록 조회에 성공하였습니다.";
@@ -46,6 +49,9 @@ public interface Msg {
 	String FAIL_ROOM_RESERVE = "회의실 예약에 실패하였습니다.";
 	String FAIL_ROOM_BOOKMARK = "회의실 즐겨찾기 등록에 실패하였습니다.";
 	String FAIL_ROOM_FIND_ALL = "회의실 예약 현황 전체 조회에 실패하였습니다.";
+	String FAIL_ROOM_SOON_MY_TIME = "나의 다가오는 회의실 시간 및 남은 회의 시간 조회에 실패하였습니다.";
+	String FAIL_ROOM_RESERVE_MY = "나의 예약 현황 조회에 성공하였습니다.";
+	String FAIL_ROOM_RESERVE_EMP = "나의 예약 현황 조회에 성공하였습니다.";
 	String FAIL_ROOM_FIND_NO = "호수별 회의실 예약 조회에 실패하였습니다.";
 	String FAIL_ROOM_FIND_DATE = "특정 시간대 회의실 예약 조회에 실패하였습니다.";
 	String FAIL_ROOM_BEST_MARK = "즐겨찾기된 회의실 TOP3 조회에 실패하였습니다.";

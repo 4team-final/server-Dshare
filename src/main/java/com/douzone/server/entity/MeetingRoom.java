@@ -13,20 +13,21 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Entity
-@Table(name = "team")
+@Table(name="meeting_room")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Team extends BaseAtTime {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+public class MeetingRoom extends BaseAtTime {
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "deptId")
-	private Department department;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String content;
+    private String categoryName;
+    private int roomNo;
+    private int capacity;
 
-	private String name;
+
+
 }
-

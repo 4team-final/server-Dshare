@@ -1,12 +1,10 @@
 package com.douzone.server.entity;
 
 import com.douzone.server.config.utils.BaseAtTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "employee")
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Employee extends BaseAtTime {
 
@@ -40,6 +38,10 @@ public class Employee extends BaseAtTime {
     @ManyToOne
     @JoinColumn(name = "positionId")
     private Position position;
+
+    public void updateProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
 
 }
 
