@@ -12,15 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehicleListResDTO implements IVehicleListResDTO {
-	private Long id;
-	private LocalDateTime startedAt;
+public class VehicleDateResDTO implements IVehicleDateResDTO {
 	private LocalDateTime endedAt;
-	private LocalDateTime createdAt;
-	private LocalDateTime modifiedAt;
-	private String reason;
-	private String title;
 	private Vehicle vehicle;
-	private String empNo;
-	private String name;
 }

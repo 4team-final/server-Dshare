@@ -3,11 +3,11 @@ package com.douzone.server.config.security.filter;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.handler.ResponseHandler;
 import com.douzone.server.config.security.handler.UserLoginFailureHandler;
-import com.douzone.server.config.utils.Msg;
 import com.douzone.server.dto.token.CommonTokenDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Token;
 import com.douzone.server.repository.TokenRepository;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +25,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.douzone.server.config.utils.Msg.FAIL_SIGN_IN;
+import static com.douzone.server.config.utils.Msg.SUCCESS_SIGN_IN;
 
 /**
  * URL 이 /login 으로 넘어올 경우 spring security 에서 자동으로 attemptAuthentication() 으로 보내줌
@@ -57,7 +60,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		log.info(METHOD_NAME + "- attemptAuthentication() ...");
 		try {
-			Employee employee = new ObjectMapper().readValue(request.getInputStream(), Employee.class);
+			Employee employee = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(request.getInputStream(), Employee.class);
 
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(employee.getEmpNo(), employee.getPassword());
 
@@ -104,7 +107,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 				response.addHeader(headerKeyRefresh, typeRefresh + commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken());
 			}
 			response.setContentType("text/html; charset=UTF-8");
-			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Msg.SUCCESS_SIGN_IN));
+			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, SUCCESS_SIGN_IN));
 		} catch (IOException ie) {
 			log.error("유저 정보를 읽지 못했습니다. " + METHOD_NAME, ie);
 		} catch (NullPointerException ne) {
@@ -124,7 +127,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 			String message = new UserLoginFailureHandler().onAuthenticationFailure(failed);
 
 			response.setContentType("text/html; charset=UTF-8");
-			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Msg.FAIL_SIGN_IN + message));
+			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_SIGN_IN + message));
 		} catch (IOException ie) {
 			log.error("전달받은 정보를 읽지 못했습니다. " + METHOD_NAME, ie);
 		} catch (Exception e) {
@@ -142,7 +145,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 			String message = new UserLoginFailureHandler().onAuthenticationFailure(exception);
 
 			response.setContentType("text/html; charset=UTF-8");
-			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Msg.FAIL_SIGN_IN + message));
+			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_SIGN_IN + message));
 		} catch (IOException ie) {
 			log.error("전달받은 정보를 읽지 못했습니다. " + METHOD_NAME, ie);
 		} catch (Exception e) {

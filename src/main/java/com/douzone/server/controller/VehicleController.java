@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.util.Map;
 
 /**
  * Create:
@@ -71,6 +71,13 @@ public class VehicleController {
 		return vehicleService.findAllReserved();
 	}
 
+	@GetMapping(path = "/list_all_paging")
+	public ResponseDTO findAllReservedPaging(@RequestBody Map<String, Integer> pageNum) {
+		log.info(METHOD_NAME + "- findAllReservedPaging");
+
+		return vehicleService.findAllReservedPaging(pageNum.get("page"));
+	}
+
 	@GetMapping(path = "/list_un")
 	public ResponseDTO findAllUnreserved() {
 		log.info(METHOD_NAME + "- findAllUnreserved");
@@ -79,17 +86,17 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/list_type")
-	public ResponseDTO findTypeReserved(@RequestBody String model) {
+	public ResponseDTO findTypeReserved(@RequestBody Map<String, String> model) {
 		log.info(METHOD_NAME + "- findTypeReserved");
-
-		return vehicleService.findTypeReserved(model);
+		System.out.println(model);
+		return vehicleService.findTypeReserved(model.get("model"));
 	}
 
 	@GetMapping(path = "/list_date")
-	public ResponseDTO findDateReserved(@RequestBody Date date) {
+	public ResponseDTO findDateReserved(@RequestBody Map<String, String> model) {
 		log.info(METHOD_NAME + "- findDateReserved");
 
-		return vehicleService.findDateReserved(date);
+		return vehicleService.findDateReserved(model.get("start"), model.get("end"));
 	}
 
 	@GetMapping(path = "/list_pre")
@@ -97,7 +104,7 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findEmpBefore");
 		Long id = principalDetails.getEmployee().getId();
 
-		return vehicleService.findEmpBefore(id, new Date());
+		return vehicleService.findEmpBefore(id);
 	}
 
 	@GetMapping(path = "/list_post")
@@ -105,7 +112,7 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findEmpAfter");
 		Long id = principalDetails.getEmployee().getId();
 
-		return vehicleService.findEmpAfter(id, new Date());
+		return vehicleService.findEmpAfter(id);
 	}
 
 	@GetMapping(path = "/best_vehicle")

@@ -41,7 +41,6 @@ public class VehicleReservation extends BaseAtTime {
 
 	public void updateReserved(VehicleReqDTO vehicleReqDTO) {
 		this.vehicle = Vehicle.builder().id(vehicleReqDTO.getVehicleId()).build();
-		this.employee = Employee.builder().id(vehicleReqDTO.getEmpId()).build();
 		this.reason = vehicleReqDTO.getReason();
 		this.title = vehicleReqDTO.getTitle();
 		this.startedAt = vehicleReqDTO.getStartedAt();

@@ -17,5 +17,4 @@ public class VehicleReqDTO {
 	private String title;
 	private LocalDateTime startedAt;
 	private LocalDateTime endedAt;
-
 }
