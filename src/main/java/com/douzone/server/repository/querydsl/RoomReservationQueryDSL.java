@@ -49,7 +49,7 @@ public class RoomReservationQueryDSL {
 
 	public List<RoomWeekReservationCountDTO> findByWeekReservationCount(LocalDateTime now, LocalDateTime nowMinusWeek) {
 		return jpaQueryFactory.select(new QRoomWeekReservationCountDTO(
-						meetingRoom.id.as("roomId"),
+						meetingRoom.id.as( "roomId"),
 						meetingRoom.content,
 						meetingRoom.categoryName,
 						meetingRoom.roomNo,

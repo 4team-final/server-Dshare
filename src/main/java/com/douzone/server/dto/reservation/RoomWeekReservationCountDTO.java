@@ -22,7 +22,6 @@ public class RoomWeekReservationCountDTO {
 	private LocalDateTime modifiedAt;
 
 	private long count;
-
 	private List<ReservationResDTO> reservationResDTOList;
 
 	@Builder

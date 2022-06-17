@@ -1,9 +1,8 @@
 package com.douzone.server.repository.querydsl;
 
-import com.douzone.server.entity.Employee;
-import com.douzone.server.entity.MeetingRoom;
-import com.douzone.server.entity.RoomBookmark;
-import com.douzone.server.entity.RoomReservation;
+import com.douzone.server.dto.room.QRoomBookmarkDTO;
+import com.douzone.server.dto.room.RoomBookmarkDTO;
+import com.douzone.server.entity.*;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -49,24 +48,32 @@ public class RoomQueryDSL {
                 .fetch();
     }
 
-    public List<RoomReservation> selectDateTimeReservation(String date) {
+    public List<RoomReservation> selectDateTimeReservation(String startTime, String endTime) {
         return jpaQueryFactory
                 .select(roomReservation)
                 .from(roomReservation)
                 .join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
-                .where(roomReservation.startedAt.eq(LocalDateTime.parse(date)))
+                .where(roomReservation.startedAt.goe(LocalDateTime.parse(startTime))
+                        .and(roomReservation.endedAt.loe(LocalDateTime.parse(endTime))))
                 .orderBy(roomReservation.modifiedAt.desc())
                 .fetch();
     }
 
-    public List<RoomBookmark> selectTop3BookmarkMeetingRoom() {
+    public List<RoomBookmarkDTO> selectTop3BookmarkMeetingRoom(long limit) {
         return jpaQueryFactory
-                .select(roomBookmark)
+                .select(new QRoomBookmarkDTO(
+                        roomBookmark.id,
+                        roomBookmark.employee.id.as("empId"),
+                        roomBookmark.meetingRoom.id.as("roomId"),
+                        roomBookmark.createdAt,
+                        roomBookmark.modifiedAt,
+                        roomBookmark.meetingRoom.id.count().as("count")
+                ))
                 .from(roomBookmark)
-                .join(roomBookmark.meetingRoom, meetingRoom).fetchJoin()
+                .join(roomBookmark.meetingRoom, meetingRoom)
                 .groupBy(meetingRoom.id)
-                .orderBy(roomBookmark.meetingRoom.id.count().desc())
-                .limit(3)
+                .orderBy(roomBookmark.meetingRoom.count().desc())
+                .limit(limit)
                 .fetch();
     }
 
