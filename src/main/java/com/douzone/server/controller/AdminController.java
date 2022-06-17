@@ -40,7 +40,7 @@ public class AdminController {
         return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못해합니다."));
     }
 
-    @PostMapping(path = "/create_reservation")
+    @PostMapping(path = "/vehicle/create_reservation")
     public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
                                          @RequestParam(value ="vId") Long vId,
                                          @AuthenticationPrincipal PrincipalDetails principalDetails) {

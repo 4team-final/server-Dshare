@@ -14,10 +14,14 @@ import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -28,282 +32,300 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class VehicleService {
-	private static final String METHOD_NAME = VehicleService.class.getName();
-	private final VehicleRepository vehicleRepository;
-	private final VehicleReservationRepository vehicleReservationRepository;
-	private final VehicleBookmarkRepository vehicleBookmarkRepository;
-	private final EmployeeRepository employeeRepository;
+    private static final String METHOD_NAME = VehicleService.class.getName();
+    private final VehicleRepository vehicleRepository;
+    private final VehicleReservationRepository vehicleReservationRepository;
+    private final VehicleBookmarkRepository vehicleBookmarkRepository;
+    private final EmployeeRepository employeeRepository;
 
-	@Transactional
-	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId, Long vId) {
-		log.info(METHOD_NAME + "-createReservation");
-		try {
-			if (vehicleReservationDTO == null) {return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);}
-			if (!empId.equals(vId)) {return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);}
-			VehicleReservation vehicleReservation =
-					VehicleReservation.builder()
-					.vehicle(Vehicle.builder().id(vId).build())
-					.employee(Employee.builder().id(empId).build())
-					.reason(vehicleReservationDTO.getReason())
-					.title(vehicleReservationDTO.getTitle())
-							.startedAt(vehicleReservationDTO.getStartedAt())
-							.endedAt(vehicleReservationDTO.getEndedAt())
-					.build();
+    @Transactional
+    public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId, Long vId) {
+        log.info(METHOD_NAME + "-createReservation");
+        try {
+            if (vehicleReservationDTO.getReason() == null) {
+                return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패1");
+            }
+            if (vehicleReservationDTO.getTitle() == null) {
+                return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패2");
+            }
+            if (vehicleReservationDTO.getStartedAt() == null) {
+                return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패3");
+            }
+            if (vehicleReservationDTO.getEndedAt() == null) {
+                return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패4");
+            }
+            
+            
+            VehicleReservation vehicleReservation =
+                    VehicleReservation.builder()
+                            .vehicle(Vehicle.builder().id(vId).build())
+                            .employee(Employee.builder().id(empId).build())
+                            .reason(vehicleReservationDTO.getReason())
+                            .title(vehicleReservationDTO.getTitle())
+                            .startedAt(vehicleReservationDTO.getStartedAt())
+                            .endedAt(vehicleReservationDTO.getEndedAt())
+                            .build();
 
-			vehicleReservationRepository.save(vehicleReservation);
+            vehicleReservationRepository.save(vehicleReservation);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_RESERVE);
-		} catch (Exception e) {
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_RESERVE);
+        } catch (DataAccessException dae) {
+            log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
+        } catch (TransactionSystemException tse) {
+            log.error("트랜잭션 커밋을 실패하였습니다.", tse);
+        } catch (ConversionFailedException cfe) {
+            log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
+        } catch (Exception e) {
 			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RESERVE);
-	}
+    }
+		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR,Msg.FAIL_VEHICLE_RESERVE);
+}
 
-	@Transactional
-	public ResponseDTO createBookmark(Long empId, Long vId) {
-		log.info(METHOD_NAME + "-createBookmark");
+    @Transactional
+    public ResponseDTO createBookmark(Long empId, Long vId) {
+        log.info(METHOD_NAME + "-createBookmark");
 
-		try {
-			VehicleBookmark vehicleBookmark =
-					VehicleBookmark.builder()
-							.vehicle(Vehicle.builder().id(vId).build())
-							.employee(Employee.builder().id(empId).build())
-							.build();
+        try {
+            VehicleBookmark vehicleBookmark =
+                    VehicleBookmark.builder()
+                            .vehicle(Vehicle.builder().id(vId).build())
+                            .employee(Employee.builder().id(empId).build())
+                            .build();
 
-			vehicleBookmarkRepository.save(vehicleBookmark);
+            vehicleBookmarkRepository.save(vehicleBookmark);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BOOKMARK);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BOOKMARK);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BOOKMARK);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BOOKMARK);
+    }
 
-	@Transactional(readOnly = true)
-	public ResponseDTO findAllReserved() {
-		log.info(METHOD_NAME + "- findAllReserved");
-		try {
-			List<VehicleReservation> list = vehicleReservationRepository.findAll();
+    @Transactional(readOnly = true)
+    public ResponseDTO findAllReserved() {
+        log.info(METHOD_NAME + "- findAllReserved");
+        try {
+            List<VehicleReservation> list = vehicleReservationRepository.findAll();
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_ALL);
+            if (list == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_ALL);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_ALL, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_ALL);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_ALL, list);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_ALL);
+    }
 
-	@Transactional(readOnly = true)
-	public ResponseDTO findAllUnreserved() {
-		log.info(METHOD_NAME + "- findAllUnreserved");
-		try {
-			List<Vehicle> list = vehicleRepository.findAllUnreserved();
+    @Transactional(readOnly = true)
+    public ResponseDTO findAllUnreserved() {
+        log.info(METHOD_NAME + "- findAllUnreserved");
+        try {
+            List<Vehicle> list = vehicleRepository.findAllUnreserved();
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_NONE);
+            if (list == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_NONE);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_NONE, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_NONE);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_NONE, list);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_NONE);
+    }
 
-	@Transactional(readOnly = true)
-	public ResponseDTO findTypeReserved(String model) {
-		log.info(METHOD_NAME + "- findTypeReserved");
-		try {
-			List<Vehicle> list = vehicleRepository.findTypeReserved(model);
+    @Transactional(readOnly = true)
+    public ResponseDTO findTypeReserved(String model) {
+        log.info(METHOD_NAME + "- findTypeReserved");
+        try {
+            List<Vehicle> list = vehicleRepository.findTypeReserved(model);
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_TYPE);
+            if (list == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_TYPE);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_TYPE, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_TYPE);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_TYPE, list);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_TYPE);
+    }
 
-	@Transactional(readOnly = true)
-	public ResponseDTO findDateReserved(Date date) {
-		log.info(METHOD_NAME + "- findTypeReserved");
-		try {
-			List<Vehicle> list = vehicleRepository.findDateReserved(date);
+    @Transactional(readOnly = true)
+    public ResponseDTO findDateReserved(Date date) {
+        log.info(METHOD_NAME + "- findTypeReserved");
+        try {
+            List<Vehicle> list = vehicleRepository.findDateReserved(date);
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_DATE);
+            if (list == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_DATE);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_DATE, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_DATE);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_DATE, list);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_DATE);
+    }
 
-	@Transactional(readOnly = true)
-	public ResponseDTO findEmpBefore(Long id, Date date) {
-		log.info(METHOD_NAME + "- findEmpBefore");
-		try {
-			List<VehicleReservation> list = vehicleReservationRepository.findEmpBefore(id, date);
+    @Transactional(readOnly = true)
+    public ResponseDTO findEmpBefore(Long id, Date date) {
+        log.info(METHOD_NAME + "- findEmpBefore");
+        try {
+            List<VehicleReservation> list = vehicleReservationRepository.findEmpBefore(id, date);
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEFORE);
+            if (list == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEFORE);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEFORE, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEFORE);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEFORE, list);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEFORE);
+    }
 
-	@Transactional(readOnly = true)
-	public ResponseDTO findEmpAfter(Long id, Date date) {
-		log.info(METHOD_NAME + "- findEmpAfter");
-		try {
-			List<VehicleReservation> list = vehicleReservationRepository.findEmpAfter(id, date);
+    @Transactional(readOnly = true)
+    public ResponseDTO findEmpAfter(Long id, Date date) {
+        log.info(METHOD_NAME + "- findEmpAfter");
+        try {
+            List<VehicleReservation> list = vehicleReservationRepository.findEmpAfter(id, date);
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_AFTER);
+            if (list == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_AFTER);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_AFTER, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_AFTER);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_AFTER, list);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_AFTER);
+    }
 
-	@Transactional
-	public ResponseDTO findWeekVehicle() {
-		log.info(METHOD_NAME + "- findWeekVehicle");
-		try {
-			Vehicle vehicle = vehicleRepository.findWeekVehicle();
+    @Transactional
+    public ResponseDTO findWeekVehicle() {
+        log.info(METHOD_NAME + "- findWeekVehicle");
+        try {
+            Vehicle vehicle = vehicleRepository.findWeekVehicle();
 
-			if (vehicle == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_WEEK);
+            if (vehicle == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_WEEK);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_WEEK, vehicle);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_WEEK);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_WEEK, vehicle);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_WEEK);
+    }
 
-	@Transactional
-	public ResponseDTO findWeekDate() {
-		log.info(METHOD_NAME + "- findWeekDate");
-		try {
-			Integer result = vehicleRepository.findWeekDate();
+    @Transactional
+    public ResponseDTO findWeekDate() {
+        log.info(METHOD_NAME + "- findWeekDate");
+        try {
+            Integer result = vehicleRepository.findWeekDate();
 
-			if (result == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_DATE);
+            if (result == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_DATE);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_DATE, result);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_DATE);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_DATE, result);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_DATE);
+    }
 
-	@Transactional
-	public ResponseDTO findRecentVehicle() {
-		log.info(METHOD_NAME + "- findRecentVehicle");
-		try {
-			Vehicle vehicle = vehicleRepository.findRecentVehicle();
+    @Transactional
+    public ResponseDTO findRecentVehicle() {
+        log.info(METHOD_NAME + "- findRecentVehicle");
+        try {
+            Vehicle vehicle = vehicleRepository.findRecentVehicle();
 
-			if (vehicle == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_RECENT);
+            if (vehicle == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_RECENT);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_RECENT, vehicle);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RECENT);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_RECENT, vehicle);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_RECENT);
+    }
 
-	@Transactional(readOnly = true)
-	public ResponseDTO findMarkVehicle(String empNo) {
-		log.info(METHOD_NAME + "- findMarkVehicle");
-		try {
-			List<Vehicle> list = vehicleBookmarkRepository.findMarkVehicle(empNo);
+    @Transactional(readOnly = true)
+    public ResponseDTO findMarkVehicle(String empNo) {
+        log.info(METHOD_NAME + "- findMarkVehicle");
+        try {
+            List<Vehicle> list = vehicleBookmarkRepository.findMarkVehicle(empNo);
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_MARK);
+            if (list == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_FIND_MARK);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_MARK, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_MARK);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_FIND_MARK, list);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_FIND_MARK);
+    }
 
-	@Transactional
-	public ResponseDTO findMarkBest() {
-		log.info(METHOD_NAME + "- findMarkBest");
-		try {
-			List<Vehicle> list = vehicleBookmarkRepository.findMarkBest(PageRequest.of(0,3));
+    @Transactional
+    public ResponseDTO findMarkBest() {
+        log.info(METHOD_NAME + "- findMarkBest");
+        try {
+            List<Vehicle> list = vehicleBookmarkRepository.findMarkBest(PageRequest.of(0, 3));
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_MARK);
+            if (list == null)
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_BEST_MARK);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_MARK, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_MARK);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_BEST_MARK, list);
+        } catch (Exception e) {
+            log.error("SERVER ERROR", e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_BEST_MARK);
+    }
 
-	@Transactional
-	public ResponseDTO updateReserved(VehicleReqDTO vehicleReqDTO) {
-		log.info(METHOD_NAME + "- updateReserved");
-		try {
-			Optional<VehicleReservation> data = vehicleReservationRepository.findById(vehicleReqDTO.getId());
-			if (data.isPresent()) {
-				VehicleReservation vehicleReservation = data.get();
-				vehicleReservation.updateReserved(vehicleReqDTO);
+    @Transactional
+    public ResponseDTO updateReserved(VehicleReqDTO vehicleReqDTO) {
+        log.info(METHOD_NAME + "- updateReserved");
+        try {
+            Optional<VehicleReservation> data = vehicleReservationRepository.findById(vehicleReqDTO.getId());
+            if (data.isPresent()) {
+                VehicleReservation vehicleReservation = data.get();
+                vehicleReservation.updateReserved(vehicleReqDTO);
 
-				return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_UPDATE);
-			}
-			return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_UPDATE);
-		} catch (NoSuchElementException ne) {
-			log.error("값이 들어갈 공간이 없습니다." + ne);
-		} catch (Exception e) {
-			log.error("SERVER ERROR" + e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_UPDATE);
-	}
+                return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_UPDATE);
+            }
+            return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_UPDATE);
+        } catch (NoSuchElementException ne) {
+            log.error("값이 들어갈 공간이 없습니다." + ne);
+        } catch (Exception e) {
+            log.error("SERVER ERROR" + e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_UPDATE);
+    }
 
-	@Transactional
-	public ResponseDTO deleteReserved(Long id) {
-		log.info(METHOD_NAME + "- deleteReserved");
-		try {
-			vehicleReservationRepository.deleteById(id);
+    @Transactional
+    public ResponseDTO deleteReserved(Long id) {
+        log.info(METHOD_NAME + "- deleteReserved");
+        try {
+            vehicleReservationRepository.deleteById(id);
 
-			if (vehicleReservationRepository.findById(id).isPresent())
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_DELETE);
+            if (vehicleReservationRepository.findById(id).isPresent())
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_DELETE);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_DELETE);
-		} catch (Exception e) {
-			log.error("SERVER ERROR" + e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_DELETE);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_DELETE);
+        } catch (Exception e) {
+            log.error("SERVER ERROR" + e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_DELETE);
+    }
 
-	@Transactional
-	public ResponseDTO deleteMark(Long id) {
-		log.info(METHOD_NAME + "- deleteMark");
-		try {
-			vehicleBookmarkRepository.deleteById(id);
+    @Transactional
+    public ResponseDTO deleteMark(Long id) {
+        log.info(METHOD_NAME + "- deleteMark");
+        try {
+            vehicleBookmarkRepository.deleteById(id);
 
-			if (vehicleBookmarkRepository.findById(id).isPresent())
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_DELETE_MARK);
+            if (vehicleBookmarkRepository.findById(id).isPresent())
+                return ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_VEHICLE_DELETE_MARK);
 
-			return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_DELETE_MARK);
-		} catch (Exception e) {
-			log.error("SERVER ERROR" + e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_DELETE_MARK);
-	}
+            return ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_VEHICLE_DELETE_MARK);
+        } catch (Exception e) {
+            log.error("SERVER ERROR" + e);
+        }
+        return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_VEHICLE_DELETE_MARK);
+    }
 }
