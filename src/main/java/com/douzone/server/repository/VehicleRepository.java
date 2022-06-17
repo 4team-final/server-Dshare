@@ -82,8 +82,12 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"where e.id = :id and vr.startedAt > current_time  ")
 	List<IVehicleEmpResDTO> findEmpAfter(@Param("id") Long id);
 
-	@Query("select vr.vehicle as vehicle, count(vr.vehicle.id) as vcount from VehicleReservation vr where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
-	List<IVehicleRankResDTO> findWeekVehicle(@Param("date") LocalDateTime date, Pageable pageable);
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, vr.reason as reason, vr.title as title, " +
+			"vr.vehicle as vehicle, count(vr.vehicle.id) as vcount " +
+			"from VehicleReservation vr " +
+			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
+	List<IVehicleRankResDTO> findWeekVehicle(@Param("date") LocalDateTime date);
 
 	@Query("select substring(vr.startedAt, 12, 2) from VehicleReservation vr where vr.startedAt > :date")
 	List<String> findWeekDate(@Param("date") LocalDateTime date);

@@ -286,7 +286,8 @@ public class VehicleService {
 	public ResponseDTO findWeekVehicle() {
 		log.info(METHOD_NAME + "- findWeekVehicle");
 		try {
-			List<IVehicleRankResDTO> result = vehicleRepository.findWeekVehicle(LocalDateTime.now().minusDays(7L), PageRequest.of(0, 1));
+			List<IVehicleRankResDTO> result = vehicleRepository.findWeekVehicle(LocalDateTime.now().minusDays(7L));
+
 			if (result == null)
 				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + "결과값이 존재하지 않습니다.");
 
@@ -366,7 +367,7 @@ public class VehicleService {
 			List<Vehicle> list = vehicleBookmarkRepository.findMarkVehicle(empNo);
 
 			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK);
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK + "결과값이 존재하지 않습니다.");
 
 			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_MARK, list);
 		} catch (Exception e) {
@@ -382,7 +383,7 @@ public class VehicleService {
 			List<Vehicle> list = vehicleBookmarkRepository.findMarkBest(PageRequest.of(0, 3));
 
 			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_MARK);
+				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_MARK + "결과값이 존재하지 않습니다.");
 
 			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_MARK, list);
 		} catch (Exception e) {

@@ -78,7 +78,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 						}
 						if (request.getRequestURI().startsWith(employeeURL)) {
 							log.info("USER role validate ...");
-							if (role != null && role.equals(employeeRole)) {
+							if (role != null && (role.equals(employeeRole) || role.equals(adminRole))) {
 								log.info("USER role validate - Success");
 								result = true;
 							} else {
