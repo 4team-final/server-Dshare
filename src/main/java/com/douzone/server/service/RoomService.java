@@ -44,28 +44,33 @@ public class RoomService {
 
 	@Transactional
 	public SoonAndIngResDTO soonAndIngReservationMyTime(Long empId) {
-
+		SoonAndIngResDTO soonAndIngResDTO;
 		if (!roomReservationRepository.existsById(empId)) {
-			return null;
+			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(0L, 0L);
+			return soonAndIngResDTO;
 		}
 		LocalDateTime now = LocalDateTime.now();
 
 		LocalDateTime soonStartTime = reservationQueryDSL.findBySoonStartTime(now, empId);
 		LocalDateTime ingEndTime = reservationQueryDSL.findByIngEndTime(now, empId);
-		SoonAndIngResDTO soonAndIngResDTO;
 
 		// Long으로 보내기로 결정
-		Long d_s = ChronoUnit.SECONDS.between(now, soonStartTime);
-		Long d_i = ChronoUnit.SECONDS.between(now, ingEndTime);
+		Long d_s;
+		Long d_i;
 
 		if (soonStartTime != null && ingEndTime != null) {
+			d_s = ChronoUnit.SECONDS.between(now, soonStartTime);
+			d_i = ChronoUnit.SECONDS.between(now, ingEndTime);
 			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(d_s, d_i);
 		} else if (soonStartTime == null) {
-			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(null, d_i);
+			d_i = ChronoUnit.SECONDS.between(now, ingEndTime);
+			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(0L, d_i);
 		} else if (ingEndTime == null) {
-			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(d_s, null);
+			d_s = ChronoUnit.SECONDS.between(now, soonStartTime);
+			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(d_s, 0L);
 		} else {
-			return null;
+			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(0L, 0L);
+			return soonAndIngResDTO;
 		}
 		return soonAndIngResDTO;
 	}
