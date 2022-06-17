@@ -49,16 +49,16 @@ public class EmployeeQueryDSL {
      *                     on emp.positionId = p.id
      *              where emp.empNo = ?;
      */
-    public List<Employee> findMyProfile(long id) {
+    public List<Employee> findMyProfile(int empNo) {
         return jpaQueryFactory
                 .select(employee).from(employee)
                 .join(employee.position, position).fetchJoin()
                 .join(employee.team, team).fetchJoin()
-                .where(employee.id.eq(id))
+                .where(employee.empNo.eq(String.valueOf(empNo)))
                 .fetch();
     }
 
-
+   
 
 
 }
