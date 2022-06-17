@@ -55,7 +55,7 @@ public class VehicleService {
                 return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패4");
             }
             
-            
+
             VehicleReservation vehicleReservation =
                     VehicleReservation.builder()
                             .vehicle(Vehicle.builder().id(vId).build())
