@@ -34,7 +34,7 @@ class EmployeeQueryDSLTest {
 		//then
 		assertThat(list.get(0).getEmpNo()).isEqualTo(empNo);
 		assertThat(list.get(0).getTeam().getName()).isEqualTo(team);
-		assertThat(list.get(0).getTeam().getDept().getName()).isEqualTo(dept);
+		assertThat(list.get(0).getTeam().getDepartment().getName()).isEqualTo(dept);
 		assertThat(list.get(0).getPosition().getName()).isEqualTo(position);
 //		System.out.println(employeeQueryDSL.findEmployeeList(1).get(0));
 	}

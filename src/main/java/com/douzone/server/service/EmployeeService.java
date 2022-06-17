@@ -16,24 +16,24 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class EmployeeService {
 
-    private final EmployeeQueryDSL employeeQueryDSL;
+	private final EmployeeQueryDSL employeeQueryDSL;
 
 
-    public List<EmpTestDTO> queryDSLTest(long positionId) {
-        List<Employee> employeeList = employeeQueryDSL.findEmployeeList(positionId);
-        List<EmpTestDTO> empTestDTOList = employeeList.stream().map(employee -> {
-            EmpTestDTO empTestDTO = EmpTestDTO.builder()
-                    .build().of(employee);
-            return empTestDTO;
-        }).collect(Collectors.toList());
-        return empTestDTOList;
-    }
+	public List<EmpTestDTO> queryDSLTest(long positionId) {
+		List<Employee> employeeList = employeeQueryDSL.findEmployeeList(positionId);
+		List<EmpTestDTO> empTestDTOList = employeeList.stream().map(employee -> {
+			EmpTestDTO empTestDTO = EmpTestDTO.builder()
+					.build().of(employee);
+			return empTestDTO;
+		}).collect(Collectors.toList());
+		return empTestDTOList;
+	}
 
 	public ProfileDto readProfile(long id) {
-        List<Employee> MyInfoList = employeeQueryDSL.findMyProfile(id);
-        ProfileDto MyInfo = MyInfoList.stream().map(employee -> {
-            return  ProfileDto.builder().build().of(employee);
-        }).collect(Collectors.toList()).get(0);
-        return MyInfo;
+		List<Employee> MyInfoList = employeeQueryDSL.findMyProfile(id);
+		ProfileDto MyInfo = MyInfoList.stream().map(employee -> {
+			return ProfileDto.builder().build().of(employee);
+		}).collect(Collectors.toList()).get(0);
+		return MyInfo;
 	}
 }

@@ -53,7 +53,7 @@ public class ProfileDto {
 				.profileImg(employee.getProfileImg())
 				.position(employee.getPosition().getName())
 				.team(employee.getTeam().getName())
-				.dept(employee.getTeam().getDept().getName())
+				.dept(employee.getTeam().getDepartment().getName())
 				.build();
 	}
 

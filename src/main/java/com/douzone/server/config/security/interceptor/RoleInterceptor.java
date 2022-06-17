@@ -3,7 +3,6 @@ package com.douzone.server.config.security.interceptor;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.security.handler.ResponseHandler;
-import com.douzone.server.config.utils.Message;
 import com.douzone.server.dto.token.TokenResDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.douzone.server.config.utils.Msg.FAIL_TOKEN_VALIDATE;
+import static com.douzone.server.config.utils.Msg.FAIL_USER_ROLE;
 
 /**
  * 지정되지 않은 모든 URL 을 가져와 검사
@@ -70,19 +72,19 @@ public class RoleInterceptor implements HandlerInterceptor {
 							} else {
 								log.warn("ADMIN role validate - Fail");
 								response.setContentType("text/html; charset=UTF-8");
-								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
+								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_USER_ROLE));
 							}
 							break Outer;
 						}
 						if (request.getRequestURI().startsWith(employeeURL)) {
 							log.info("USER role validate ...");
-							if (role != null && role.equals(employeeRole)) {
+							if (role != null && (role.equals(employeeRole) || role.equals(adminRole))) {
 								log.info("USER role validate - Success");
 								result = true;
 							} else {
 								log.warn("USER role validate - Fail");
 								response.setContentType("text/html; charset=UTF-8");
-								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
+								response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_USER_ROLE));
 							}
 							break Outer;
 						}
@@ -90,12 +92,12 @@ public class RoleInterceptor implements HandlerInterceptor {
 					} else {
 						log.warn("Request User is not exist " + METHOD_NAME);
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.USER_ROLE_CHECK_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_USER_ROLE));
 					}
 				} else {
 					log.warn("Token validate - Fail");
 					response.setContentType("text/html; charset=UTF-8");
-					response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.TOKEN_FAIL));
+					response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_TOKEN_VALIDATE));
 				}
 			}
 			return result;

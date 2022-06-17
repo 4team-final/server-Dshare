@@ -21,19 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class EmployeeController {
 
-    private final EmployeeService employeeService;
+	private final EmployeeService employeeService;
 
-    @GetMapping("/test")
-    public ResponseEntity<ResponseDTO> queryDSLTest(@RequestParam(value = "positionId") long positionId) {
-        return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
-                Message.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
-    }
+	@GetMapping("/test")
+	public ResponseEntity<ResponseDTO> queryDSLTest(@RequestParam(value = "positionId") long positionId) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
+				Message.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
+	}
 
-    @GetMapping("/profile/read")
-    public ResponseEntity<ResponseDTO> readProfile(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-        return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
-                Msg.SUCCESS_EMP_PROFILE, employeeService.readProfile(principalDetails.getEmployee().getId())));
-    }
+	@GetMapping("/profile/read")
+	public ResponseEntity<ResponseDTO> readProfile(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
+				Msg.SUCCESS_EMP_PROFILE, employeeService.readProfile(principalDetails.getEmployee().getId())));
+	}
 
 
 }
