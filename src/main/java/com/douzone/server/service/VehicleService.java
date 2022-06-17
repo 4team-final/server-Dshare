@@ -12,12 +12,9 @@ import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.convert.ConversionFailedException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -38,64 +35,47 @@ public class VehicleService {
 	@Transactional
 	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId, Long vId) {
 		log.info(METHOD_NAME + "-createReservation");
-		try {
-			if (vehicleReservationDTO.getReason() == null) {
-				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패1");
-			}
-			if (vehicleReservationDTO.getTitle() == null) {
-				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패2");
-			}
-			if (vehicleReservationDTO.getStartedAt() == null) {
-				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패3");
-			}
-			if (vehicleReservationDTO.getEndedAt() == null) {
-				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패4");
-			}
-
-
-			VehicleReservation vehicleReservation =
-					VehicleReservation.builder()
-							.vehicle(Vehicle.builder().id(vId).build())
-							.employee(Employee.builder().id(empId).build())
-							.reason(vehicleReservationDTO.getReason())
-							.title(vehicleReservationDTO.getTitle())
-							.startedAt(vehicleReservationDTO.getStartedAt())
-							.endedAt(vehicleReservationDTO.getEndedAt())
-							.build();
-
-			vehicleReservationRepository.save(vehicleReservation);
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESERVE);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
+		if (vehicleReservationDTO.getReason() == null) {
+			return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패1");
 		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_RESERVE);
+		if (vehicleReservationDTO.getTitle() == null) {
+			return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패2");
+		}
+		if (vehicleReservationDTO.getStartedAt() == null) {
+			return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패3");
+		}
+		if (vehicleReservationDTO.getEndedAt() == null) {
+			return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패4");
+		}
+
+
+		VehicleReservation vehicleReservation =
+				VehicleReservation.builder()
+						.vehicle(Vehicle.builder().id(vId).build())
+						.employee(Employee.builder().id(empId).build())
+						.reason(vehicleReservationDTO.getReason())
+						.title(vehicleReservationDTO.getTitle())
+						.startedAt(vehicleReservationDTO.getStartedAt())
+						.endedAt(vehicleReservationDTO.getEndedAt())
+						.build();
+
+		vehicleReservationRepository.save(vehicleReservation);
+
+		return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESERVE);
 	}
 
 	@Transactional
 	public ResponseDTO createBookmark(Long empId, Long vId) {
 		log.info(METHOD_NAME + "-createBookmark");
+		VehicleBookmark vehicleBookmark =
+				VehicleBookmark.builder()
+						.vehicle(Vehicle.builder().id(vId).build())
+						.employee(Employee.builder().id(empId).build())
+						.build();
 
-		try {
-			VehicleBookmark vehicleBookmark =
-					VehicleBookmark.builder()
-							.vehicle(Vehicle.builder().id(vId).build())
-							.employee(Employee.builder().id(empId).build())
-							.build();
+		vehicleBookmarkRepository.save(vehicleBookmark);
 
-			vehicleBookmarkRepository.save(vehicleBookmark);
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_BOOKMARK);
+		return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK);
 	}
 
 	@Transactional(readOnly = true)
@@ -279,9 +259,8 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> (id != null))
-				.map(v -> vehicleReservationRepository.findById(id))
-				.map(res -> res.map(vehicleReservation -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NO, vehicleReservation))
-						.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값을 조회에 실패하였습니다.")))
+				.map(v -> vehicleRepository.findCustom(id))
+				.map(res -> res.map(iVehicleListResDTO -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NO, iVehicleListResDTO)).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값을 조회에 실패하였습니다.")))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값이 존재하지 않습니다."));
 	}
 }
