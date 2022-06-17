@@ -29,7 +29,7 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-	private static final String METHOD_NAME = "JwtTokenProvider";
+	private static final String METHOD_NAME = JwtTokenProvider.class.getName();
 	private final TokenRepository tokenRepository;
 	private final String headerKeyAccess;
 	private final String typeAccess;

@@ -3,7 +3,6 @@ package com.douzone.server.config.security.filter;
 import com.douzone.server.config.jwt.JwtTokenProvider;
 import com.douzone.server.config.security.auth.PrincipalDetailService;
 import com.douzone.server.config.security.handler.ResponseHandler;
-import com.douzone.server.config.utils.Message;
 import com.douzone.server.dto.token.TokenResDTO;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.douzone.server.config.utils.Msg.FAIL_ACCESS;
+import static com.douzone.server.config.utils.Msg.FAIL_TOKEN_VALIDATE;
 
 /**
  * 제외 지정한 URL 이 아닌 모든 URL 이 인가된 Token 을 보유하고 있는지 검증하는 클래스
@@ -72,7 +74,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						log.info("Access Token Validation - Fail");
 
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_ACCESS + FAIL_TOKEN_VALIDATE));
 					}
 					return;
 				case 1:
@@ -83,7 +85,7 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						response.addHeader(headerKeyAccess, typeAccess + accessToken);
 
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_ACCESS + FAIL_TOKEN_VALIDATE));
 					}
 					return;
 				case 2:
@@ -96,6 +98,6 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 			log.error("사용자 인증을 확인하지 못해 인가할 수 없습니다. " + METHOD_NAME, e);
 		}
 		response.setContentType("text/html; charset=UTF-8");
-		response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, Message.ACCESS_FAIL + Message.TOKEN_FAIL));
+		response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_ACCESS + FAIL_TOKEN_VALIDATE));
 	}
 }

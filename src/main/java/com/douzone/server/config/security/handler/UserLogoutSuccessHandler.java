@@ -1,6 +1,6 @@
 package com.douzone.server.config.security.handler;
 
-import com.douzone.server.config.utils.Message;
+import com.douzone.server.config.utils.Msg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -22,7 +22,7 @@ public class UserLogoutSuccessHandler implements LogoutSuccessHandler {
 		log.info(METHOD_NAME + "- onLogoutSuccess() ...");
 		try {
 			response.setContentType("text/html; charset=UTF-8");
-			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Message.SIGN_OUT_OK));
+			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, Msg.SUCCESS_SIGN_OUT));
 			return;
 		} catch (IOException ie) {
 			log.error("전달받은 정보를 읽지 못했습니다. " + METHOD_NAME, ie);
@@ -31,6 +31,6 @@ public class UserLogoutSuccessHandler implements LogoutSuccessHandler {
 		}
 
 		response.setContentType("text/html; charset=UTF-8");
-		response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, Message.SIGN_OUT_FAIL));
+		response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.INTERNAL_SERVER_ERROR, Msg.FAIL_SIGN_OUT));
 	}
 }

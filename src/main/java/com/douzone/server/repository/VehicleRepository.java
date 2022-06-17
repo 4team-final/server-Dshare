@@ -1,46 +1,99 @@
 package com.douzone.server.repository;
 
+import com.douzone.server.dto.vehicle.IVehicleDateResDTO;
+import com.douzone.server.dto.vehicle.IVehicleEmpResDTO;
+import com.douzone.server.dto.vehicle.IVehicleListResDTO;
+import com.douzone.server.dto.vehicle.IVehicleRankResDTO;
 import com.douzone.server.entity.Vehicle;
-import com.douzone.server.entity.VehicleReservation;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
-	@Query("select v from VehicleReservation vr left join Vehicle v on vr.vehicle.id = v.id")
-	List<Vehicle> findAllReserved();
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+			"vr.reason as reason, vr.title as title, " +
+			"v as vehicle, e.empNo as empNo, e.name as name " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where vr.startedAt > current_time " +
+			"order by id desc")
+	List<IVehicleListResDTO> findAllReserved();
 
-	@Query("select v from Vehicle v left outer join VehicleReservation vr on vr.vehicle.id = v.id where vr.id is null")
-	List<Vehicle> findAllUnreserved();
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+			"vr.reason as reason, vr.title as title, " +
+			"v as vehicle, e.empNo as empNo, e.name as name " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where vr.startedAt > current_time " +
+			"order by id desc")
+	List<IVehicleListResDTO> findAllReservedPaging(Pageable pageable);
 
-	@Query("select v from VehicleReservation vr left join Vehicle v on v.id = vr.vehicle.id where v.model = :model")
-	List<Vehicle> findTypeReserved(@Param("model") String model);
+	@Query("select distinct v from Vehicle v " +
+			"left outer join VehicleReservation vr on vr.vehicle.id = v.id " +
+			"where vr.endedAt < current_time or vr.id is null and vr.startedAt > :date")
+	List<Vehicle> findAllUnreserved(@Param("date") LocalDateTime date);
 
-	@Query("select v from VehicleReservation vr left join Vehicle v on v.id = vr.vehicle.id where vr.startedAt < :date and vr.endedAt > :date")
-	List<Vehicle> findDateReserved(@Param("date") Date date);
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+			"vr.reason as reason, vr.title as title, " +
+			"v as vehicle, e.empNo as empNo, e.name as name " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where v.model = :model " +
+			"order by id desc ")
+	List<IVehicleListResDTO> findTypeReserved(@Param("model") String model);
 
-	@Query("select vr from VehicleReservation vr left join Employee e on vr.employee.id = e.id where e.id = :id and vr.endedAt < :date")
-	List<VehicleReservation> findEmpBefore(@Param("id") Long id, @Param("date") Date date);
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+			"vr.reason as reason, vr.title as title, " +
+			"v as vehicle, e.empNo as empNo, e.name as name " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where vr.startedAt between :startDate and :endDate " +
+			"order by id desc ")
+	List<IVehicleListResDTO> findDateReserved(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-	@Query("select vr from VehicleReservation vr left join Employee e on vr.employee.id = e.id where e.id = :id and vr.startedAt > :date")
-	List<VehicleReservation> findEmpAfter(@Param("id") Long id, @Param("date") Date date);
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+			"vr.reason as reason, vr.title as title, v as vehicle " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where e.id = :id and vr.endedAt < current_time  ")
+	List<IVehicleEmpResDTO> findEmpBefore(@Param("id") Long id);
 
-	@Query(nativeQuery = true, value = "select count(v) as vc from VehicleReservation vr left join Vehicle v on vr.vehicle.id = v.id group by v.id order by vc desc limit 1")
-	Vehicle findWeekVehicle();
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+			"vr.reason as reason, vr.title as title, v as vehicle " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where e.id = :id and vr.startedAt > current_time  ")
+	List<IVehicleEmpResDTO> findEmpAfter(@Param("id") Long id);
 
-	@Query(nativeQuery = true, value = "select count(hour(vr.startedAt)) as h from VehicleReservation vr order by h desc limit 1")
-	Integer findWeekDate();
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, vr.reason as reason, vr.title as title, " +
+			"vr.vehicle as vehicle, count(vr.vehicle.id) as vcount " +
+			"from VehicleReservation vr " +
+			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
+	List<IVehicleRankResDTO> findWeekVehicle(@Param("date") LocalDateTime date);
 
-	@Query(nativeQuery = true, value = "select v from Vehicle v left join VehicleReservation vr on v.id = vr.vehicle.id order by vr.startedAt desc limit 1")
-	Vehicle findRecentVehicle();
+	@Query("select substring(vr.startedAt, 12, 2) from VehicleReservation vr where vr.startedAt > :date")
+	List<String> findWeekDate(@Param("date") LocalDateTime date);
 
-	@Query("select v from VehicleBookmark vb left join Vehicle v on vb.vehicle.id = v.id where vb.employee.empNo = :empNo")
-	List<Vehicle> findMarkVehicle(@Param("empNo") String empNo);
-
-	@Query(nativeQuery = true, value = "select count(v) as vc from VehicleBookmark vb left join Vehicle v on vb.vehicle.id = v.id order by vc desc limit 3")
-	List<Vehicle> findMarkBest();
+	@Query("select distinct vr.endedAt as endedAt, v as vehicle from Vehicle v " +
+			"left join VehicleReservation vr on v.id = vr.vehicle.id " +
+			"where endedAt is not null order by vr.modifiedAt desc")
+	List<IVehicleDateResDTO> findRecentVehicle();
 }

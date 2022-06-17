@@ -1,33 +1,39 @@
 package com.douzone.server.controller;
 
+import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.ResponseDTO;
+import com.douzone.server.dto.vehicle.VehicleReqDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
-import com.douzone.server.entity.Vehicle;
-import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 /**
+ * Create:
+ * createReservation - 차량 예약 등록 /creation/reservation
+ * createBookmark - 차량 즐겨찾기 등록 /creation/bookmark
  * Read:
- * findAllReserved - 차량 전체 예약 현황 조회 /list_all
- * findAllUnreserved - 차량 전체 미예약 현황 조회 /list_un
- * findTypeReserved - 차량 종류별 예약 현황 조회 /list_type
- * findDateReserved - 특정 일시 차량 예약 현황 조회 /list_date
- * createReservation - 차량 예약 등록 /create_reservation
- * findEmpBefore - 내 예약 조회 - 과거 /list_pre
- * findEmpAfter - 내 예약 조회 - 미래 /list_post
- * findWeekVehicle - 7일 동안 가장 많이 예약된 차량 /best_vehicle
- * findWeekDate - 7일 동안 가장 많이 예약한 시간대 /best_time
- * findRecentVehicle - 최근 예약된 차량 조회 /recent
- * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /mark
- * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best_mark
+ * findAllReserved - 차량 전체 예약 현황 조회 /list/reservation
+ * findAllUnreserved - 차량 전체 미예약 현황 조회 /list/stock
+ * findAllReservedPaging - 차량 예약 페이징 처리 /list/reservation/paging
+ * findTypeReserved - 차량 종류별 예약 현황 조회 /list/type
+ * findDateReserved - 특정 일시 차량 예약 현황 조회 /list/time
+ * findEmpBefore - 내 예약 조회 - 과거 /list/own/past
+ * findEmpAfter - 내 예약 조회 - 미래 /list/own/current
+ * findWeekVehicle - 7일 동안 가장 많이 예약된 차량 /best/vehicle
+ * findWeekDate - 7일 동안 가장 많이 예약한 시간대 /best/time
+ * findRecentVehicle - 최근 예약된 차량 조회 /list/recent
+ * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /list/own/mark
+ * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best/mark
+ * Update:
+ * updateReserved - 내 차량 예약 현황 수정 /modification
+ * Delete:
+ * deleteReserved - 내 차량 예약 삭제 /elimination
+ * deleteMark - 내 즐겨찾기 차량 삭제 /elimination/mark
  */
 
 @Slf4j
@@ -35,137 +41,133 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/emp/vehicle")
 public class VehicleController {
-    private static final String METHOD_NAME = VehicleController.class.getName();
-    private final VehicleService vehicleService;
+	private static final String METHOD_NAME = VehicleController.class.getName();
+	private final VehicleService vehicleService;
 
+	@PostMapping(path = "/creation/reservation")
+	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
+										 @RequestParam(value = "vId") Long vId,
+										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- createReservation");
+		Long empId = principalDetails.getEmployee().getId();
 
-    @GetMapping(path = "/list_all")
-    public ResponseDTO findAllReserved() {
-        log.info(METHOD_NAME + "- findAllReserved");
-        List<Vehicle> result = vehicleService.findAllReserved();
+		return vehicleService.createReservation(vehicleReservationDTO, empId, vId);
+	}
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+	@PostMapping(path = "/creation/bookmark")
+	public ResponseDTO createBookmark(@RequestParam(value = "vId") Long vId,
+									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- createBookmark");
+		Long empId = principalDetails.getEmployee().getId();
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+		return vehicleService.createBookmark(empId, vId);
+	}
 
-    @GetMapping(path = "/list_un")
-    public ResponseDTO findAllUnreserved() {
-        log.info(METHOD_NAME + "- findAllUnreserved");
-        List<Vehicle> result = vehicleService.findAllUnreserved();
+	@GetMapping(path = "/list/reservation")
+	public ResponseDTO findAllReserved() {
+		log.info(METHOD_NAME + "- findAllReserved");
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+		return vehicleService.findAllReserved();
+	}
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+	@GetMapping(path = "/list/reservation/paging")
+	public ResponseDTO findAllReservedPaging(@RequestBody Map<String, Integer> pageNum) {
+		log.info(METHOD_NAME + "- findAllReservedPaging");
 
-    @PostMapping(path = "/list_type")
-    public ResponseDTO findTypeReserved(@RequestBody String model) {
-        log.info(METHOD_NAME + "- findTypeReserved");
-        List<Vehicle> result = vehicleService.findTypeReserved(model);
+		return vehicleService.findAllReservedPaging(pageNum.get("page"));
+	}
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+	@GetMapping(path = "/list/stock")
+	public ResponseDTO findAllUnreserved() {
+		log.info(METHOD_NAME + "- findAllUnreserved");
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+		return vehicleService.findAllUnreserved();
+	}
 
-    @PostMapping(path = "/list_date")
-    public ResponseDTO findDateReserved(@RequestBody Date date) {
-        log.info(METHOD_NAME + "- findDateReserved");
-        List<Vehicle> result = vehicleService.findDateReserved(date);
+	@GetMapping(path = "/list/type")
+	public ResponseDTO findTypeReserved(@RequestBody Map<String, String> model) {
+		log.info(METHOD_NAME + "- findTypeReserved");
+		System.out.println(model);
+		return vehicleService.findTypeReserved(model.get("model"));
+	}
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+	@GetMapping(path = "/list/time")
+	public ResponseDTO findDateReserved(@RequestBody Map<String, String> model) {
+		log.info(METHOD_NAME + "- findDateReserved");
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+		return vehicleService.findDateReserved(model.get("start"), model.get("end"));
+	}
 
-    @PostMapping(path = "/list_pre")
-    public ResponseDTO findEmpBefore(@RequestBody Long id) {
-        log.info(METHOD_NAME + "- findEmpBefore");
-        List<VehicleReservation> result = vehicleService.findEmpBefore(id, new Date());
+	@GetMapping(path = "/list/own/past")
+	public ResponseDTO findEmpBefore(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- findEmpBefore");
+		Long id = principalDetails.getEmployee().getId();
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+		return vehicleService.findEmpBefore(id);
+	}
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+	@GetMapping(path = "/list/own/current")
+	public ResponseDTO findEmpAfter(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- findEmpAfter");
+		Long id = principalDetails.getEmployee().getId();
 
-    @PostMapping(path = "/list_post")
-    public ResponseDTO findEmpAfter(@RequestBody Long id) {
-        log.info(METHOD_NAME + "- findEmpAfter");
-        List<VehicleReservation> result = vehicleService.findEmpAfter(id, new Date());
+		return vehicleService.findEmpAfter(id);
+	}
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+	@GetMapping(path = "/best/vehicle")
+	public ResponseDTO findWeekVehicle() {
+		log.info(METHOD_NAME + "- findWeekVehicle");
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+		return vehicleService.findWeekVehicle();
+	}
 
-    @GetMapping(path = "/best_vehicle")
-    public ResponseDTO findWeekVehicle() {
-        log.info(METHOD_NAME + "- findWeekVehicle");
-        Vehicle result = vehicleService.findWeekVehicle();
+	@GetMapping(path = "/best/time")
+	public ResponseDTO findWeekDate() {
+		log.info(METHOD_NAME + "- findWeekDate");
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+		return vehicleService.findWeekDate();
+	}
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+	@GetMapping(path = "/list/recent")
+	public ResponseDTO findRecentVehicle() {
+		log.info(METHOD_NAME + "- findRecentVehicle");
 
-    @GetMapping(path = "/best_time")
-    public ResponseDTO findWeekDate() {
-        log.info(METHOD_NAME + "- findWeekDate");
-        Integer result = vehicleService.findWeekDate();
+		return vehicleService.findRecentVehicle();
+	}
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+	@GetMapping(path = "/list/own/mark")
+	public ResponseDTO findMarkVehicle(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- findMarkVehicle");
+		String empNo = principalDetails.getEmployee().getEmpNo();
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+		return vehicleService.findMarkVehicle(empNo);
+	}
 
-    @GetMapping(path = "/recent")
-    public ResponseDTO findRecentVehicle() {
-        log.info(METHOD_NAME + "- findRecentVehicle");
-        Vehicle result = vehicleService.findRecentVehicle();
+	@GetMapping(path = "/best/mark")
+	public ResponseDTO findMarkBest() {
+		log.info(METHOD_NAME + "- findMarkBest");
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+		return vehicleService.findMarkBest();
+	}
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+	@PostMapping(path = "/modification")
+	public ResponseDTO updateReserved(@RequestBody VehicleReqDTO vehicleReqDTO) {
+		log.info(METHOD_NAME + "- updateReserved");
 
-    @GetMapping(path = "/mark")
-    public ResponseDTO findMarkVehicle(@RequestBody String empNo) {
-        log.info(METHOD_NAME + "- findMarkVehicle");
-        List<Vehicle> result = vehicleService.findMarkVehicle(empNo);
+		return vehicleService.updateReserved(vehicleReqDTO);
+	}
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
+	@PostMapping(path = "/elimination")
+	public ResponseDTO deleteReserved(@RequestBody Long id) {
+		log.info(METHOD_NAME + "- deleteReserved");
 
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
+		return vehicleService.deleteReserved(id);
+	}
 
-    @GetMapping(path = "/best_mark")
-    public ResponseDTO findMarkBest() {
-        log.info(METHOD_NAME + "- findMarkBest");
-        List<Vehicle> result = vehicleService.findMarkBest();
+	@PostMapping(path = "/elimination/mark")
+	public ResponseDTO deleteMark(@RequestBody Long id) {
+		log.info(METHOD_NAME + "- deleteMark");
 
-        if (result == null) return ResponseDTO.fail(HttpStatus.BAD_REQUEST, "");
-
-        return ResponseDTO.of(HttpStatus.OK, "", result);
-    }
-
-    @PostMapping(path = "/create_reservation")
-    public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
-        log.info(METHOD_NAME + "- createReservation");
-        Integer result = vehicleService.createReservation(vehicleReservationDTO);
-
-        if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
-
-        return new ResponseDTO().of(HttpStatus.OK, "");
-    }
-
-    @PostMapping(path = "/create_bookmark")
-    public ResponseDTO createBookmark() {
-        log.info(METHOD_NAME + "- createBookmark");
-        Integer result = vehicleService.createBookmark();
-
-        if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
-
-        return new ResponseDTO().of(HttpStatus.OK, "");
-    }
+		return vehicleService.deleteMark(id);
+	}
 }

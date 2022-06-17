@@ -69,7 +69,8 @@ public interface Msg {
 	String SUCCESS_VEHICLE_RESERVE = "차량 예약에 성공하였습니다.";
 	String SUCCESS_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_ALL = "차량 예약 현황 전체 조회에 성공하였습니다.";
-	String SUCCESS_VEHICLE_FIND_NO = "차량 종류에 따른 예약 조회에 성공하였습니다.";
+	String SUCCESS_VEHICLE_FIND_NONE = "차량 미예약 현황 전체 조회에 성공하였습니다.";
+	String SUCCESS_VEHICLE_FIND_TYPE = "차량 종류에 따른 예약 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_DATE = "특정 시간대 차량 예약 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_BEST_MARK = "즐겨찾기된 차량 TOP3 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_RECENT = "최근 예약된 차량 조회에 성공하였습니다.";
@@ -85,7 +86,8 @@ public interface Msg {
 	String FAIL_VEHICLE_RESERVE = "차량 예약에 실패하였습니다.";
 	String FAIL_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 실패하였습니다.";
 	String FAIL_VEHICLE_FIND_ALL = "차량 예약 현황 전체 조회에 실패하였습니다.";
-	String FAIL_VEHICLE_FIND_NO = "차량 종류에 따른 예약 조회에 실패하였습니다.";
+	String FAIL_VEHICLE_FIND_NONE = "차량 미예약 현황 전체 조회에 실패하였습니다.";
+	String FAIL_VEHICLE_FIND_TYPE = "차량 종류에 따른 예약 조회에 실패하였습니다.";
 	String FAIL_VEHICLE_FIND_DATE = "특정 시간대 차량 예약 조회에 실패하였습니다.";
 	String FAIL_VEHICLE_BEST_MARK = "즐겨찾기된 차량 TOP3 조회에 실패하였습니다.";
 	String FAIL_VEHICLE_RECENT = "최근 예약된 차량 조회에 실패하였습니다.";
