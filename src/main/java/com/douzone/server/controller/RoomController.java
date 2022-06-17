@@ -47,8 +47,13 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_EMP, roomService.myReservation(empId)));
 	}
 
-	@GetMapping("/reservation/week/count")
-	public ResponseEntity<ResponseDTO> weekReservationCount() {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_BEST_WEEK, roomService.weekReservationCount()));
+	@GetMapping("/reservation/count/{datetime}")
+	public ResponseEntity<ResponseDTO> weekAndMonthReservationCount(@PathVariable("datetime") int datetime) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_BEST_WEEK, roomService.weekAndMonthReservationCount(datetime)));
+	}
+
+	@GetMapping("/reservation/count/hour/{datetime}")
+	public ResponseEntity<ResponseDTO> weekReservationCountHour(@PathVariable("datetime") int datetime) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_BEST_DATE, roomService.weekReservationCountHour(datetime)));
 	}
 }

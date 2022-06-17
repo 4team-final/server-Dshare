@@ -1,9 +1,6 @@
 package com.douzone.server.service;
 
-import com.douzone.server.dto.reservation.MyReservationResDTO;
-import com.douzone.server.dto.reservation.ReservationResDTO;
-import com.douzone.server.dto.reservation.RoomWeekReservationCountDTO;
-import com.douzone.server.dto.reservation.SoonAndIngResDTO;
+import com.douzone.server.dto.reservation.*;
 import com.douzone.server.entity.RoomReservation;
 import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;
@@ -95,19 +92,20 @@ public class RoomService {
 	}
 
 	@Transactional
-	public List<RoomWeekReservationCountDTO> weekReservationCount() {
+	public List<WeekCountResDTO> weekAndMonthReservationCount(int datetime) {
+
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime nowMinusWeek = now.minusDays(7);
+		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
-		List<RoomWeekReservationCountDTO> roomWeekReservationCountDTOList = reservationQueryDSL.findByWeekReservationCount(now, nowMinusWeek);
-		roomWeekReservationCountDTOList.stream().map(roomWeekReservationCountDTO -> {
+		List<WeekCountResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
+		weekCountResDTOList.stream().map(weekCountResDTO -> {
 
-			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(roomWeekReservationCountDTO.getRoomId(), now, nowMinusWeek);
+			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountResDTO.getRoomId(), now, nowMinusWeek);
 
-			roomWeekReservationCountDTO.setReservationResDTOList(reservationResDTOList);
-			return roomWeekReservationCountDTO;
+			weekCountResDTO.setReservationResDTOList(reservationResDTOList);
+			return weekCountResDTO;
 		}).collect(Collectors.toList());
-		return roomWeekReservationCountDTOList;
+		return weekCountResDTOList;
 	}
 
 	@Transactional
@@ -118,5 +116,23 @@ public class RoomService {
 			return reservationResDTO;
 		}).collect(Collectors.toList());
 		return reservationResDTOList;
+	}
+
+	@Transactional
+	public Object weekReservationCountHour(int datetime) {
+
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime nowMinusWeek = now.minusDays(datetime);
+
+		List<WeekCountHourResDTO> weekCountHourResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCountHour(now, nowMinusWeek);
+		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
+
+			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
+
+			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+			return weekCountHourResDTO;
+		}).collect(Collectors.toList());
+		return weekCountHourResDTOList;
+
 	}
 }

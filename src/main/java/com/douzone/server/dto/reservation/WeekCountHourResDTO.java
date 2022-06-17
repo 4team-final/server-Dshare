@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RoomWeekReservationCountDTO {
+public class WeekCountHourResDTO {
 
 	private long roomId;
 	private String content;
@@ -22,12 +22,13 @@ public class RoomWeekReservationCountDTO {
 	private LocalDateTime modifiedAt;
 
 	private long count;
+	private int hour;
 
 	private List<ReservationResDTO> reservationResDTOList;
 
 	@Builder
 	@QueryProjection
-	public RoomWeekReservationCountDTO(long roomId, String content, String categoryName, int roomNo, int capacity, LocalDateTime modifiedAt, long count) {
+	public WeekCountHourResDTO(long roomId, String content, String categoryName, int roomNo, int capacity, LocalDateTime modifiedAt, long count, int hour) {
 		this.roomId = roomId;
 		this.content = content;
 		this.categoryName = categoryName;
@@ -35,5 +36,6 @@ public class RoomWeekReservationCountDTO {
 		this.capacity = capacity;
 		this.modifiedAt = modifiedAt;
 		this.count = count;
+		this.hour = hour;
 	}
 }

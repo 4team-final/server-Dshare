@@ -37,8 +37,8 @@ public interface Msg {
 	String SUCCESS_ROOM_SOON_MY_TIME = "나의 다가오는 회의실 시간 및 남은 회의 시간 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_RESERVE_MY = "나의 예약 현황 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_RESERVE_EMP = "해당 회원 예약 현황 조회에 성공하였습니다.";
-	String SUCCESS_ROOM_BEST_WEEK = "일주일간 가장 많이 예약된 회의실 조회에 성공하였습니다.";
-	String SUCCESS_ROOM_BEST_DATE = "일주일간 가장 많이 예약한 시간대 조회에 성공하였습니다.";
+	String SUCCESS_ROOM_BEST_WEEK = "일주일간 많이 예약된 회의실 조회에 성공하였습니다.";
+	String SUCCESS_ROOM_BEST_DATE = "일주일간 많이 예약한 시간대 회의실 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_BEFORE = "사용 후 회의실 예약 기록 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_AFTER = "사용 전 회의실 예약 내역 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_FIND_MARK = "내가 즐겨찾기한 회의실 조회에 성공하였습니다.";
