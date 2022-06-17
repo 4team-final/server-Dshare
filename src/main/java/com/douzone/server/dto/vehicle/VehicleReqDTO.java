@@ -4,17 +4,31 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Builder
 public class VehicleReqDTO {
+	@Min(1)
+	@NotEmpty(message = "예약 번호는 null 일 수 없습니다.")
 	private Long id;
+
+	@Min(1)
+	@NotEmpty(message = "차량 번호는 필수 입력 사항입니다.")
 	private Long vehicleId;
-	private Long empId;
+
+	@NotEmpty(message = "사유는 필수 입력 사항입니다.")
 	private String reason;
+
+	@NotEmpty(message = "제목은 필수 입력 사항입니다.")
 	private String title;
+
+	@NotEmpty(message = "시작 시간은 필수 입력 사항입니다.")
 	private LocalDateTime startedAt;
+
+	@NotEmpty(message = "종료 시간은 필수 입력 사항입니다.")
 	private LocalDateTime endedAt;
 }

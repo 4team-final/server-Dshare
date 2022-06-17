@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -47,13 +48,12 @@ public class VehicleController {
 	private final VehicleService vehicleService;
 
 	@PostMapping(path = "/creation/reservation")
-	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
-										 @RequestParam(value = "vId") Long vId,
+	public ResponseDTO createReservation(@RequestBody @Valid VehicleReservationDTO vehicleReservationDTO,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createReservation");
 		Long empId = principalDetails.getEmployee().getId();
 
-		return vehicleService.createReservation(vehicleReservationDTO, empId, vId);
+		return vehicleService.createReservation(vehicleReservationDTO, empId);
 	}
 
 	@PostMapping(path = "/creation/bookmark")
@@ -162,23 +162,33 @@ public class VehicleController {
 
 
 	@PostMapping(path = "/modification")
-	public ResponseDTO updateReserved(@RequestBody VehicleReqDTO vehicleReqDTO) {
+	public ResponseDTO updateReserved(@RequestBody @Valid VehicleReqDTO vehicleReqDTO,
+									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- updateReserved");
 
-		return vehicleService.updateReserved(vehicleReqDTO);
+		Long id = principalDetails.getEmployee().getId();
+
+		return vehicleService.updateReserved(vehicleReqDTO, id);
 	}
 
 	@PostMapping(path = "/elimination")
-	public ResponseDTO deleteReserved(@RequestBody Long id) {
+	public ResponseDTO deleteReserved(@RequestParam("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- deleteReserved");
-
-		return vehicleService.deleteReserved(id);
+		Long empId = principalDetails.getEmployee().getId();
+		return vehicleService.deleteReserved(id, empId);
 	}
 
 	@PostMapping(path = "/elimination/mark")
-	public ResponseDTO deleteMark(@RequestBody Long id) {
+	public ResponseDTO deleteMark(@RequestParam("id") Long id) {
 		log.info(METHOD_NAME + "- deleteMark");
 
 		return vehicleService.deleteMark(id);
+	}
+
+	@GetMapping(path = "/reservation")
+	public ResponseDTO findVehicleReserved(@RequestParam("id") Long id) {
+		log.info(METHOD_NAME + "- findVehicleReserved");
+
+		return vehicleService.findVehicleReserved(id);
 	}
 }

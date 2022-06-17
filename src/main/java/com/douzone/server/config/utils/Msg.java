@@ -83,6 +83,7 @@ public interface Msg {
 	String SUCCESS_VEHICLE_UPDATE = "차량 예약 정보 수정에 성공하였습니다.";
 	String SUCCESS_VEHICLE_DELETE = "차량 예약 삭제에 성공하였습니다.";
 	String SUCCESS_VEHICLE_DELETE_MARK = "차량 즐겨찾기 삭제에 성공하였습니다.";
+	String SUCCESS_VEHICLE_FIND_NO = "차량 예약 현황 단일 조회에 성공하였습니다.";
 
 	String FAIL_VEHICLE_RESERVE = "차량 예약에 실패하였습니다.";
 	String FAIL_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 실패하였습니다.";
@@ -101,4 +102,5 @@ public interface Msg {
 	String FAIL_VEHICLE_UPDATE = "차량 예약 정보 수정에 실패하였습니다.";
 	String FAIL_VEHICLE_DELETE = "차량 예약 삭제에 실패하였습니다.";
 	String FAIL_VEHICLE_DELETE_MARK = "차량 즐겨찾기 삭제에 실패하였습니다.";
+	String FAIL_VEHICLE_FIND_NO = "차량 예약 현황 단일 조회에 실패하였습니다.";
 }

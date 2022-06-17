@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
@@ -22,7 +23,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from VehicleReservation vr " +
 			"join fetch Vehicle v on vr.vehicle.id = v.id " +
 			"join fetch Employee e on vr.employee.id = e.id " +
-			"where vr.startedAt > current_time " +
+			"where startedAt > current_time " +
 			"order by id desc")
 	List<IVehicleListResDTO> findAllReserved();
 
@@ -33,7 +34,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from VehicleReservation vr " +
 			"join fetch Vehicle v on vr.vehicle.id = v.id " +
 			"join fetch Employee e on vr.employee.id = e.id " +
-			"where vr.startedAt > current_time " +
+			"where startedAt > current_time " +
 			"order by id desc")
 	List<IVehicleListResDTO> findAllReservedPaging(Pageable pageable);
 
@@ -60,7 +61,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from VehicleReservation vr " +
 			"join fetch Vehicle v on vr.vehicle.id = v.id " +
 			"join fetch Employee e on vr.employee.id = e.id " +
-			"where vr.startedAt between :startDate and :endDate " +
+			"where startedAt between :startDate and :endDate " +
 			"order by id desc ")
 	List<IVehicleListResDTO> findDateReserved(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
@@ -96,4 +97,15 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join VehicleReservation vr on v.id = vr.vehicle.id " +
 			"where endedAt is not null order by vr.modifiedAt desc")
 	List<IVehicleDateResDTO> findRecentVehicle();
+
+
+	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+			"vr.reason as reason, vr.title as title, " +
+			"v as vehicle, e.empNo as empNo, e.name as name " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where vr.id = :id")
+	Optional<IVehicleListResDTO> findCustom(@Param("id") Long id);
 }

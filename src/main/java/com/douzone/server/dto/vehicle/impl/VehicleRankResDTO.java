@@ -1,5 +1,6 @@
-package com.douzone.server.dto.vehicle;
+package com.douzone.server.dto.vehicle.impl;
 
+import com.douzone.server.dto.vehicle.IVehicleRankResDTO;
 import com.douzone.server.entity.Vehicle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
