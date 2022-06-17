@@ -1,7 +1,8 @@
 package com.douzone.server.service;
 
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.dto.vehicle.*;
+import com.douzone.server.dto.vehicle.VehicleReqDTO;
+import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import static com.douzone.server.config.utils.Msg.*;
@@ -101,351 +101,187 @@ public class VehicleService {
 	@Transactional(readOnly = true)
 	public ResponseDTO findAllReserved() {
 		log.info(METHOD_NAME + "- findAllReserved");
-		try {
-			List<IVehicleListResDTO> list = vehicleRepository.findAllReserved();
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL, list);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_FIND_ALL);
+		return Optional.of(new ResponseDTO())
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL, vehicleRepository.findAllReserved()))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findAllReservedPaging(int pageNum) {
 		log.info(METHOD_NAME + "- findAllReservedPaging");
-		try {
-			if (pageNum < 0)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "잘못된 파라미터가 전달되었습니다.");
 
-			PageRequest pageRequest = PageRequest.of(pageNum, 5);
-			List<IVehicleListResDTO> list = vehicleRepository.findAllReservedPaging(pageRequest);
-
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + pageNum, list);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (NumberFormatException ne) {
-			log.error("파라미터 형식이 잘못되었습니다.", ne);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_FIND_ALL);
+		return Optional.of(new ResponseDTO())
+				.map(u -> (pageNum < 0) ?
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "잘못된 파라미터가 전달되었습니다.") :
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + pageNum, vehicleRepository.findAllReservedPaging(PageRequest.of(pageNum, 5))))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findAllUnreserved() {
 		log.info(METHOD_NAME + "- findAllUnreserved");
-		try {
-			List<Vehicle> list = vehicleRepository.findAllUnreserved(LocalDateTime.now().plusHours(1L));
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NONE + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NONE, list);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_FIND_NONE);
+		return Optional.of(new ResponseDTO())
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NONE, vehicleRepository.findAllUnreserved(LocalDateTime.now().plusHours(1L))))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NONE + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findTypeReserved(String model) {
 		log.info(METHOD_NAME + "- findTypeReserved");
-		try {
-			if (model == null || model.equals(""))
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + "파라미터가 전달되지 않았습니다.");
-
-			List<IVehicleListResDTO> list = vehicleRepository.findTypeReserved(model);
-
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_TYPE, list);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (NumberFormatException ne) {
-			log.error("파라미터 형식이 잘못되었습니다.", ne);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_FIND_TYPE);
+		return Optional.of(new ResponseDTO())
+				.map(u -> (model == null || model.equals("")) ?
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + "파라미터가 전달되지 않았습니다.") :
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_TYPE, vehicleRepository.findTypeReserved(model)))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findDateReserved(String start, String end) {
 		log.info(METHOD_NAME + "- findDateReserved");
-		try {
-			if (start == null || start.equals("") || end == null || end.equals(""))
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "파라미터가 전달되지 않았습니다.");
 
-			LocalDateTime startDate = LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			LocalDateTime endDate = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			List<IVehicleListResDTO> list = vehicleRepository.findDateReserved(startDate, endDate);
-
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_DATE, list);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (DateTimeParseException pe) {
-			log.error("시간 변환에 실패하였습니다.", pe);
-		} catch (NumberFormatException ne) {
-			log.error("파라미터 형식이 잘못되었습니다.", ne);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_FIND_DATE);
+		return Optional.of(new ResponseDTO())
+				.map(u -> (start == null || start.equals("") || end == null || end.equals("")) ?
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "파라미터가 전달되지 않았습니다.") :
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_DATE, vehicleRepository.findDateReserved(
+								LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findEmpBefore(Long id) {
 		log.info(METHOD_NAME + "- findEmpBefore");
-		try {
-			if (id == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + "파라미터가 전달되지 않았습니다.");
 
-			List<IVehicleEmpResDTO> list = vehicleRepository.findEmpBefore(id);
-
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEFORE, list);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (NumberFormatException ne) {
-			log.error("파라미터 형식이 잘못되었습니다.", ne);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_BEFORE);
+		return Optional.of(new ResponseDTO())
+				.map(u -> (id != null) ?
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEFORE, vehicleRepository.findEmpBefore(id)) :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "파라미터가 전달되지 않았습니다.")
+				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findEmpAfter(Long id) {
 		log.info(METHOD_NAME + "- findEmpAfter");
-		try {
-			if (id == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + "파라미터가 전달되지 않았습니다.");
 
-			List<IVehicleEmpResDTO> list = vehicleRepository.findEmpAfter(id);
-
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_AFTER, list);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (NumberFormatException ne) {
-			log.error("파라미터 형식이 잘못되었습니다.", ne);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_AFTER);
+		return Optional.of(new ResponseDTO())
+				.map(u -> (id != null) ?
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_AFTER, vehicleRepository.findEmpAfter(id)) :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "파라미터가 전달되지 않았습니다.")
+				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findWeekVehicle() {
 		log.info(METHOD_NAME + "- findWeekVehicle");
-		try {
-			List<IVehicleRankResDTO> result = vehicleRepository.findWeekVehicle(LocalDateTime.now().minusDays(7L));
 
-			if (result == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_WEEK, result);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_BEST_WEEK);
+		return Optional.of(new ResponseDTO())
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_WEEK, vehicleRepository.findWeekVehicle(LocalDateTime.now().minusDays(7L))))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findWeekDate() {
 		log.info(METHOD_NAME + "- findWeekDate");
-		try {
+
+		return Optional.of(new ResponseDTO()).map(u -> {
 			Map<String, Integer> map = new HashMap<>();
 			List<String> result = vehicleRepository.findWeekDate(LocalDateTime.now().minusDays(7L));
-
-			if (result == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_DATE + "결과값을 조회에 실패하였습니다.");
-
 			for (String s : result) {
 				if (!map.containsKey(s)) map.put(s, 1);
 				map.put(s, map.get(s) + 1);
 			}
 			List<Map.Entry<String, Integer>> entry = new LinkedList<>(map.entrySet());
 			entry.sort((o1, o2) -> o2.getValue() - o1.getValue());
-			String res = entry.get(0).getKey();
-
-			if (res == null || res.equals(""))
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_DATE + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, res);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_BEST_DATE);
+			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, entry);
+		}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_DATE + "결과값을 조회에 실패하였습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findRecentVehicle() {
 		log.info(METHOD_NAME + "- findRecentVehicle");
-		try {
-			List<IVehicleDateResDTO> result = vehicleRepository.findRecentVehicle();
 
-			if (result == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RECENT + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RECENT, result);
-		} catch (DataAccessException dae) {
-			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
-		} catch (TransactionSystemException tse) {
-			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
-		} catch (ConversionFailedException cfe) {
-			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_RECENT);
+		return Optional.of(new ResponseDTO())
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, vehicleRepository.findRecentVehicle()))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RECENT + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findMarkVehicle(String empNo) {
 		log.info(METHOD_NAME + "- findMarkVehicle");
-		try {
-			List<Vehicle> list = vehicleBookmarkRepository.findMarkVehicle(empNo);
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_MARK, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_FIND_MARK);
+		return Optional.of(new ResponseDTO())
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_MARK, vehicleBookmarkRepository.findMarkVehicle(empNo)))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional
 	public ResponseDTO findMarkBest() {
 		log.info(METHOD_NAME + "- findMarkBest");
-		try {
-			List<Vehicle> list = vehicleBookmarkRepository.findMarkBest(PageRequest.of(0, 3));
 
-			if (list == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_MARK + "결과값이 존재하지 않습니다.");
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_MARK, list);
-		} catch (Exception e) {
-			log.error("SERVER ERROR", e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_BEST_MARK);
+		return Optional.of(new ResponseDTO())
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_MARK, vehicleBookmarkRepository.findMarkBest(PageRequest.of(0, 3))))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_MARK + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional
 	public ResponseDTO updateReserved(VehicleReqDTO vehicleReqDTO) {
 		log.info(METHOD_NAME + "- updateReserved");
-		try {
-			if (vehicleReqDTO == null || vehicleReqDTO.getId() == null)
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_UPDATE);
 
-			Optional<VehicleReservation> data = vehicleReservationRepository.findById(vehicleReqDTO.getId());
-
-			if (data.isPresent()) {
-				VehicleReservation vehicleReservation = data.get();
-
-				vehicleReservation.updateReserved(vehicleReqDTO);
-
-				return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_UPDATE);
-			}
-			return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_UPDATE);
-		} catch (NoSuchElementException ne) {
-			log.error("값이 들어갈 공간이 없습니다." + ne);
-		} catch (Exception e) {
-			log.error("SERVER ERROR" + e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_UPDATE);
+		return Optional.of(new ResponseDTO())
+				.map(u -> Optional.ofNullable(vehicleReqDTO).map(VehicleReqDTO::getId))
+				.filter(Optional::isPresent)
+				.map(v -> vehicleReservationRepository.findById(vehicleReqDTO.getId()))
+				.map(res -> {
+					if (res.isPresent()) {
+						VehicleReservation vehicleReservation = res.get();
+						vehicleReservation.updateReserved(vehicleReqDTO);
+						return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_UPDATE);
+					}
+					return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_UPDATE + "결과값을 조회에 실패하였습니다.");
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_UPDATE + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional
-	public ResponseDTO deleteReserved(Long id) {
+	public ResponseDTO deleteReserved(Long id, Long empId) {
 		log.info(METHOD_NAME + "- deleteReserved");
-		try {
-			vehicleReservationRepository.deleteById(id);
 
-			if (vehicleReservationRepository.findById(id).isPresent())
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE);
-
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_DELETE);
-		} catch (Exception e) {
-			log.error("SERVER ERROR" + e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_DELETE);
+		return Optional.of(new ResponseDTO())
+				.filter(u -> (id != null))
+				.map(v -> vehicleReservationRepository.findById(id))
+				.map(res -> res.isPresent() ? res.get() : -1L)
+				.filter(uid -> uid == empId)
+				.map(fi -> {
+					vehicleReservationRepository.deleteById(id);
+					return (vehicleReservationRepository.findById(id).isPresent()) ?
+							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + "결과값을 조회에 실패하였습니다.") :
+							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_DELETE);
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + "결과값이 존재하지 않습니다."));
 	}
 
 	@Transactional
 	public ResponseDTO deleteMark(Long id) {
 		log.info(METHOD_NAME + "- deleteMark");
-		try {
-			vehicleBookmarkRepository.deleteById(id);
 
-			if (vehicleBookmarkRepository.findById(id).isPresent())
-				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE_MARK);
+		return Optional.of(new ResponseDTO())
+				.filter(u -> (id != null))
+				.map(v -> {
+					vehicleBookmarkRepository.deleteById(id);
+					return (vehicleBookmarkRepository.findById(id).isPresent()) ?
+							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE_MARK + "결과값을 조회에 실패하였습니다.") :
+							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_DELETE_MARK);
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE_MARK + "결과값이 존재하지 않습니다."));
+	}
 
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_DELETE_MARK);
-		} catch (Exception e) {
-			log.error("SERVER ERROR" + e);
-		}
-		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_DELETE_MARK);
+	@Transactional
+	public ResponseDTO findVehicleReserved(Long id) {
+		log.info(METHOD_NAME + "- findVehicleReserved");
+
+		return Optional.of(new ResponseDTO())
+				.filter(u -> (id != null))
+				.map(v -> vehicleReservationRepository.findById(id))
+				.map(res -> res.map(vehicleReservation -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NO, vehicleReservation))
+						.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값을 조회에 실패하였습니다.")))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값이 존재하지 않습니다."));
 	}
 }

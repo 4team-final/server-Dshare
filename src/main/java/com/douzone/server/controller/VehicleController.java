@@ -160,16 +160,23 @@ public class VehicleController {
 	}
 
 	@PostMapping(path = "/elimination")
-	public ResponseDTO deleteReserved(@RequestBody Long id) {
+	public ResponseDTO deleteReserved(@RequestParam("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- deleteReserved");
-
-		return vehicleService.deleteReserved(id);
+		Long empId = principalDetails.getEmployee().getId();
+		return vehicleService.deleteReserved(id, empId);
 	}
 
 	@PostMapping(path = "/elimination/mark")
-	public ResponseDTO deleteMark(@RequestBody Long id) {
+	public ResponseDTO deleteMark(@RequestParam("id") Long id) {
 		log.info(METHOD_NAME + "- deleteMark");
 
 		return vehicleService.deleteMark(id);
+	}
+
+	@GetMapping(path = "/reservation")
+	public ResponseDTO findVehicleReserved(@RequestParam("id") Long id) {
+		log.info(METHOD_NAME + "- findVehicleReserved");
+
+		return vehicleService.findVehicleReserved(id);
 	}
 }

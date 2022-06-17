@@ -22,7 +22,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from VehicleReservation vr " +
 			"join fetch Vehicle v on vr.vehicle.id = v.id " +
 			"join fetch Employee e on vr.employee.id = e.id " +
-			"where vr.startedAt > current_time " +
+			"where startedAt > current_time " +
 			"order by id desc")
 	List<IVehicleListResDTO> findAllReserved();
 
@@ -33,7 +33,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from VehicleReservation vr " +
 			"join fetch Vehicle v on vr.vehicle.id = v.id " +
 			"join fetch Employee e on vr.employee.id = e.id " +
-			"where vr.startedAt > current_time " +
+			"where startedAt > current_time " +
 			"order by id desc")
 	List<IVehicleListResDTO> findAllReservedPaging(Pageable pageable);
 
@@ -60,7 +60,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from VehicleReservation vr " +
 			"join fetch Vehicle v on vr.vehicle.id = v.id " +
 			"join fetch Employee e on vr.employee.id = e.id " +
-			"where vr.startedAt between :startDate and :endDate " +
+			"where startedAt between :startDate and :endDate " +
 			"order by id desc ")
 	List<IVehicleListResDTO> findDateReserved(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
