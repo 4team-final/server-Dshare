@@ -9,22 +9,23 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Entity
-@Table(name="reservation_attend")
+@Table(name = "reservation_attend")
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class ReservationAttend {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empId")
-    private Employee employee;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "empId")
+	private Employee employee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reservationId")
-    private RoomReservation roomReservation;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "reservationId")
+	private RoomReservation roomReservation;
 
 }

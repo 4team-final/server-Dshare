@@ -21,42 +21,42 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class Test {
 
-    private final EmployeeRepository employeeRepository;
-    private final DecodeEncodeHandler decodeEncodeHandler;
+	private final EmployeeRepository employeeRepository;
+	private final DecodeEncodeHandler decodeEncodeHandler;
 
-    @PostMapping("/sign")
-    public void sign(@RequestBody Model model) {
-        log.info("UserController join method ...");
+	@PostMapping("/sign")
+	public void sign(@RequestBody Model model) {
+		log.info("UserController join method ...");
 
-        Employee employee = join(model);
-        System.out.println(employee);
-    }
+		Employee employee = join(model);
+		System.out.println(employee);
+	}
 
-    public Employee join(Model model) {
-        log.info("UserService join() ...");
-        return employeeRepository.save(model.toEntity(decodeEncodeHandler.passwordEncode(model.getPassword())));
-    }
+	public Employee join(Model model) {
+		log.info("UserService join() ...");
+		return employeeRepository.save(model.toEntity(decodeEncodeHandler.passwordEncode(model.getPassword())));
+	}
 
-    @PostMapping("/emp/check")
-    public ResponseDTO check(@RequestBody Model model) {
-        return new ResponseDTO().of(HttpStatus.OK, "hi", model);
-    }
+	@PostMapping("/emp/check")
+	public ResponseDTO check(@RequestBody Model model) {
+		return new ResponseDTO().of(HttpStatus.OK, "hi", model);
+	}
 }
 
 @Getter
 @AllArgsConstructor
 class Model {
-    private String empNo, password, name, email, tel;
+	private String empNo, password, name, email, tel;
 
-    public Employee toEntity(String pw) {
-        return Employee.builder()
-                .empNo(empNo)
-                .password(pw)
-                .name(name)
-                .email(email)
-                .tel(tel)
-                .team(Team.builder().id(1L).dept(Department.builder().id(1L).build()).build())
-                .position(Position.builder().id(2L).build())
-                .build();
-    }
+	public Employee toEntity(String pw) {
+		return Employee.builder()
+				.empNo(empNo)
+				.password(pw)
+				.name(name)
+				.email(email)
+				.tel(tel)
+				.team(Team.builder().id(1L).department(Department.builder().id(1L).build()).build())
+				.position(Position.builder().id(2L).build())
+				.build();
+	}
 }

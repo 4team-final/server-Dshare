@@ -1,16 +1,12 @@
 package com.douzone.server.dto.employee;
 
 
-import com.douzone.server.entity.Department;
 import com.douzone.server.entity.Employee;
-import com.douzone.server.entity.Position;
-import com.douzone.server.entity.Team;
-import javafx.geometry.Pos;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Getter
@@ -57,7 +53,7 @@ public class ProfileDto {
 				.profileImg(employee.getProfileImg())
 				.position(employee.getPosition().getName())
 				.team(employee.getTeam().getName())
-				.dept(employee.getTeam().getDept().getName())
+				.dept(employee.getTeam().getDepartment().getName())
 				.build();
 	}
 }
