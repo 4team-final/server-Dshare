@@ -36,40 +36,66 @@ public class VehicleService {
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 
 	@Transactional
-	public Integer createReservation(VehicleReservationDTO vehicleReservationDTO) {
-		log.info(METHOD_NAME + "- createReservation");
+	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId, Long vId) {
+		log.info(METHOD_NAME + "-createReservation");
 		try {
-			VehicleReservation vehicleReservation = VehicleReservation.builder()
-					.vehicle(Vehicle.builder().id(1L).build())
-					.employee(Employee.builder().id(1L).build())
-					.reason(vehicleReservationDTO.getReason())
-					.title(vehicleReservationDTO.getTitle())
-					.build();
-			VehicleReservation result = vehicleReservationRepository.save(vehicleReservation);
-			if (result.getId() == null) return 0;
-			return 1;
+			if (vehicleReservationDTO.getReason() == null) {
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패1");
+			}
+			if (vehicleReservationDTO.getTitle() == null) {
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패2");
+			}
+			if (vehicleReservationDTO.getStartedAt() == null) {
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패3");
+			}
+			if (vehicleReservationDTO.getEndedAt() == null) {
+				return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "실패4");
+			}
+
+
+			VehicleReservation vehicleReservation =
+					VehicleReservation.builder()
+							.vehicle(Vehicle.builder().id(vId).build())
+							.employee(Employee.builder().id(empId).build())
+							.reason(vehicleReservationDTO.getReason())
+							.title(vehicleReservationDTO.getTitle())
+							.startedAt(vehicleReservationDTO.getStartedAt())
+							.endedAt(vehicleReservationDTO.getEndedAt())
+							.build();
+
+			vehicleReservationRepository.save(vehicleReservation);
+
+			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESERVE);
+		} catch (DataAccessException dae) {
+			log.error("SQL 문법, 제약 조건 위배 혹은 DB 서버와의 연결을 실패하였습니다.", dae);
+		} catch (TransactionSystemException tse) {
+			log.error("트랜잭션 커밋을 실패하였습니다.", tse);
+		} catch (ConversionFailedException cfe) {
+			log.error("서비스로의 리턴 형식이 잘못되었습니다.", cfe);
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_RESERVE);
 	}
 
 	@Transactional
-	public Integer createBookmark() {
-		log.info(METHOD_NAME + "- createBookmark");
+	public ResponseDTO createBookmark(Long empId, Long vId) {
+		log.info(METHOD_NAME + "-createBookmark");
 
 		try {
-			VehicleBookmark vehicleBookmark = VehicleBookmark.builder()
-					.employee(Employee.builder().id(1L).build())
-					.vehicle(Vehicle.builder().id(1L).build())
-					.build();
-			VehicleBookmark result = vehicleBookmarkRepository.save(vehicleBookmark);
-			if (result.getId() == null) return 0;
-			return 1;
+			VehicleBookmark vehicleBookmark =
+					VehicleBookmark.builder()
+							.vehicle(Vehicle.builder().id(vId).build())
+							.employee(Employee.builder().id(empId).build())
+							.build();
+
+			vehicleBookmarkRepository.save(vehicleBookmark);
+
+			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK);
 		} catch (Exception e) {
 			log.error("SERVER ERROR", e);
 		}
-		return null;
+		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, FAIL_VEHICLE_BOOKMARK);
 	}
 
 	@Transactional(readOnly = true)
@@ -337,7 +363,8 @@ public class VehicleService {
 	public ResponseDTO findMarkVehicle(String empNo) {
 		log.info(METHOD_NAME + "- findMarkVehicle");
 		try {
-			List<Vehicle> list = vehicleRepository.findMarkVehicle(empNo);
+			List<Vehicle> list = vehicleBookmarkRepository.findMarkVehicle(empNo);
+
 			if (list == null)
 				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK);
 
@@ -352,7 +379,7 @@ public class VehicleService {
 	public ResponseDTO findMarkBest() {
 		log.info(METHOD_NAME + "- findMarkBest");
 		try {
-			List<Vehicle> list = vehicleRepository.findMarkBest();
+			List<Vehicle> list = vehicleBookmarkRepository.findMarkBest(PageRequest.of(0, 3));
 
 			if (list == null)
 				return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_MARK);

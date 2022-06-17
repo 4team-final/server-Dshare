@@ -7,7 +7,6 @@ import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,23 +44,22 @@ public class VehicleController {
 	private final VehicleService vehicleService;
 
 	@PostMapping(path = "/create_reservation")
-	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO) {
+	public ResponseDTO createReservation(@RequestBody VehicleReservationDTO vehicleReservationDTO,
+										 @RequestParam(value = "vId") Long vId,
+										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createReservation");
-		Integer result = vehicleService.createReservation(vehicleReservationDTO);
+		Long empId = principalDetails.getEmployee().getId();
 
-		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
-
-		return new ResponseDTO().of(HttpStatus.OK, "");
+		return vehicleService.createReservation(vehicleReservationDTO, empId, vId);
 	}
 
 	@PostMapping(path = "/create_bookmark")
-	public ResponseDTO createBookmark() {
+	public ResponseDTO createBookmark(@RequestParam(value = "vId") Long vId,
+									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createBookmark");
-		Integer result = vehicleService.createBookmark();
+		Long empId = principalDetails.getEmployee().getId();
 
-		if (result == 0) return new ResponseDTO().fail(HttpStatus.BAD_REQUEST, "");
-
-		return new ResponseDTO().of(HttpStatus.OK, "");
+		return vehicleService.createBookmark(empId, vId);
 	}
 
 	@GetMapping(path = "/list_all")

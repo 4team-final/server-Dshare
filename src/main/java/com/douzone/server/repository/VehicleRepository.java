@@ -92,10 +92,4 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join VehicleReservation vr on v.id = vr.vehicle.id " +
 			"where endedAt is not null order by vr.modifiedAt desc")
 	List<IVehicleDateResDTO> findRecentVehicle();
-
-	@Query("select v from VehicleBookmark vb left join Vehicle v on vb.vehicle.id = v.id where vb.employee.empNo = :empNo")
-	List<Vehicle> findMarkVehicle(@Param("empNo") String empNo);
-
-	@Query(nativeQuery = true, value = "select count(vb) as vc from VehicleBookmark vb order by vc desc limit 3")
-	List<Vehicle> findMarkBest();
 }
