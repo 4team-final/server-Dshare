@@ -3,8 +3,6 @@ package com.douzone.server.config.utils;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.douzone.server.config.s3.AwsS3;
-import com.douzone.server.entity.MeetingRoom;
-import com.douzone.server.entity.Vehicle;
 import com.douzone.server.exception.ErrorCode;
 import com.douzone.server.exception.ImgFileNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -36,15 +34,15 @@ public class UploadUtils {
 		List<Long> fileLength = new ArrayList<>();
 		List<String> filePath = new ArrayList<>();
 		List<UploadDTO> uploadDTOS = new ArrayList<>();
-		Object object = null;
-
-		if (basePath.equals("vehicle/")) {
-			object = new Vehicle();
-		} else if (basePath.equals("room/")) {
-			object = new MeetingRoom();
-		} else if (basePath.equals("profile/")) {
-			object = null;
-		}
+//		Object object = null;
+//
+//		if (basePath.equals("vehicle/")) {
+//			object = new Vehicle();
+//		} else if (basePath.equals("room/")) {
+//			object = new MeetingRoom();
+//		} else if (basePath.equals("profile/")) {
+//			object = null;
+//		}
 
 		try {
 			for (int i = 0; i < files.size(); i++) {
@@ -55,26 +53,26 @@ public class UploadUtils {
 					// 업로드 될 버킷 객체 url
 					filePath.add(awsS3.upload(files.get(i), basePath + fileName.get(i), fileType.get(i), fileLength.get(i)));
 
-					uploadDTOS.add(UploadDTO.builder().object(object).path(awsPath + filePath.get(i)).type(fileType.get(i)).imgSize(String.valueOf(fileLength.get(i))).build());
+					uploadDTOS.add(UploadDTO.builder().path(awsPath + filePath.get(i)).type(fileType.get(i)).imgSize(String.valueOf(fileLength.get(i))).build());
 
 				} catch (AmazonS3Exception e) {
-					log.error("AmazonS3Exception : AdminService - uploadProfileImg " + e.getMessage());
+					log.error("AmazonS3Exception : UploadUtils - uploadProfileImg " + e.getMessage());
 					e.printStackTrace();
 				} catch (IOException e) {
-					log.error("IOException : AdminService - uploadProfileImg " + e.getMessage());
+					log.error("IOException : UploadUtils - uploadProfileImg " + e.getMessage());
 					e.printStackTrace();
 				} catch (Exception e) {
-					log.error("Exception : AdminService - uploadProfileImg " + e.getMessage());
+					log.error("Exception : UploadUtils - uploadProfileImg " + e.getMessage());
 					e.printStackTrace();
 				}
 			}
 
 			return uploadDTOS;
 		} catch (IllegalStateException e) {
-			log.error("IllegalStateException : AdminService - uploadProfileImg " + e.getMessage());
+			log.error("IllegalStateException : UploadUtils - uploadProfileImg " + e.getMessage());
 			e.printStackTrace();
 		} catch (Exception e) {
-			log.error("Exception : AdminService - uploadProfileImg " + e.getMessage());
+			log.error("Exception : UploadUtils - uploadProfileImg " + e.getMessage());
 			e.printStackTrace();
 		}
 		return null;

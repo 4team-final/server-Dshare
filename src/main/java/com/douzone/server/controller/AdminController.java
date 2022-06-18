@@ -2,9 +2,12 @@ package com.douzone.server.controller;
 
 import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Message;
+import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.service.AdminService;
+import com.douzone.server.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,6 +30,7 @@ public class AdminController {
 
 	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final AdminService adminService;
+	private final RoomService roomService;
 
 	@PostMapping("/register")
 	public ResponseEntity<ResponseDTO> register(@RequestBody @Valid SignupReqDTO signupReqDTO) {
@@ -41,5 +45,12 @@ public class AdminController {
 	@PostMapping("/image/upload")
 	public ResponseEntity<ResponseDTO> uploadProfileImg(@NotNull List<MultipartFile> files, long TargetEmpId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
+	}
+
+	@PostMapping("/room/register")
+	public ResponseEntity<ResponseDTO> register(@NotNull List<MultipartFile> files, @Valid RoomReqDTO roomReqDTO) {
+//		System.out.println(roomReqDTO.getRoomObjects().get(0).getName());
+//		System.out.println(files.get(0).getOriginalFilename());
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM, roomService.register(files, roomReqDTO)));
 	}
 }

@@ -1,7 +1,15 @@
 package com.douzone.server.service;
 
+import com.douzone.server.config.utils.UploadDTO;
+import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.reservation.*;
+import com.douzone.server.dto.room.RoomObjectReqDTO;
+import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.entity.RoomReservation;
+import com.douzone.server.exception.ErrorCode;
+import com.douzone.server.exception.ImgFileNotFoundException;
+import com.douzone.server.repository.RoomImgRepository;
+import com.douzone.server.repository.RoomObjectRepository;
 import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;
 import com.douzone.server.repository.querydsl.RoomReservationQueryDSL;
@@ -9,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -23,6 +32,9 @@ public class RoomService {
 	private final RoomRepository roomRepository;
 	private final RoomReservationRepository roomReservationRepository;
 	private final RoomReservationQueryDSL reservationQueryDSL;
+	private final UploadUtils uploadUtils;
+	private final RoomImgRepository roomImgRepository;
+	private final RoomObjectRepository roomObjectRepository;
 
 
 	@Transactional
@@ -156,4 +168,30 @@ public class RoomService {
 		return weekCountHourResDTOList;
 	}
 
+	@Transactional
+	public Long register(List<MultipartFile> files, RoomReqDTO roomReqDTO) {
+		String basePath = "room/";
+
+		//회의실 등록
+		long roomId = roomRepository.save(roomReqDTO.of()).getId();
+		//회의실 물품 등록
+		List<Long> roomObjectIdList = roomReqDTO.getRoomObjects().stream().map(
+				roomObjectReqDTO -> {
+					long id = roomObjectRepository.save(RoomObjectReqDTO.builder().build().of(roomId, roomObjectReqDTO)).getId();
+					return id;
+				}).collect(Collectors.toList());
+		//회의실 이미지 등록
+		List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
+		List<Long> roomImgIdList = uploadDTOS.stream().map(
+				uploadDTO -> {
+					long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
+					return id;
+				}).collect(Collectors.toList());
+
+		if (uploadDTOS == null) {
+			throw new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND);
+		}
+
+		return roomId;
+	}
 }

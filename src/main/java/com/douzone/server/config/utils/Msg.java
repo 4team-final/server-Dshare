@@ -28,6 +28,7 @@ public interface Msg {
 
 	// room
 	String SUCCESS_ROOM_RESERVE = "회의실 예약에 성공하였습니다.";
+	String SUCCESS_ROOM = "회의실 등록에 성공하였습니다.";
 	String SUCCESS_ROOM_BOOKMARK = "회의실 즐겨찾기 등록에 성공하였습니다.";
 	String SUCCESS_ROOM_FIND_ALL = "회의실 예약 현황 전체 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_FIND_NO = "호수별 회의실 예약 조회에 성공하였습니다.";
@@ -48,6 +49,7 @@ public interface Msg {
 	String SUCCESS_ROOM_DELETE_MARK = "회의실 즐겨찾기 삭제에 성공하였습니다.";
 
 	String FAIL_ROOM_RESERVE = "회의실 예약에 실패하였습니다.";
+	String FAIL_ROOM = "회의실 등록에 성공하였습니다.";
 	String FAIL_ROOM_BOOKMARK = "회의실 즐겨찾기 등록에 실패하였습니다.";
 	String FAIL_ROOM_FIND_ALL = "회의실 예약 현황 전체 조회에 실패하였습니다.";
 	String FAIL_ROOM_SOON_MY_TIME = "나의 다가오는 회의실 시간 및 남은 회의 시간 조회에 실패하였습니다.";
