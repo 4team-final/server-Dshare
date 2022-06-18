@@ -1,6 +1,8 @@
 package com.douzone.server.repository.querydsl;
 
+
 import com.douzone.server.dto.reservation.QRoomWeekReservationCountDTO;
+import com.douzone.server.dto.reservation.RegistReservationReqDto;
 import com.douzone.server.dto.reservation.RoomWeekReservationCountDTO;
 import com.douzone.server.entity.RoomReservation;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -68,4 +70,9 @@ public class RoomReservationQueryDSL {
 				.where(roomReservation.meetingRoom.id.eq(roomId).and(roomReservation.modifiedAt.lt(now).and(roomReservation.modifiedAt.gt(nowMinusWeek))))
 				.orderBy(roomReservation.modifiedAt.desc()).fetch();
 	}
+	/**
+	 * 회의실 예약 6/18 오후 2시 오윤성
+	 */
+
+
 }

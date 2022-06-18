@@ -9,7 +9,6 @@ import lombok.Getter;
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum ErrorCode {
 
-
     //EMP
     EMP_NOT_FOUND(404, "사원을 찾을 수 없습니다."), EMP_ALREADY_EXIST(400, "이미 존재하는 사원 입니다."),
 

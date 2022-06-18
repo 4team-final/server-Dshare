@@ -1,12 +1,8 @@
 package com.douzone.server.service;
 
-import com.douzone.server.dto.reservation.MyReservationResDTO;
-import com.douzone.server.dto.reservation.ReservationResDTO;
-import com.douzone.server.dto.reservation.RoomWeekReservationCountDTO;
-import com.douzone.server.dto.reservation.SoonAndIngResDTO;
+import com.douzone.server.dto.reservation.*;
 import com.douzone.server.dto.room.RoomBookmarkDTO;
-import com.douzone.server.entity.RoomBookmark;
-import com.douzone.server.entity.RoomReservation;
+import com.douzone.server.entity.*;
 import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;
 import com.douzone.server.repository.querydsl.RoomQueryDSL;
@@ -149,5 +145,9 @@ public class RoomService {
 	@Transactional
 	public List<RoomBookmarkDTO> selectByLimitBookmark(int limit) {
 		return	roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
+	}
+	@Transactional
+	public ReservationResDTO save(RegistReservationReqDto registReservationReqDto) {
+		return ReservationResDTO.builder().build().ofSave(roomReservationRepository.save(new RoomReservation().of(registReservationReqDto)));
 	}
 }
