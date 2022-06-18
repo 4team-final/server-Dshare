@@ -182,4 +182,23 @@ public class VehicleController {
 
 		return vehicleService.findVehicleReserved(id);
 	}
+
+	@GetMapping(path = "/own/reservation/next")
+	public ResponseDTO soonReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- soonReservationMyTime");
+
+		Long empId = principalDetails.getEmployee().getId();
+
+		return vehicleService.soonAndIngReservationMyTime(empId, 1);
+	}
+
+	@GetMapping(path = "/own/reservation/ongoing")
+	public ResponseDTO ingReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- ingReservationMyTime");
+
+		Long empId = principalDetails.getEmployee().getId();
+
+		return vehicleService.soonAndIngReservationMyTime(empId, 0);
+	}
+
 }

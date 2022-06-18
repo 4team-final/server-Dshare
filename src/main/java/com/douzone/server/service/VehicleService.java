@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.douzone.server.config.utils.Msg.*;
@@ -206,7 +207,7 @@ public class VehicleService {
 				.filter(Optional::isPresent)
 				.map(v -> vehicleReservationRepository.findById(vehicleReqDTO.getId()))
 				.filter(Optional::isPresent)
-				.filter(res -> res.get().getEmployee().getId() == id)
+				.filter(res -> Objects.equals(res.get().getEmployee().getId(), id))
 				.map(ans -> {
 					ans.get().updateReserved(vehicleReqDTO);
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_UPDATE);
@@ -254,4 +255,20 @@ public class VehicleService {
 				.map(res -> res.map(iVehicleListResDTO -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NO, iVehicleListResDTO)).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값을 조회에 실패하였습니다.")))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값이 존재하지 않습니다."));
 	}
+
+	@Transactional
+	public ResponseDTO soonAndIngReservationMyTime(Long empId, int code) {
+		log.info(METHOD_NAME + "- soonReservationMyTime");
+
+		return Optional.of(new ResponseDTO())
+				.filter(u -> (empId > 0))
+				.map(v -> code == 0 ?
+						vehicleRepository.ingReservationMyTime(empId, PageRequest.of(0, 1)) :
+						vehicleRepository.soonReservationMyTime(empId, PageRequest.of(0, 1)))
+				.map(res -> res.getId() == null ?
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, "" + "잘못된 파라미터가 전달되었습니다.") :
+						ResponseDTO.of(HttpStatus.OK, "", ChronoUnit.SECONDS.between(LocalDateTime.now(), res.getDateTime())))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+	}
+
 }
