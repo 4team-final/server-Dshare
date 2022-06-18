@@ -131,7 +131,7 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.map(u -> (id != null) ?
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEFORE, vehicleRepository.findEmpBefore(id)) :
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_REQUEST_PARAMETER)
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + FAIL_REQUEST_PARAMETER)
 				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + FAIL_EXIST_RESULT));
 	}
 
@@ -142,7 +142,7 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.map(u -> (id != null) ?
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_AFTER, vehicleRepository.findEmpAfter(id)) :
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_REQUEST_PARAMETER)
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_REQUEST_PARAMETER)
 				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_EXIST_RESULT));
 	}
 
@@ -177,7 +177,7 @@ public class VehicleService {
 		log.info(METHOD_NAME + "- findRecentVehicle");
 
 		return Optional.of(new ResponseDTO())
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, vehicleRepository.findRecentVehicle()))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RECENT, vehicleRepository.findRecentVehicle()))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RECENT + FAIL_EXIST_RESULT));
 	}
 
@@ -272,7 +272,7 @@ public class VehicleService {
 						(code == 0 ? ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + FAIL_FIND_RESULT) :
 								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + FAIL_FIND_RESULT)) :
 						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime())) :
-								ResponseDTO.of(HttpStatus.OK, "", ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime()))))
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime()))))
 				.orElseGet(() -> code == 0 ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));

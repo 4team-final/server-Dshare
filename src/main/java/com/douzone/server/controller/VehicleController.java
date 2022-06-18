@@ -34,6 +34,7 @@ import java.util.Map;
  * findVehicleReserved - 수정 전 차량 단일 조회 /reservation - GET
  * IngReservationMyTime - 내가 현재 진행중인 예약 종료 시간 조회 /own/reservation/ongoing - GET
  * soonReservationMyTime - 나의 다음 예약 시작 시간 조회 /own/reservation/next - GET
+>>>>>>> origin/fix/dshare-33
  * Update:
  * updateReserved - 내 차량 예약 현황 수정 /modification - PATCH
  * Delete:
@@ -154,9 +155,11 @@ public class VehicleController {
 		return ResponseEntity.ok().body(vehicleService.findMarkBest());
 	}
 
+
 	@PatchMapping(path = "/modification")
 	public ResponseEntity<ResponseDTO> updateReserved(@RequestBody @Valid VehicleReqDTO vehicleReqDTO,
 													  @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- updateReserved");
 
 		Long id = principalDetails.getEmployee().getId();
@@ -186,19 +189,24 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/own/reservation/next")
+
 	public ResponseEntity<ResponseDTO> soonReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- soonReservationMyTime");
 
 		Long empId = principalDetails.getEmployee().getId();
+
 
 		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(empId, 1));
 	}
 
 	@GetMapping(path = "/own/reservation/ongoing")
 	public ResponseEntity<ResponseDTO> ingReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- ingReservationMyTime");
 
 		Long empId = principalDetails.getEmployee().getId();
+
 
 		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(empId, 0));
 	}
