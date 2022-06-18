@@ -2,15 +2,15 @@ package com.douzone.server.dto.employee;
 
 
 import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.Position;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Builder
 public class ProfileDto {
@@ -56,4 +56,5 @@ public class ProfileDto {
 				.dept(employee.getTeam().getDepartment().getName())
 				.build();
 	}
+
 }

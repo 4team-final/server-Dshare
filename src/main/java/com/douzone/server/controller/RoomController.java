@@ -1,5 +1,6 @@
 package com.douzone.server.controller;
 
+
 import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 /**
+ * <<<<<<< HEAD
  * recentReservation(@RequestParam(value = "limit") @Valid int limit) - 최근에 예약된 회의실 TOP 조회
  * soonAndIngReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) - 내가 예약한 회의실 남은 시간 조회 (회의전 - 곧 시작할,회의중 -회의가 끝나는)
  * myReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) - 내 예약 현황 조회 (과거 예약, 현재 예약)
@@ -21,6 +23,13 @@ import javax.validation.Valid;
  * weekAndMonthReservationCount(@PathVariable("datetime") int datetime) - 7일/30일/90일 동안 많이 예약된 회의실별 개수, 회의실 목록 조회
  * weekAndMonthReservationCountHour(@PathVariable("datetime") int datetime) - 7일/30일/90일 동안 많이 예약된 시간별 개수 ,회의실 목록 조회
  * weekAndMonthMeetingCountHour(@PathVariable("datetime") int datetime) - 7일/30일/90일 동안 회의 시작 시간별 회의실 목록 조회
+ * recentReservation() - 최근에 예약된 회의실 TOP 조회
+ * soonAndIngReservationMyTime() - 내가 예약한 회의실 남은 시간 조회 (회의전 - 곧 시작할,회의중 -회의가 끝나는)
+ * myReservation() - 내 예약 현황 조회 (과거 예약, 현재 예약)
+ * selectByLimitBookmark() - 예약 즐겨찾기한 회의실 조회
+ * selectByDateRoomReservation() - 특정시간대별 회의실 조회
+ * selectByRoomNoReservation() - 회의실 호수에따른 예약 현황 조회
+ * selectAllReservation() - 회의실 전체 예약 현황 조회
  */
 
 @RestController
@@ -66,4 +75,29 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_MEET_START, roomService.weekAndMonthMeetingCountHour(datetime)));
 	}
 
+	@GetMapping("/reservation/all")
+	public ResponseEntity<ResponseDTO> selectAllReservation() {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation()));
+	}
+
+	@GetMapping("/reservation/roomNo/{roomNo}")
+	public ResponseEntity<ResponseDTO> selectByRoomNoReservation(@PathVariable("roomNo") int roomNo) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectByRoomNoReservation(roomNo)));
+	}
+
+	/**
+	 * selectByDateRoomReservation() - 특정시간대별 회의실 조회
+	 */
+	@GetMapping("/reservation/time/{startTime}/{endTime}")
+	public ResponseEntity<ResponseDTO> selectByDateRoomReservation(@PathVariable("startTime") String startTime, @PathVariable("endTime") String endTime) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectByDateRoomReservation(startTime, endTime)));
+	}
+
+	/**
+	 * selectByLimitBookmark() - 즐겨찾기 상위 top(limit) 회의실 조회
+	 **/
+	@GetMapping("/reservation/my/bookmark/top/{limit}")
+	public ResponseEntity<ResponseDTO> selectByLimitBookmark(@PathVariable("limit") int limit) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectByLimitBookmark(limit)));
+	}
 }

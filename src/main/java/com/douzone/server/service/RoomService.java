@@ -1,8 +1,10 @@
 package com.douzone.server.service;
 
+
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.reservation.*;
+import com.douzone.server.dto.room.RoomBookmarkDTO;
 import com.douzone.server.dto.room.RoomObjectReqDTO;
 import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.entity.RoomReservation;
@@ -12,6 +14,7 @@ import com.douzone.server.repository.RoomImgRepository;
 import com.douzone.server.repository.RoomObjectRepository;
 import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;
+import com.douzone.server.repository.querydsl.RoomQueryDSL;
 import com.douzone.server.repository.querydsl.RoomReservationQueryDSL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,6 +39,7 @@ public class RoomService {
 	private final UploadUtils uploadUtils;
 	private final RoomImgRepository roomImgRepository;
 	private final RoomObjectRepository roomObjectRepository;
+	private final RoomQueryDSL roomQueryDSL;
 
 
 	@Transactional
@@ -175,23 +180,49 @@ public class RoomService {
 		//회의실 등록
 		long roomId = roomRepository.save(roomReqDTO.of()).getId();
 		//회의실 물품 등록
-		List<Long> roomObjectIdList = roomReqDTO.getRoomObjects().stream().map(
-				roomObjectReqDTO -> {
-					long id = roomObjectRepository.save(RoomObjectReqDTO.builder().build().of(roomId, roomObjectReqDTO)).getId();
-					return id;
-				}).collect(Collectors.toList());
+		List<Long> roomObjectIdList = roomReqDTO.getRoomObjects().stream().map(roomObjectReqDTO -> {
+			long id = roomObjectRepository.save(RoomObjectReqDTO.builder().build().of(roomId, roomObjectReqDTO)).getId();
+			return id;
+		}).collect(Collectors.toList());
 		//회의실 이미지 등록
 		List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
-		List<Long> roomImgIdList = uploadDTOS.stream().map(
-				uploadDTO -> {
-					long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
-					return id;
-				}).collect(Collectors.toList());
+		List<Long> roomImgIdList = uploadDTOS.stream().map(uploadDTO -> {
+			long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
+			return id;
+		}).collect(Collectors.toList());
 
 		if (uploadDTOS == null) {
 			throw new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND);
 		}
 
 		return roomId;
+	}
+
+	public List<ReservationResDTO> selectAllReservation() {
+
+		List<ReservationResDTO> reservationResDTOList = roomQueryDSL.selectAllReservation().stream().map(roomReservation -> {
+			return ReservationResDTO.builder().build().of(roomReservation);
+		}).collect(Collectors.toList());
+
+		return reservationResDTOList;
+	}
+
+	@Transactional
+	public List<ReservationResDTO> selectByRoomNoReservation(int roomNo) {
+		return roomQueryDSL.selectRoomNoReservation(roomNo).stream().map(roomReservation -> {
+			return ReservationResDTO.builder().build().of(roomReservation);
+		}).collect(Collectors.toList());
+	}
+
+	@Transactional
+	public List<ReservationResDTO> selectByDateRoomReservation(String startTime, String endTime) {
+		return roomQueryDSL.selectDateTimeReservation(startTime, endTime).stream().map(roomReservation -> {
+			return ReservationResDTO.builder().build().of(roomReservation);
+		}).collect(Collectors.toList());
+	}
+
+	@Transactional
+	public List<RoomBookmarkDTO> selectByLimitBookmark(int limit) {
+		return roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
 	}
 }

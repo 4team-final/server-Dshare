@@ -29,35 +29,35 @@ class ServerApplicationTests {
 	@Autowired
 	private DecodeEncodeHandler decodeEncodeHandler;
 
-	@Test
-	void 사원등록() {
-		//when
-		SignupReqDTO signupReqDTO = new SignupReqDTO();
-		LocalDateTime localDateTime = LocalDateTime.now();
-		//?
-
-//		String empNo = "1";
-		String empNo = "220100002";
-		signupReqDTO.builder()
-				.deptId(1)
-				.teamId(1)
-				.positionId(1)
-				.empNo(empNo)
-				.password(decodeEncodeHandler.passwordEncode("1234"))
-				.name("test")
-				.email("test@test.com")
-				.tel("00000000000")
-				.birthday(localDateTime)
-				.build();
-
-		//then
-		boolean exists = employeeRepository.existsByEmpNo(empNo);
-		if (exists) {
-			throw new EmpAlreadyExistException(ErrorCode.EMP_ALREADY_EXIST);
-		}
-		System.out.println("good");
-
-
-	}
+//	@Test
+//	void 사원등록() {
+//		//when
+//		SignupReqDTO signupReqDTO = new SignupReqDTO();
+//		LocalDateTime localDateTime = LocalDateTime.now();
+//		//?
+//
+////		String empNo = "1";
+//		String empNo = "220100002";
+//		signupReqDTO.builder()
+//				.deptId(1)
+//				.teamId(1)
+//				.positionId(1)
+//				.empNo(empNo)
+//				.password(decodeEncodeHandler.passwordEncode("1234"))
+//				.name("test")
+//				.email("test@test.com")
+//				.tel("00000000000")
+//				.birthday(localDateTime)
+//				.build();
+//
+//		//then
+//		boolean exists = employeeRepository.existsByEmpNo(empNo);
+//		if (exists) {
+//			throw new EmpAlreadyExistException(ErrorCode.EMP_ALREADY_EXIST);
+//		}
+//		System.out.println("good");
+//
+//
+//	}
 
 }

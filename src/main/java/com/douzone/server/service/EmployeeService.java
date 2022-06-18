@@ -2,6 +2,7 @@ package com.douzone.server.service;
 
 import com.douzone.server.dto.employee.EmpTestDTO;
 import com.douzone.server.dto.employee.ProfileDto;
+import com.douzone.server.dto.room.RoomBookmarkDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.repository.querydsl.EmployeeQueryDSL;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,9 @@ public class EmployeeService {
 			return ProfileDto.builder().build().of(employee);
 		}).collect(Collectors.toList()).get(0);
 		return MyInfo;
+	}
+
+	public List<RoomBookmarkDTO> selectByMyBookmark(int empNo) {
+		return employeeQueryDSL.selectByMyBookmark(empNo);
 	}
 }
