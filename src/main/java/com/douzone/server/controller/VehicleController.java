@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import java.util.Map;
 
 /**
+ * 차량 예약 등록, 조회, 수정, 삭제
  * Create:
  * createReservation - 차량 예약 등록 /creation/reservation
  * createBookmark - 차량 즐겨찾기 등록 /creation/bookmark
@@ -37,6 +38,10 @@ import java.util.Map;
  * Delete:
  * deleteReserved - 내 차량 예약 삭제 /elimination
  * deleteMark - 내 즐겨찾기 차량 삭제 /elimination/mark
+ * 차량 등록, 수정, 삭제
+ * createVehicle - 차량 등록 /creation/vehicle
+ * updateVehicle - 차량 수정 /modification/vehicle
+ * deleteVehicle - 차량 삭제 /elimination/vehicle
  */
 
 @Slf4j
