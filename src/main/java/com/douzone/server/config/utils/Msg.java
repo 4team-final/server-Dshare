@@ -83,6 +83,8 @@ public interface Msg {
 	String SUCCESS_VEHICLE_DELETE = "차량 예약 삭제에 성공하였습니다.";
 	String SUCCESS_VEHICLE_DELETE_MARK = "차량 즐겨찾기 삭제에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_NO = "차량 예약 현황 단일 조회에 성공하였습니다.";
+	String SUCCESS_VEHICLE_SOON = "다음 예약 시작 시간 조회에 성공하였습니다.";
+	String SUCCESS_VEHICLE_ING = "현재 예약 종료 시간 조회에 성공하였습니다.";
 
 	String FAIL_VEHICLE_RESERVE = "차량 예약에 실패하였습니다.";
 	String FAIL_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 실패하였습니다.";
@@ -101,4 +103,9 @@ public interface Msg {
 	String FAIL_VEHICLE_DELETE = "차량 예약 삭제에 실패하였습니다.";
 	String FAIL_VEHICLE_DELETE_MARK = "차량 즐겨찾기 삭제에 실패하였습니다.";
 	String FAIL_VEHICLE_FIND_NO = "차량 예약 현황 단일 조회에 실패하였습니다.";
+	String FAIL_VEHICLE_SOON = "다음 예약 시작 시간 조회에 실패하였습니다.";
+	String FAIL_VEHICLE_ING = "현재 예약 종료 시간 조회에 실패하였습니다.";
+	String FAIL_FIND_RESULT = "결과값 조회에 실패하였습니다.";
+	String FAIL_EXIST_RESULT = "결과값이 존재하지 않습니다.";
+	String FAIL_REQUEST_PARAMETER = "잘못된 파라미터가 전달되었습니다";
 }
