@@ -1,5 +1,6 @@
 package com.douzone.server.repository;
 
+import com.douzone.server.dto.vehicle.IVehicleTimeResDTO;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleReservation;
 import org.springframework.data.domain.Pageable;
