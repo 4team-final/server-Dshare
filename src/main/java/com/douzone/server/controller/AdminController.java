@@ -4,6 +4,7 @@ import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Message;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
 import com.douzone.server.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,17 +34,30 @@ public class AdminController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, adminService.register(signupReqDTO)));
 	}
 
-    @GetMapping("/check")
-    public ResponseEntity<ResponseDTO> check() {
-        return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));
-    }
+	@GetMapping("/check")
+	public ResponseEntity<ResponseDTO> check() {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));
+	}
 
 
-    @PostMapping("/image/upload")
-    public ResponseEntity<ResponseDTO> uploadProfileImg(@NotNull List<MultipartFile> files, long TargetEmpId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
-    }
+	@PostMapping("/image/upload")
+	public ResponseEntity<ResponseDTO> uploadProfileImg(@NotNull List<MultipartFile> files, long TargetEmpId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
+	}
 
+	@PostMapping("/creation/vehicle")
+	public ResponseEntity<ResponseDTO> createVehicle(@RequestBody @Valid VehicleUpdateDTO vehicleUpdateDTO) {
+		return ResponseEntity.ok().body(adminService.createVehicle(vehicleUpdateDTO));
+	}
 
+	@PostMapping("/modification/vehicle")
+	public ResponseEntity<ResponseDTO> updateVehicle(@RequestBody @Valid VehicleUpdateDTO vehicleUpdateDTO, @RequestParam("id") Long id) {
+		return ResponseEntity.ok().body(adminService.updateVehicle(vehicleUpdateDTO, id));
+	}
+
+	@DeleteMapping("/elimination/vehicle")
+	public ResponseEntity<ResponseDTO> deleteVehicle(@RequestBody Long id) {
+		return ResponseEntity.ok().body(adminService.deleteVehicle(id));
+	}
 
 }

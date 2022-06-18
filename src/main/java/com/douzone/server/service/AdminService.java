@@ -3,8 +3,11 @@ package com.douzone.server.service;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.douzone.server.config.s3.AwsS3;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
+import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
 import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.Vehicle;
 import com.douzone.server.exception.EmpAlreadyExistException;
 import com.douzone.server.exception.EmpNotFoundException;
 import com.douzone.server.exception.ErrorCode;
@@ -15,6 +18,7 @@ import com.douzone.server.repository.VehicleReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +27,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -111,5 +116,52 @@ public class AdminService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Transactional
+	public ResponseDTO createVehicle(VehicleUpdateDTO vehicleUpdateDTO) {
+		log.info(METHOD_NAME + "- createVehicle");
+
+		return Optional.of(new ResponseDTO())
+				.map(res -> {
+					vehicleRepository.save(Vehicle.builder()
+							.name(vehicleUpdateDTO.getName())
+							.number(vehicleUpdateDTO.getNumber())
+							.model(vehicleUpdateDTO.getModel())
+							.color(vehicleUpdateDTO.getColor())
+							.capacity(vehicleUpdateDTO.getCapacity())
+							.build());
+					return ResponseDTO.of(HttpStatus.OK, "");
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+	}
+
+	@Transactional
+	public ResponseDTO updateVehicle(VehicleUpdateDTO vehicleUpdateDTO, Long id) {
+		log.info(METHOD_NAME + "- updateVehicle");
+
+		return Optional.of(new ResponseDTO())
+				.filter(u -> id > 0L)
+				.map(v -> vehicleRepository.findById(id))
+				.filter(Optional::isPresent)
+				.map(res -> {
+					res.get().updateVehicle(vehicleUpdateDTO);
+					return ResponseDTO.of(HttpStatus.OK, "");
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+	}
+
+	@Transactional
+	public ResponseDTO deleteVehicle(Long id) {
+		log.info(METHOD_NAME + "- deleteVehicle");
+
+		return Optional.of(new ResponseDTO())
+				.filter(u -> id >= 0L)
+				.map(v -> vehicleRepository.findById(id))
+				.map(res -> {
+					if (res.isPresent()) vehicleRepository.deleteById(id);
+
+					return (vehicleRepository.findById(id).isPresent()) ?
+							ResponseDTO.fail(HttpStatus.BAD_REQUEST, "") :
+							ResponseDTO.of(HttpStatus.OK, "");
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
 	}
 }
