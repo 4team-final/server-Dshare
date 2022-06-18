@@ -3,7 +3,7 @@ package com.douzone.server.repository;
 import com.douzone.server.dto.vehicle.IVehicleDateResDTO;
 import com.douzone.server.dto.vehicle.IVehicleEmpResDTO;
 import com.douzone.server.dto.vehicle.IVehicleListResDTO;
-import com.douzone.server.dto.vehicle.IVehicleRankResDTO;
+import com.douzone.server.dto.vehicle.IVehicleTimeResDTO;
 import com.douzone.server.entity.Vehicle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -88,7 +88,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"vr.vehicle as vehicle, count(vr.vehicle.id) as vcount " +
 			"from VehicleReservation vr " +
 			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
-	List<IVehicleRankResDTO> findWeekVehicle(@Param("date") LocalDateTime date);
+	List<IVehicleTimeResDTO> findWeekVehicle(@Param("date") LocalDateTime date);
 
 	@Query("select substring(vr.startedAt, 12, 2) from VehicleReservation vr where vr.startedAt > :date")
 	List<String> findWeekDate(@Param("date") LocalDateTime date);
@@ -108,4 +108,18 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"join fetch Employee e on vr.employee.id = e.id " +
 			"where vr.id = :id")
 	Optional<IVehicleListResDTO> findCustom(@Param("id") Long id);
+
+	@Query("select vr.id as id, vr.startedAt as dateTime " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where e.id = :empId and dateTime > current_time")
+	IVehicleTimeResDTO soonReservationMyTime(@Param("empId") Long empId, Pageable pageable);
+
+	@Query("select vr.id as id, vr.endedAt as dateTime " +
+			"from VehicleReservation vr " +
+			"join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"join fetch Employee e on vr.employee.id = e.id " +
+			"where e.id = :empId and vr.startedAt < current_time and current_time < dateTime")
+	IVehicleTimeResDTO ingReservationMyTime(@Param("empId") Long empId, Pageable pageable);
 }

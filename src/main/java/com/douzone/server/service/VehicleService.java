@@ -209,7 +209,7 @@ public class VehicleService {
 				.filter(Optional::isPresent)
 				.map(v -> vehicleReservationRepository.findById(vehicleReqDTO.getId()))
 				.filter(Optional::isPresent)
-				.filter(res -> res.get().getEmployee().getId() == id)
+				.filter(res -> Objects.equals(res.get().getEmployee().getId(), id))
 				.map(ans -> {
 					ans.get().updateReserved(vehicleReqDTO);
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_UPDATE);
@@ -259,31 +259,18 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO soonReservationMyTime(Long empId) {
+	public ResponseDTO soonAndIngReservationMyTime(Long empId, int code) {
 		log.info(METHOD_NAME + "- soonReservationMyTime");
 
-		LocalDateTime soon = vehicleReservationRepository.soonReservationMyTime(empId, PageRequest.of(0,1)).getStartedAt();
-		LocalDateTime now = LocalDateTime.now();
-		Long time = ChronoUnit.SECONDS.between(now, soon);
-
 		return Optional.of(new ResponseDTO())
-				.filter(u -> (empId != null))
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, time))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + "결과값이 존재하지 않습니다."));
+				.filter(u -> (empId > 0))
+				.map(v -> code == 0 ?
+						vehicleRepository.ingReservationMyTime(empId, PageRequest.of(0, 1)) :
+						vehicleRepository.soonReservationMyTime(empId, PageRequest.of(0, 1)))
+				.map(res -> res.getId() == null ?
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, "" + "잘못된 파라미터가 전달되었습니다.") :
+						ResponseDTO.of(HttpStatus.OK, "", ChronoUnit.SECONDS.between(LocalDateTime.now(), res.getDateTime())))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
 	}
 
-	@Transactional
-	public ResponseDTO ingReservationMyTime(Long empId) {
-		log.info(METHOD_NAME + "- IngReservationMyTime");
-
-		LocalDateTime ing = vehicleReservationRepository.ingReservationMyTime(empId, PageRequest.of(0,1)).getEndedAt();
-		LocalDateTime now = LocalDateTime.now();
-		Long time = ChronoUnit.SECONDS.between(now, ing);
-
-		return Optional.of(new ResponseDTO())
-				.filter(u -> (empId != null))
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, time))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + "결과값이 존재하지 않습니다."));
-
-	}
 }

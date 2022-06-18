@@ -7,6 +7,7 @@ import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,29 +16,30 @@ import java.util.Map;
 
 /**
  * Create:
- * createReservation - 차량 예약 등록 /creation/reservation
- * createBookmark - 차량 즐겨찾기 등록 /creation/bookmark
+ * createReservation - 차량 예약 등록 /creation/reservation - POST
+ * createBookmark - 차량 즐겨찾기 등록 /creation/bookmark - POST
  * Read:
- * findAllReserved - 차량 전체 예약 현황 조회 /list/reservation
- * findAllUnreserved - 차량 전체 미예약 현황 조회 /list/stock
- * findAllReservedPaging - 차량 예약 페이징 처리 /list/reservation/paging
- * findTypeReserved - 차량 종류별 예약 현황 조회 /list/type
- * findDateReserved - 특정 일시 차량 예약 현황 조회 /list/time
- * findEmpBefore - 내 예약 조회 - 과거 /list/own/past
- * findEmpAfter - 내 예약 조회 - 미래 /list/own/current
- * findWeekVehicle - 7일 동안 가장 많이 예약된 차량 /best/vehicle
- * findWeekDate - 7일 동안 가장 많이 예약한 시간대 /best/time
- * findRecentVehicle - 최근 예약된 차량 조회 /list/recent
- * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /list/own/mark
- * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best/mark
- * findVehicleReserved - 수정 전 차량 단일 조회 /reservation
- * soonReservationMyTime - 동적 타이머 /own/reservation/next
- * IngReservationMyTime - 동적 타이머 /own/reservation/ongoing
+ * findAllReserved - 차량 전체 예약 현황 조회 /list/reservation - GET
+ * findAllUnreserved - 차량 전체 미예약 현황 조회 /list/stock - GET
+ * findAllReservedPaging - 차량 예약 페이징 처리 /list/reservation/paging - GET
+ * findTypeReserved - 차량 종류별 예약 현황 조회 /list/type - GET
+ * findDateReserved - 특정 일시 차량 예약 현황 조회 /list/time - GET
+ * findEmpBefore - 내 예약 조회 - 과거 /list/own/past - GET
+ * findEmpAfter - 내 예약 조회 - 미래 /list/own/current - GET
+ * findWeekVehicle - 7일 동안 가장 많이 예약된 차량 /best/vehicle - GET
+ * findWeekDate - 7일 동안 가장 많이 예약한 시간대 /best/time - GET
+ * findRecentVehicle - 최근 예약된 차량 조회 /list/recent - GET
+ * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /list/own/mark - GET
+ * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best/mark - GET
+ * findVehicleReserved - 수정 전 차량 단일 조회 /reservation - GET
+ * IngReservationMyTime - 내가 현재 진행중인 예약 종료 시간 조회 /own/reservation/ongoing - GET
+ * soonReservationMyTime - 나의 다음 예약 시작 시간 조회 /own/reservation/next - GET
+>>>>>>> origin/fix/dshare-33
  * Update:
- * updateReserved - 내 차량 예약 현황 수정 /modification
+ * updateReserved - 내 차량 예약 현황 수정 /modification - PATCH
  * Delete:
- * deleteReserved - 내 차량 예약 삭제 /elimination
- * deleteMark - 내 즐겨찾기 차량 삭제 /elimination/mark
+ * deleteReserved - 내 차량 예약 삭제 /elimination -DELETE
+ * deleteMark - 내 즐겨찾기 차량 삭제 /elimination/mark - DELETE
  */
 
 @Slf4j
@@ -49,165 +51,164 @@ public class VehicleController {
 	private final VehicleService vehicleService;
 
 	@PostMapping(path = "/creation/reservation")
-	public ResponseDTO createReservation(@RequestBody @Valid VehicleReservationDTO vehicleReservationDTO,
-										 @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> createReservation(@RequestBody @Valid VehicleReservationDTO vehicleReservationDTO,
+														 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createReservation");
 		Long empId = principalDetails.getEmployee().getId();
 
-		return vehicleService.createReservation(vehicleReservationDTO, empId);
+		return ResponseEntity.ok().body(vehicleService.createReservation(vehicleReservationDTO, empId));
 	}
 
 	@PostMapping(path = "/creation/bookmark")
-	public ResponseDTO createBookmark(@RequestParam(value = "vId") Long vId,
-									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> createBookmark(@RequestParam(value = "vId") Long vId,
+													  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createBookmark");
 		Long empId = principalDetails.getEmployee().getId();
 
-		return vehicleService.createBookmark(empId, vId);
+		return ResponseEntity.ok().body(vehicleService.createBookmark(empId, vId));
 	}
 
 	@GetMapping(path = "/list/reservation")
-	public ResponseDTO findAllReserved() {
+	public ResponseEntity<ResponseDTO> findAllReserved() {
 		log.info(METHOD_NAME + "- findAllReserved");
 
-		return vehicleService.findAllReserved();
+		return ResponseEntity.ok().body(vehicleService.findAllReserved());
 	}
 
 	@GetMapping(path = "/list/reservation/paging")
-	public ResponseDTO findAllReservedPaging(@RequestBody Map<String, Integer> pageNum) {
+	public ResponseEntity<ResponseDTO> findAllReservedPaging(@RequestBody Map<String, Integer> pageNum) {
 		log.info(METHOD_NAME + "- findAllReservedPaging");
 
-		return vehicleService.findAllReservedPaging(pageNum.get("page"));
+		return ResponseEntity.ok().body(vehicleService.findAllReservedPaging(pageNum.get("page")));
 	}
 
 	@GetMapping(path = "/list/stock")
-	public ResponseDTO findAllUnreserved() {
+	public ResponseEntity<ResponseDTO> findAllUnreserved() {
 		log.info(METHOD_NAME + "- findAllUnreserved");
 
-		return vehicleService.findAllUnreserved();
+		return ResponseEntity.ok().body(vehicleService.findAllUnreserved());
 	}
 
 	@GetMapping(path = "/list/type")
-	public ResponseDTO findTypeReserved(@RequestBody Map<String, String> model) {
+	public ResponseEntity<ResponseDTO> findTypeReserved(@RequestBody Map<String, String> model) {
 		log.info(METHOD_NAME + "- findTypeReserved");
 		System.out.println(model);
-		return vehicleService.findTypeReserved(model.get("model"));
+		return ResponseEntity.ok().body(vehicleService.findTypeReserved(model.get("model")));
 	}
 
 	@GetMapping(path = "/list/time")
-	public ResponseDTO findDateReserved(@RequestBody Map<String, String> model) {
+	public ResponseEntity<ResponseDTO> findDateReserved(@RequestBody Map<String, String> model) {
 		log.info(METHOD_NAME + "- findDateReserved");
 
-		return vehicleService.findDateReserved(model.get("start"), model.get("end"));
+		return ResponseEntity.ok().body(vehicleService.findDateReserved(model.get("start"), model.get("end")));
 	}
 
 	@GetMapping(path = "/list/own/past")
-	public ResponseDTO findEmpBefore(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> findEmpBefore(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findEmpBefore");
 		Long id = principalDetails.getEmployee().getId();
 
-		return vehicleService.findEmpBefore(id);
+		return ResponseEntity.ok().body(vehicleService.findEmpBefore(id));
 	}
 
 	@GetMapping(path = "/list/own/current")
-	public ResponseDTO findEmpAfter(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> findEmpAfter(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findEmpAfter");
 		Long id = principalDetails.getEmployee().getId();
 
-		return vehicleService.findEmpAfter(id);
+		return ResponseEntity.ok().body(vehicleService.findEmpAfter(id));
 	}
 
 	@GetMapping(path = "/best/vehicle")
-	public ResponseDTO findWeekVehicle() {
+	public ResponseEntity<ResponseDTO> findWeekVehicle() {
 		log.info(METHOD_NAME + "- findWeekVehicle");
 
-		return vehicleService.findWeekVehicle();
+		return ResponseEntity.ok().body(vehicleService.findWeekVehicle());
 	}
 
 	@GetMapping(path = "/best/time")
-	public ResponseDTO findWeekDate() {
+	public ResponseEntity<ResponseDTO> findWeekDate() {
 		log.info(METHOD_NAME + "- findWeekDate");
 
-		return vehicleService.findWeekDate();
+		return ResponseEntity.ok().body(vehicleService.findWeekDate());
 	}
 
 	@GetMapping(path = "/list/recent")
-	public ResponseDTO findRecentVehicle() {
+	public ResponseEntity<ResponseDTO> findRecentVehicle() {
 		log.info(METHOD_NAME + "- findRecentVehicle");
 
-		return vehicleService.findRecentVehicle();
+		return ResponseEntity.ok().body(vehicleService.findRecentVehicle());
 	}
 
 	@GetMapping(path = "/list/own/mark")
-	public ResponseDTO findMarkVehicle(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> findMarkVehicle(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findMarkVehicle");
 		String empNo = principalDetails.getEmployee().getEmpNo();
 
-		return vehicleService.findMarkVehicle(empNo);
+		return ResponseEntity.ok().body(vehicleService.findMarkVehicle(empNo));
 	}
 
 	@GetMapping(path = "/best/mark")
-	public ResponseDTO findMarkBest() {
+	public ResponseEntity<ResponseDTO> findMarkBest() {
 		log.info(METHOD_NAME + "- findMarkBest");
 
-		return vehicleService.findMarkBest();
-	}
-
-	@GetMapping(path = "/reservation")
-	public ResponseDTO findVehicleReserved(@RequestParam(value = "vrId") Long vrId,
-										   @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		log.info(METHOD_NAME + "- findVehicleReserved");
-
-		return vehicleService.findVehicleReserved(vrId);
+		return ResponseEntity.ok().body(vehicleService.findMarkBest());
 	}
 
 
-	@PostMapping(path = "/modification")
-	public ResponseDTO updateReserved(@RequestBody @Valid VehicleReqDTO vehicleReqDTO,
-									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	@PatchMapping(path = "/modification")
+	public ResponseEntity<ResponseDTO> updateReserved(@RequestBody @Valid VehicleReqDTO vehicleReqDTO,
+													  @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- updateReserved");
 
 		Long id = principalDetails.getEmployee().getId();
 
-		return vehicleService.updateReserved(vehicleReqDTO, id);
+		return ResponseEntity.ok().body(vehicleService.updateReserved(vehicleReqDTO, id));
 	}
 
-	@PostMapping(path = "/elimination")
-	public ResponseDTO deleteReserved(@RequestParam("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	@DeleteMapping(path = "/elimination")
+	public ResponseEntity<ResponseDTO> deleteReserved(@RequestParam("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- deleteReserved");
 		Long empId = principalDetails.getEmployee().getId();
-		return vehicleService.deleteReserved(id, empId);
+		return ResponseEntity.ok().body(vehicleService.deleteReserved(id, empId));
 	}
 
-	@PostMapping(path = "/elimination/mark")
-	public ResponseDTO deleteMark(@RequestParam("id") Long id) {
+	@DeleteMapping(path = "/elimination/mark")
+	public ResponseEntity<ResponseDTO> deleteMark(@RequestParam("id") Long id) {
 		log.info(METHOD_NAME + "- deleteMark");
 
-		return vehicleService.deleteMark(id);
+		return ResponseEntity.ok().body(vehicleService.deleteMark(id));
 	}
 
 	@GetMapping(path = "/reservation")
-	public ResponseDTO findVehicleReserved(@RequestParam("id") Long id) {
+	public ResponseEntity<ResponseDTO> findVehicleReserved(@RequestParam("id") Long id) {
 		log.info(METHOD_NAME + "- findVehicleReserved");
 
-		return vehicleService.findVehicleReserved(id);
+		return ResponseEntity.ok().body(vehicleService.findVehicleReserved(id));
 	}
 
 	@GetMapping(path = "/own/reservation/next")
-	public ResponseDTO soonReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+	public ResponseEntity<ResponseDTO> soonReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- soonReservationMyTime");
 
 		Long empId = principalDetails.getEmployee().getId();
 
-		return vehicleService.soonReservationMyTime(empId);
+
+		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(empId, 1));
 	}
 
 	@GetMapping(path = "/own/reservation/ongoing")
-	public ResponseDTO ingReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> ingReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- ingReservationMyTime");
 
 		Long empId = principalDetails.getEmployee().getId();
 
-		return vehicleService.ingReservationMyTime(empId);
+
+		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(empId, 0));
 	}
+
 }
