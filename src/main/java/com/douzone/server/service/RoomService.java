@@ -4,19 +4,25 @@ import com.douzone.server.dto.reservation.MyReservationResDTO;
 import com.douzone.server.dto.reservation.ReservationResDTO;
 import com.douzone.server.dto.reservation.RoomWeekReservationCountDTO;
 import com.douzone.server.dto.reservation.SoonAndIngResDTO;
+import com.douzone.server.dto.room.RoomBookmarkDTO;
+import com.douzone.server.entity.RoomBookmark;
 import com.douzone.server.entity.RoomReservation;
 import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;
+import com.douzone.server.repository.querydsl.RoomQueryDSL;
 import com.douzone.server.repository.querydsl.RoomReservationQueryDSL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -26,6 +32,7 @@ public class RoomService {
 	private final RoomRepository roomRepository;
 	private final RoomReservationRepository roomReservationRepository;
 	private final RoomReservationQueryDSL reservationQueryDSL;
+	private final RoomQueryDSL roomQueryDSL;
 
 
 	@Transactional
@@ -118,5 +125,29 @@ public class RoomService {
 			return reservationResDTO;
 		}).collect(Collectors.toList());
 		return reservationResDTOList;
+	}
+
+	@Transactional
+	public List<ReservationResDTO> selectAllReservation() {
+
+		List<ReservationResDTO> reservationResDTOList = roomQueryDSL.selectAllReservation().stream().map(roomReservation -> {
+			return ReservationResDTO.builder().build().of(roomReservation);
+		}).collect(Collectors.toList());
+
+		return reservationResDTOList;
+	}
+
+	@Transactional
+	public  List<ReservationResDTO> selectByRoomNoReservation(int roomNo) {
+		return roomQueryDSL.selectRoomNoReservation(roomNo).stream().map(roomReservation -> {return ReservationResDTO.builder().build().of(roomReservation);}).collect(Collectors.toList());
+	}
+
+	@Transactional
+	public List<ReservationResDTO> selectByDateRoomReservation(String startTime, String endTime) {
+		return roomQueryDSL.selectDateTimeReservation(startTime, endTime).stream().map(roomReservation -> {return ReservationResDTO.builder().build().of(roomReservation);}).collect(Collectors.toList());
+	}
+	@Transactional
+	public List<RoomBookmarkDTO> selectByLimitBookmark(int limit) {
+		return	roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
 	}
 }
