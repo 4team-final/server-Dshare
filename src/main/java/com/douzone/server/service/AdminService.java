@@ -8,13 +8,14 @@ import com.douzone.server.dto.employee.SignupReqDTO;
 import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
+import com.douzone.server.entity.VehicleImg;
 import com.douzone.server.exception.EmpAlreadyExistException;
 import com.douzone.server.exception.EmpNotFoundException;
 import com.douzone.server.exception.ErrorCode;
 import com.douzone.server.exception.ImgFileNotFoundException;
 import com.douzone.server.repository.EmployeeRepository;
+import com.douzone.server.repository.VehicleImgRepository;
 import com.douzone.server.repository.VehicleRepository;
-import com.douzone.server.repository.VehicleReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.douzone.server.config.utils.Msg.*;
+
 
 @Slf4j
 @Service
@@ -37,7 +40,7 @@ public class AdminService {
 	private static final String METHOD_NAME = VehicleService.class.getName();
 	private final EmployeeRepository employeeRepository;
 	private final VehicleRepository vehicleRepository;
-	private final VehicleReservationRepository vehicleReservationRepository;
+	private final VehicleImgRepository vehicleImgRepository;
 	private final DecodeEncodeHandler decodeEncodeHandler;
 	private final AwsS3 awsS3;
 
@@ -119,24 +122,57 @@ public class AdminService {
 	}
 
 	@Transactional
-	public ResponseDTO createVehicle(VehicleUpdateDTO vehicleUpdateDTO) {
+	public ResponseDTO createVehicle(VehicleUpdateDTO vehicleUpdateDTO, List<MultipartFile> files) {
 		log.info(METHOD_NAME + "- createVehicle");
+		Optional.ofNullable(files).filter(v -> !v.isEmpty())
+				.orElseThrow(() -> new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND));
+
+		ArrayList<String> fileName = new ArrayList<>(), fileType = new ArrayList<>();
+		ArrayList<Long> fileLength = new ArrayList<>();
+
+		for (MultipartFile file : files) {
+			fileName.add(LocalDateTime.now() + "_" + file.getOriginalFilename());
+			fileType.add(file.getContentType());
+			fileLength.add(file.getSize());
+		}
+
+		String[] uploadUrl = new String[files.size()];
+
+		for (int i = 0; i < files.size(); i++) {
+			try {
+				uploadUrl[i] = awsS3.upload(files.get(i), "vehicle/" + fileName.get(i), fileType.get(i), fileLength.get(i));
+			} catch (AmazonS3Exception | IOException ae) {
+				log.error("차량 이미지 URL 업로드 에러" + METHOD_NAME, ae);
+			}
+		}
+		StringBuilder filePath = new StringBuilder();
+		for (String s : uploadUrl) filePath.append(s).append(" ");
+		StringBuilder fType = new StringBuilder();
+		for (String s : fileType) fType.append(s).append(" ");
+		StringBuilder fSize = new StringBuilder();
+		for (Long l : fileLength) fSize.append(l).append(" ");
 
 		return Optional.of(new ResponseDTO())
 				.map(res -> {
-					vehicleRepository.save(Vehicle.builder()
+					Long vId = vehicleRepository.save(Vehicle.builder()
 							.name(vehicleUpdateDTO.getName())
 							.number(vehicleUpdateDTO.getNumber())
 							.model(vehicleUpdateDTO.getModel())
 							.color(vehicleUpdateDTO.getColor())
 							.capacity(vehicleUpdateDTO.getCapacity())
+							.build()).getId();
+					vehicleImgRepository.save(VehicleImg.builder()
+							.vehicle(Vehicle.builder().id(vId).build())
+							.path(String.valueOf(filePath))
+							.type(String.valueOf(fType))
+							.imgSize(String.valueOf(fSize))
 							.build());
-					return ResponseDTO.of(HttpStatus.OK, "");
-				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESISTER);
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RESISTER));
 	}
 
 	@Transactional
-	public ResponseDTO updateVehicle(VehicleUpdateDTO vehicleUpdateDTO, Long id) {
+	public ResponseDTO updateVehicle(VehicleUpdateDTO vehicleUpdateDTO, Long id, List<MultipartFile> files) {
 		log.info(METHOD_NAME + "- updateVehicle");
 
 		return Optional.of(new ResponseDTO())
@@ -145,8 +181,8 @@ public class AdminService {
 				.filter(Optional::isPresent)
 				.map(res -> {
 					res.get().updateVehicle(vehicleUpdateDTO);
-					return ResponseDTO.of(HttpStatus.OK, "");
-				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_UPDATE);
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_UPDATE));
 	}
 
 	@Transactional
@@ -160,8 +196,8 @@ public class AdminService {
 					if (res.isPresent()) vehicleRepository.deleteById(id);
 
 					return (vehicleRepository.findById(id).isPresent()) ?
-							ResponseDTO.fail(HttpStatus.BAD_REQUEST, "") :
-							ResponseDTO.of(HttpStatus.OK, "");
-				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_DELETE) :
+							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_DELETE);
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_DELETE));
 	}
 }
