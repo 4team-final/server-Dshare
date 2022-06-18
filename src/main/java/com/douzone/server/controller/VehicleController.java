@@ -31,7 +31,8 @@ import java.util.Map;
  * findMarkVehicle - 내가 즐겨찾기한 차량 조회 /list/own/mark
  * findMarkBest - 즐겨찾기가 많은 차량 Top 3 조회 /best/mark
  * findVehicleReserved - 수정 전 차량 단일 조회 /reservation
- * soonAndIngReservationMyTime - 동적 타이머 /own/reservation
+ * soonReservationMyTime - 동적 타이머 /own/reservation/next
+ * IngReservationMyTime - 동적 타이머 /own/reservation/ongoing
  * Update:
  * updateReserved - 내 차량 예약 현황 수정 /modification
  * Delete:
@@ -190,5 +191,23 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findVehicleReserved");
 
 		return vehicleService.findVehicleReserved(id);
+	}
+
+	@GetMapping(path = "/own/reservation/next")
+	public ResponseDTO soonReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- soonReservationMyTime");
+
+		Long empId = principalDetails.getEmployee().getId();
+
+		return vehicleService.soonReservationMyTime(empId);
+	}
+
+	@GetMapping(path = "/own/reservation/ongoing")
+	public ResponseDTO ingReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- ingReservationMyTime");
+
+		Long empId = principalDetails.getEmployee().getId();
+
+		return vehicleService.ingReservationMyTime(empId);
 	}
 }

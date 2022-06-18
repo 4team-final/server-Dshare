@@ -13,6 +13,7 @@ import com.douzone.server.repository.VehicleReservationRepository;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.douzone.server.config.utils.Msg.*;
@@ -254,5 +256,34 @@ public class VehicleService {
 				.map(v -> vehicleRepository.findCustom(id))
 				.map(res -> res.map(iVehicleListResDTO -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NO, iVehicleListResDTO)).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값을 조회에 실패하였습니다.")))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값이 존재하지 않습니다."));
+	}
+
+	@Transactional
+	public ResponseDTO soonReservationMyTime(Long empId) {
+		log.info(METHOD_NAME + "- soonReservationMyTime");
+
+		LocalDateTime soon = vehicleReservationRepository.soonReservationMyTime(empId, PageRequest.of(0,1)).getStartedAt();
+		LocalDateTime now = LocalDateTime.now();
+		Long time = ChronoUnit.SECONDS.between(now, soon);
+
+		return Optional.of(new ResponseDTO())
+				.filter(u -> (empId != null))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, time))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + "결과값이 존재하지 않습니다."));
+	}
+
+	@Transactional
+	public ResponseDTO ingReservationMyTime(Long empId) {
+		log.info(METHOD_NAME + "- IngReservationMyTime");
+
+		LocalDateTime ing = vehicleReservationRepository.ingReservationMyTime(empId, PageRequest.of(0,1)).getEndedAt();
+		LocalDateTime now = LocalDateTime.now();
+		Long time = ChronoUnit.SECONDS.between(now, ing);
+
+		return Optional.of(new ResponseDTO())
+				.filter(u -> (empId != null))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, time))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + "결과값이 존재하지 않습니다."));
+
 	}
 }
