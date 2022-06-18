@@ -41,9 +41,9 @@ import java.util.Map;
  * deleteReserved - 내 차량 예약 삭제 /elimination
  * deleteMark - 내 즐겨찾기 차량 삭제 /elimination/mark
  * 차량 등록, 수정, 삭제 (AdminController)
- * createVehicle - 차량 등록 /creation/vehicle
- * updateVehicle - 차량 수정 /modification/vehicle
- * deleteVehicle - 차량 삭제 /elimination/vehicle
+ * createVehicle - 차량 등록 /creation/vehicle - POST
+ * updateVehicle - 차량 수정 /modification/vehicle - PATCH
+ * deleteVehicle - 차량 삭제 /elimination/vehicle - DELETE
  */
 
 @Slf4j

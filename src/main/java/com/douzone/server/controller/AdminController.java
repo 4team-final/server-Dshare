@@ -50,7 +50,7 @@ public class AdminController {
 		return ResponseEntity.ok().body(adminService.createVehicle(vehicleUpdateDTO));
 	}
 
-	@PostMapping("/modification/vehicle")
+	@PatchMapping("/modification/vehicle")
 	public ResponseEntity<ResponseDTO> updateVehicle(@RequestBody @Valid VehicleUpdateDTO vehicleUpdateDTO, @RequestParam("id") Long id) {
 		return ResponseEntity.ok().body(adminService.updateVehicle(vehicleUpdateDTO, id));
 	}
