@@ -4,14 +4,12 @@ import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Message;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.dto.room.RoomBookmarkDTO;
-import com.douzone.server.entity.Employee;
+import com.douzone.server.dto.room.RoomBookmarkReqDTO;
 import com.douzone.server.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,6 +38,11 @@ public class EmployeeController {
 	public ResponseEntity<ResponseDTO> selectByMyBookmark(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
 				Msg.SUCCESS_ROOM_FIND_MARK, employeeService.selectByMyBookmark(Integer.parseInt(principalDetails.getEmployee().getEmpNo()))));
+	}
+
+	@PostMapping("/room/bookmark")
+	public ResponseEntity<ResponseDTO> bookmarkRegister(@RequestBody RoomBookmarkReqDTO roomBookmarkReqDTO, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_PROFILEIMG, employeeService.bookmarkRegister(roomBookmarkReqDTO)));
 	}
 
 

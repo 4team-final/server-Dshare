@@ -2,8 +2,10 @@ package com.douzone.server.service;
 
 import com.douzone.server.dto.employee.EmpTestDTO;
 import com.douzone.server.dto.employee.ProfileDto;
-import com.douzone.server.dto.room.RoomBookmarkDTO;
+import com.douzone.server.dto.room.RoomBookmarkResDTO;
 import com.douzone.server.entity.Employee;
+import com.douzone.server.repository.EmployeeRepository;
+import com.douzone.server.repository.RoomBookmarkRepository;
 import com.douzone.server.repository.querydsl.EmployeeQueryDSL;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
 	private final EmployeeQueryDSL employeeQueryDSL;
+	private final EmployeeRepository employeeRepository;
+	private final RoomBookmarkRepository roomBookmarkRepository;
 
 
 	public List<EmpTestDTO> queryDSLTest(long positionId) {
@@ -38,7 +42,14 @@ public class EmployeeService {
 		return MyInfo;
 	}
 
-	public List<RoomBookmarkDTO> selectByMyBookmark(int empNo) {
+	public List<RoomBookmarkResDTO> selectByMyBookmark(int empNo) {
 		return employeeQueryDSL.selectByMyBookmark(empNo);
 	}
+
+//	public Long bookmarkRegister(RoomBookmarkReqDTO roomBookmarkReqDTO) {
+//		if (roomBookmarkRepository.existsByMeetingRoom_IdAndEmployee_Id()) {
+//
+//		}
+//		return roomBookmarkRepository.save(roomBookmarkReqDTO.of()).getId();
+//	}
 }

@@ -20,6 +20,7 @@ public enum ErrorCode {
 	//EMP
 	EMP_NOT_FOUND(404, "사원을 찾을 수 없습니다."),
 	EMP_ALREADY_EXIST(400, "이미 존재하는 사원 입니다."),
+	BOOKMARK_ALREADY_EXIST(400, "이미 존재하는 즐겨찾기 입니다."),
 
 	//500
 	INTERNAL_SERVER_ERROR(500, "내부 서버 오류 입니다."),

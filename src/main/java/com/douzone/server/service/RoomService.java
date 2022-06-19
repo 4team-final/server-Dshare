@@ -4,7 +4,7 @@ package com.douzone.server.service;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.reservation.*;
-import com.douzone.server.dto.room.RoomBookmarkDTO;
+import com.douzone.server.dto.room.RoomBookmarkResDTO;
 import com.douzone.server.dto.room.RoomObjectReqDTO;
 import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.entity.MeetingRoom;
@@ -201,7 +201,7 @@ public class RoomService {
 	}
 
 	@Transactional
-	public List<RoomBookmarkDTO> selectByLimitBookmark(int limit) {
+	public List<RoomBookmarkResDTO> selectByLimitBookmark(int limit) {
 		return roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
 	}
 
