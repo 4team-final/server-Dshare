@@ -4,13 +4,11 @@ import com.douzone.server.entity.Employee;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -38,8 +36,6 @@ class EmployeeQueryDSLTest {
 		assertThat(list.get(0).getPosition().getName()).isEqualTo(position);
 //		System.out.println(employeeQueryDSL.findEmployeeList(1).get(0));
 	}
-
-
 
 
 }

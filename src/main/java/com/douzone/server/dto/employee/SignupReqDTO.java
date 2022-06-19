@@ -19,19 +19,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SignupReqDTO {
 
+	@NotNull(message = "팀 Id가 없습니다.")
 	@Max(48)
 	@Min(1)
-	@NotNull(message = "팀 Id가 null 일 수 없습니다.")
 	private long teamId;
 
 	@Max(13)
 	@Min(1)
-	@NotNull(message = "직책 Id가 null 일 수 없습니다.")
+	@NotNull(message = "직책 Id가 없습니다.")
 	private long positionId;
 
 	@Max(14)
 	@Min(1)
-	@NotNull(message = "부서 Id null 일 수 없습니다.")
+	@NotNull(message = "부서 Id 없습니다.")
 	private long deptId;
 
 	private String empNo;
@@ -67,7 +67,7 @@ public class SignupReqDTO {
 
 	public Employee of(String empNo, String password) {
 		return Employee.builder().empNo(empNo).password(password).name(name).email(email).tel(tel).birthday(birthday)
-				.team(Team.builder().id((teamId))
-						.department(Department.builder().id(deptId).build()).build()).position(Position.builder().id(positionId).build()).build();
+				.team(Team.builder().id((teamId)).department(Department.builder().id(deptId).build()).build())
+				.position(Position.builder().id(positionId).build()).build();
 	}
 }
