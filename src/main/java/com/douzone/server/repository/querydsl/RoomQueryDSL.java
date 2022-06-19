@@ -1,6 +1,6 @@
 package com.douzone.server.repository.querydsl;
 
-import com.douzone.server.dto.room.QRoomBookmarkDTO;
+import com.douzone.server.dto.room.QRoomBookmarkResDTO;
 import com.douzone.server.dto.room.RoomBookmarkResDTO;
 import com.douzone.server.entity.RoomReservation;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -56,7 +56,7 @@ public class RoomQueryDSL {
 
 	public List<RoomBookmarkResDTO> selectTop3BookmarkMeetingRoom(long limit) {
 		return jpaQueryFactory
-				.select(new QRoomBookmarkDTO(
+				.select(new QRoomBookmarkResDTO(
 						roomBookmark.id,
 						roomBookmark.employee.id.as("empId"),
 						roomBookmark.meetingRoom.id.as("roomId"),

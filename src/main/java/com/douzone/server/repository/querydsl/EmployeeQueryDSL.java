@@ -1,6 +1,6 @@
 package com.douzone.server.repository.querydsl;
 
-import com.douzone.server.dto.room.QRoomBookmarkDTO;
+import com.douzone.server.dto.room.QRoomBookmarkResDTO;
 import com.douzone.server.dto.room.RoomBookmarkResDTO;
 import com.douzone.server.entity.Employee;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -37,7 +37,7 @@ public class EmployeeQueryDSL {
 
 	public List<RoomBookmarkResDTO> selectByMyBookmark(int empNo) {
 		return jpaQueryFactory
-				.select(new QRoomBookmarkDTO(
+				.select(new QRoomBookmarkResDTO(
 						roomBookmark.id,
 						roomBookmark.employee.as("employee"),
 						roomBookmark.meetingRoom.as("meetingRoom"),
@@ -48,6 +48,4 @@ public class EmployeeQueryDSL {
 				.where(roomBookmark.employee.empNo.eq(String.valueOf(empNo)))
 				.fetch();
 	}
-
-
 }

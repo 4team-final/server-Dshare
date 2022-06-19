@@ -1,10 +1,8 @@
 package com.douzone.server.controller;
 
 import com.douzone.server.config.security.auth.PrincipalDetails;
-import com.douzone.server.config.utils.Message;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.dto.room.RoomBookmarkReqDTO;
 import com.douzone.server.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,7 @@ public class EmployeeController {
 	@GetMapping("/test")
 	public ResponseEntity<ResponseDTO> queryDSLTest(@RequestParam(value = "positionId") long positionId) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
-				Message.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
+				Msg.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
 	}
 
 	@GetMapping("/profile/read")
@@ -40,10 +38,15 @@ public class EmployeeController {
 				Msg.SUCCESS_ROOM_FIND_MARK, employeeService.selectByMyBookmark(Integer.parseInt(principalDetails.getEmployee().getEmpNo()))));
 	}
 
-	@PostMapping("/room/bookmark")
-	public ResponseEntity<ResponseDTO> bookmarkRegister(@RequestBody RoomBookmarkReqDTO roomBookmarkReqDTO, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_PROFILEIMG, employeeService.bookmarkRegister(roomBookmarkReqDTO)));
+	@PostMapping("/room/bookmark/{roomId}")
+	public ResponseEntity<ResponseDTO> bookmarkRegisterAndDelete(@PathVariable("roomId") long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		Long result = employeeService.bookmarkRegisterAndDelete(roomId, principalDetails.getEmployee().getId());
+		if (result == 1) {
+			return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_BOOKMARK));
+
+		} else {
+			return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_DELETE_MARK));
+
+		}
 	}
-
-
 }

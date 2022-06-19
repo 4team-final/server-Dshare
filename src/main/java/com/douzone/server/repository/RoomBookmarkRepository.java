@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoomBookmarkRepository extends JpaRepository<RoomBookmark, Long> {
 	boolean existsByMeetingRoom_IdAndEmployee_Id(long roomId, long empId);
+
+	void deleteByMeetingRoom_IdAndEmployee_Id(long roomId, long empId);
+
 }
