@@ -3,6 +3,8 @@ package com.douzone.server.service;
 import com.douzone.server.dto.reservation.*;
 import com.douzone.server.dto.room.RoomBookmarkDTO;
 import com.douzone.server.entity.*;
+import com.douzone.server.exception.ErrorCode;
+import com.douzone.server.exception.reservationNotFoundException;
 import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;
 import com.douzone.server.repository.querydsl.RoomQueryDSL;
@@ -13,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -149,5 +148,17 @@ public class RoomService {
 	@Transactional
 	public ReservationResDTO save(RegistReservationReqDto registReservationReqDto) {
 		return ReservationResDTO.builder().build().ofSave(roomReservationRepository.save(new RoomReservation().of(registReservationReqDto)));
+	}
+	@Transactional
+	public Long update(RegistReservationReqDto registReservationReqDto, long id) {
+		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
+		roomReservation.updateReservation(
+				registReservationReqDto.getRoomId(),
+				registReservationReqDto.getReason(),
+				registReservationReqDto.getTitle(),
+				registReservationReqDto.getStartedAt(),
+				registReservationReqDto.getEndedAt()
+		);
+		return roomReservation.getId();
 	}
 }

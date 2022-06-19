@@ -9,14 +9,18 @@ import com.douzone.server.service.RoomService;
 import com.douzone.server.repository.RoomReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 /**
  * recentReservation() - 최근에 예약된 회의실 TOP 조회
@@ -90,8 +94,15 @@ public class RoomController {
 	 * 6/18 14:17 회의실 예약 오윤성
 	 */
 	@PostMapping("/regist")
-	public ResponseEntity<ResponseDTO> saveReservation(@RequestBody @Validated RegistReservationReqDto registReservationReqDto) {
+	public ResponseEntity<ResponseDTO> saveReservation(@Validated @RequestBody RegistReservationReqDto registReservationReqDto) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE, roomService.save(registReservationReqDto)));
 	}
+
+	@PostMapping("/my/update/{id}")
+	public ResponseEntity<ResponseDTO> updateReservation(@Validated  RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_UPDATE, roomService.update(registReservationReqDto, id)));
+	}
+
+
 
 }

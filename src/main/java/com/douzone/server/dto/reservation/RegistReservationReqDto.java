@@ -3,35 +3,38 @@ package com.douzone.server.dto.reservation;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.MeetingRoom;
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.apache.tomcat.jni.Local;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@ToString
+@AllArgsConstructor
 public class RegistReservationReqDto {
 
-	@NotNull
-	private long empId;
-	@NotNull
-	private long roomId;
-	@NotEmpty
+	@NotNull(groups = registRes.class)
+	private Long empId;
+	@NotNull(groups = {registRes.class, updateRes.class})
+	private Long roomId;
+
+	@NotBlank(groups = {registRes.class, updateRes.class})
 	private String reason;
-	@NotEmpty
+	@NotBlank(groups = {registRes.class, updateRes.class})
 	private String title;
-	@NotNull
+	@NotNull(groups = {registRes.class, updateRes.class}) @FutureOrPresent
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime startedAt;
-	@NotNull
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	@NotNull(groups = {registRes.class, updateRes.class}) @FutureOrPresent
 	private LocalDateTime endedAt;
+
+
 
 
 }

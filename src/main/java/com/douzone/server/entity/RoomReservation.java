@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class RoomReservation extends BaseAtTime {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -35,6 +36,14 @@ public class RoomReservation extends BaseAtTime {
 	private String title;
 	private LocalDateTime startedAt;
 	private LocalDateTime endedAt;
+
+	public void updateReservation(long roomId, String reason, String title, LocalDateTime startedAt, LocalDateTime endedAt) {
+		this.meetingRoom.builder().id(roomId).build();
+		this.reason = reason;
+		this.title = title;
+		this.startedAt =startedAt;
+		this.endedAt = endedAt;
+	}
 
 	public RoomReservation of(RegistReservationReqDto registReservationReqDto) {
 		return RoomReservation.builder()
