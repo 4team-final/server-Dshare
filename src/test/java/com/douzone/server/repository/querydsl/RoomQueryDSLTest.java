@@ -62,15 +62,6 @@ class RoomQueryDSLTest {
 
 	}
 
-//	@Test
-//	void 탑3즐겨찾기조회() {
-//
-//		//given은 더미데이터를 활용해서 작성
-//		int given = 3;
-//		for(int i = 0 ; i < 3; i++){
-//			System.out.println(roomQueryDSL.selectTop3BookmarkMeetingRoom(given).get(i).getMeetingRoom().getRoomNo());
-//		}
-//	}
 
 
 }
