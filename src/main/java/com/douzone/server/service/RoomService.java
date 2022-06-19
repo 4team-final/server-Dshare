@@ -7,9 +7,11 @@ import com.douzone.server.dto.reservation.*;
 import com.douzone.server.dto.room.RoomBookmarkDTO;
 import com.douzone.server.dto.room.RoomObjectReqDTO;
 import com.douzone.server.dto.room.RoomReqDTO;
+import com.douzone.server.entity.MeetingRoom;
+import com.douzone.server.entity.RoomImg;
+import com.douzone.server.entity.RoomObject;
 import com.douzone.server.entity.RoomReservation;
-import com.douzone.server.exception.ErrorCode;
-import com.douzone.server.exception.ImgFileNotFoundException;
+import com.douzone.server.exception.*;
 import com.douzone.server.repository.RoomImgRepository;
 import com.douzone.server.repository.RoomObjectRepository;
 import com.douzone.server.repository.RoomRepository;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -173,31 +176,6 @@ public class RoomService {
 		return weekCountHourResDTOList;
 	}
 
-	@Transactional
-	public Long register(List<MultipartFile> files, RoomReqDTO roomReqDTO) {
-		String basePath = "room/";
-
-		//회의실 등록
-		long roomId = roomRepository.save(roomReqDTO.of()).getId();
-		//회의실 물품 등록
-		List<Long> roomObjectIdList = roomReqDTO.getRoomObjects().stream().map(roomObjectReqDTO -> {
-			long id = roomObjectRepository.save(RoomObjectReqDTO.builder().build().of(roomId, roomObjectReqDTO)).getId();
-			return id;
-		}).collect(Collectors.toList());
-		//회의실 이미지 등록
-		List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
-		List<Long> roomImgIdList = uploadDTOS.stream().map(uploadDTO -> {
-			long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
-			return id;
-		}).collect(Collectors.toList());
-
-		if (uploadDTOS == null) {
-			throw new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND);
-		}
-
-		return roomId;
-	}
-
 	public List<ReservationResDTO> selectAllReservation() {
 
 		List<ReservationResDTO> reservationResDTOList = roomQueryDSL.selectAllReservation().stream().map(roomReservation -> {
@@ -224,5 +202,59 @@ public class RoomService {
 	@Transactional
 	public List<RoomBookmarkDTO> selectByLimitBookmark(int limit) {
 		return roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
+	}
+
+	@Transactional
+	public Long register(List<MultipartFile> files, RoomReqDTO roomReqDTO) {
+		String basePath = "room/";
+
+		//회의실 등록
+		long roomId = roomRepository.save(roomReqDTO.of()).getId();
+		//회의실 물품 등록
+		List<Long> roomObjectInsertIdList = roomReqDTO.getRoomObjects().stream().map(roomObjectReqDTO -> {
+			long id = roomObjectRepository.save(RoomObjectReqDTO.builder().build().of(roomId, roomObjectReqDTO)).getId();
+			return id;
+		}).collect(Collectors.toList());
+		//회의실 이미지 등록
+		List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
+		List<Long> roomImgInsertIdList = uploadDTOS.stream().map(uploadDTO -> {
+			long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
+			return id;
+		}).collect(Collectors.toList());
+
+		if (uploadDTOS == null) {
+			throw new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND);
+		}
+		return roomId;
+	}
+
+	@Transactional
+	public Long delete(long roomId) {
+		List<RoomObject> roomObjectList = roomObjectRepository.findByMeetingRoom_Id(roomId);
+		if (roomObjectList == null) {
+			throw new RoomObjectNotFoundException(ErrorCode.ROOM_OBJECT_NOT_FOUND);
+		}
+		List<Long> roomObjectDeleteIdList = roomObjectList.stream().map(roomObject -> {
+			roomObjectRepository.deleteById(roomObject.getId());
+			return roomObject.getId();
+		}).collect(Collectors.toList());
+
+		List<RoomImg> roomImgList = roomImgRepository.findByMeetingRoom_Id(roomId);
+		if (roomImgList == null) {
+			throw new RoomImgNotFoundException(ErrorCode.ROOM_OBJECT_NOT_FOUND);
+		}
+		List<Long> roomImgDeleteIdList = roomImgList.stream().map(roomImg -> {
+			roomImgRepository.deleteById(roomImg.getId());
+			return roomImg.getId();
+		}).collect(Collectors.toList());
+		//이미지 경로
+		List<String> CurrentImgPath = roomImgRepository.findPathByRoomId(roomId);
+		uploadUtils.delete(CurrentImgPath);
+
+
+		Optional<MeetingRoom> room = Optional.ofNullable(roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException(ErrorCode.ROOM_NOT_FOUND)));
+		roomRepository.delete(room.get());
+
+		return room.get().getId();
 	}
 }

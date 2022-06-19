@@ -34,15 +34,6 @@ public class UploadUtils {
 		List<Long> fileLength = new ArrayList<>();
 		List<String> filePath = new ArrayList<>();
 		List<UploadDTO> uploadDTOS = new ArrayList<>();
-//		Object object = null;
-//
-//		if (basePath.equals("vehicle/")) {
-//			object = new Vehicle();
-//		} else if (basePath.equals("room/")) {
-//			object = new MeetingRoom();
-//		} else if (basePath.equals("profile/")) {
-//			object = null;
-//		}
 
 		try {
 			for (int i = 0; i < files.size(); i++) {
@@ -52,30 +43,47 @@ public class UploadUtils {
 					fileLength.add(files.get(i).getSize());
 					// 업로드 될 버킷 객체 url
 					filePath.add(awsS3.upload(files.get(i), basePath + fileName.get(i), fileType.get(i), fileLength.get(i)));
-
 					uploadDTOS.add(UploadDTO.builder().path(awsPath + filePath.get(i)).type(fileType.get(i)).imgSize(String.valueOf(fileLength.get(i))).build());
-
 				} catch (AmazonS3Exception e) {
-					log.error("AmazonS3Exception : UploadUtils - uploadProfileImg " + e.getMessage());
+					log.error("AmazonS3Exception : UploadUtils - upload " + e.getMessage());
 					e.printStackTrace();
 				} catch (IOException e) {
-					log.error("IOException : UploadUtils - uploadProfileImg " + e.getMessage());
+					log.error("IOException : UploadUtils - upload " + e.getMessage());
 					e.printStackTrace();
 				} catch (Exception e) {
-					log.error("Exception : UploadUtils - uploadProfileImg " + e.getMessage());
+					log.error("Exception : UploadUtils - upload " + e.getMessage());
 					e.printStackTrace();
 				}
 			}
-
 			return uploadDTOS;
 		} catch (IllegalStateException e) {
-			log.error("IllegalStateException : UploadUtils - uploadProfileImg " + e.getMessage());
+			log.error("IllegalStateException : UploadUtils - upload " + e.getMessage());
 			e.printStackTrace();
 		} catch (Exception e) {
-			log.error("Exception : UploadUtils - uploadProfileImg " + e.getMessage());
+			log.error("Exception : UploadUtils - upload " + e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
 	}
 
+	public void delete(List<String> CurrentImgPath) {
+
+		List<String> DelImgPathKey = new ArrayList<>();
+
+		for (int i = 0; i < CurrentImgPath.size(); i++) {
+			try {
+				if (!(CurrentImgPath.get(i) == null)
+				) {
+					DelImgPathKey.add(CurrentImgPath.get(i).split("/")[3] + "/" + CurrentImgPath.get(i).split("/")[4]);
+					awsS3.delete(DelImgPathKey.get(i));
+				}
+			} catch (AmazonS3Exception e) {
+				log.error("AmazonS3Exception : UploadUtils - delete " + e.getMessage());
+				e.printStackTrace();
+			} catch (Exception e) {
+				log.error("Exception : UploadUtils - delete " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
 }

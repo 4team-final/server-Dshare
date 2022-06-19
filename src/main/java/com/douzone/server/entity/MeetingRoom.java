@@ -13,21 +13,26 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Entity
-@Table(name="meeting_room")
+@Table(name = "meeting_room")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MeetingRoom extends BaseAtTime {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String content;
-    private String categoryName;
-    private int roomNo;
-    private int capacity;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String content;
+	private String categoryName;
+	private int roomNo;
+	private int capacity;
 
 
-
+	public void updateRoom(MeetingRoom room) {
+		this.content = room.getContent();
+		this.categoryName = room.getCategoryName();
+		this.roomNo = room.getRoomNo();
+		this.capacity = room.getCapacity();
+	}
 }
