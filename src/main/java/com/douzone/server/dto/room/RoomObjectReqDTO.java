@@ -17,7 +17,7 @@ public class RoomObjectReqDTO {
 	private String name;
 
 	@Builder
-	public RoomObjectReqDTO(long id, long roomId, String name) {
+	public RoomObjectReqDTO(long roomId, String name) {
 		this.roomId = roomId;
 		this.name = name;
 	}

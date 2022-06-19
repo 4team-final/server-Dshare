@@ -26,4 +26,10 @@ public class RoomImg extends BaseAtTime {
     private String type;
     private String imgSize;
 
+    public void updateRoomImg(String path, String type, String imgSize) {
+        this.path = path;
+        this.type = type;
+        this.imgSize = imgSize;
+    }
+
 }

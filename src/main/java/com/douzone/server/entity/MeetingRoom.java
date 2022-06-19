@@ -1,7 +1,6 @@
 package com.douzone.server.entity;
 
 import com.douzone.server.config.utils.BaseAtTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,15 +8,15 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @DynamicInsert
 @DynamicUpdate
 @Entity
 @Table(name = "meeting_room")
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class MeetingRoom extends BaseAtTime {
 
 	@Id
@@ -28,11 +27,22 @@ public class MeetingRoom extends BaseAtTime {
 	private int roomNo;
 	private int capacity;
 
+	@OneToMany(mappedBy = "meetingRoom", cascade = CascadeType.ALL)
+	List<RoomObject> roomObjectList = new ArrayList<>();
 
-	public void updateRoom(MeetingRoom room) {
-		this.content = room.getContent();
-		this.categoryName = room.getCategoryName();
-		this.roomNo = room.getRoomNo();
-		this.capacity = room.getCapacity();
+	public void updateRoom(String content, String categoryName, int roomNo, int capacity) {
+		this.content = content;
+		this.categoryName = categoryName;
+		this.roomNo = roomNo;
+		this.capacity = capacity;
+	}
+
+	@Builder
+	public MeetingRoom(Long id, String content, String categoryName, int roomNo, int capacity) {
+		this.id = id;
+		this.content = content;
+		this.categoryName = categoryName;
+		this.roomNo = roomNo;
+		this.capacity = capacity;
 	}
 }
