@@ -5,6 +5,7 @@ import com.douzone.server.config.s3.AwsS3;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.vehicle.VehicleImgDTO;
 import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
@@ -124,36 +125,12 @@ public class AdminService {
 	@Transactional
 	public ResponseDTO createVehicle(VehicleUpdateDTO vehicleUpdateDTO, List<MultipartFile> files) {
 		log.info(METHOD_NAME + "- createVehicle");
-		Optional.ofNullable(files).filter(v -> !v.isEmpty())
-				.orElseThrow(() -> new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND));
-
-		ArrayList<String> fileName = new ArrayList<>(), fileType = new ArrayList<>();
-		ArrayList<Long> fileLength = new ArrayList<>();
-
-		for (MultipartFile file : files) {
-			fileName.add(LocalDateTime.now() + "_" + file.getOriginalFilename());
-			fileType.add(file.getContentType());
-			fileLength.add(file.getSize());
-		}
-
-		String[] uploadUrl = new String[files.size()];
-
-		for (int i = 0; i < files.size(); i++) {
-			try {
-				uploadUrl[i] = awsS3.upload(files.get(i), "vehicle/" + fileName.get(i), fileType.get(i), fileLength.get(i));
-			} catch (AmazonS3Exception | IOException ae) {
-				log.error("차량 이미지 URL 업로드 에러" + METHOD_NAME, ae);
-			}
-		}
-		StringBuilder filePath = new StringBuilder();
-		for (String s : uploadUrl) filePath.append(s).append(" ");
-		StringBuilder fType = new StringBuilder();
-		for (String s : fileType) fType.append(s).append(" ");
-		StringBuilder fSize = new StringBuilder();
-		for (Long l : fileLength) fSize.append(l).append(" ");
 
 		return Optional.of(new ResponseDTO())
+				.filter(u -> !files.isEmpty())
 				.map(res -> {
+					VehicleImgDTO vehicleImgDTO = updateVehicleImg(files);
+
 					Long vId = vehicleRepository.save(Vehicle.builder()
 							.name(vehicleUpdateDTO.getName())
 							.number(vehicleUpdateDTO.getNumber())
@@ -161,11 +138,12 @@ public class AdminService {
 							.color(vehicleUpdateDTO.getColor())
 							.capacity(vehicleUpdateDTO.getCapacity())
 							.build()).getId();
+
 					vehicleImgRepository.save(VehicleImg.builder()
 							.vehicle(Vehicle.builder().id(vId).build())
-							.path(String.valueOf(filePath))
-							.type(String.valueOf(fType))
-							.imgSize(String.valueOf(fSize))
+							.path(vehicleImgDTO.getPath())
+							.type(vehicleImgDTO.getType())
+							.imgSize(vehicleImgDTO.getImgSize())
 							.build());
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESISTER);
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RESISTER));
@@ -179,10 +157,20 @@ public class AdminService {
 				.filter(u -> id > 0L)
 				.map(v -> vehicleRepository.findById(id))
 				.filter(Optional::isPresent)
-				.map(res -> {
-					res.get().updateVehicle(vehicleUpdateDTO);
+				.map(res -> res.get().updateVehicle(vehicleUpdateDTO))
+				.map(vehicleImgRepository::findById)
+				.filter(Optional::isPresent)
+				.map(data -> {
+					String[] path = data.get().getPath().split(" ");
+					for (String s : path) deleteVehicleImg(s);
+
+					VehicleImgDTO vehicleImgDTO = updateVehicleImg(files);
+					vehicleImgDTO.setVehicleId(id);
+					data.get().updateVehicleImg(vehicleImgDTO);
+
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_UPDATE);
-				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_UPDATE));
+				})
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_UPDATE));
 	}
 
 	@Transactional
@@ -192,12 +180,67 @@ public class AdminService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> id >= 0L)
 				.map(v -> vehicleRepository.findById(id))
+				.filter(Optional::isPresent)
+				.map(v -> vehicleImgRepository.findById(id))
+				.filter(Optional::isPresent)
 				.map(res -> {
-					if (res.isPresent()) vehicleRepository.deleteById(id);
+					String[] path = res.get().getPath().split(" ");
+					for (String s : path) deleteVehicleImg(s);
 
-					return (vehicleRepository.findById(id).isPresent()) ?
+					vehicleImgRepository.deleteById(id);
+					vehicleRepository.deleteById(id);
+
+					return (vehicleRepository.findById(id).isPresent()
+							|| vehicleImgRepository.findById(id).isPresent()) ?
 							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_DELETE) :
 							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_DELETE);
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_DELETE));
+	}
+
+	public VehicleImgDTO updateVehicleImg(List<MultipartFile> files) {
+
+		String[] uploadUrl = new String[files.size()];
+		ArrayList<String> fileName = new ArrayList<>(), fileType = new ArrayList<>();
+		ArrayList<Long> fileLength = new ArrayList<>();
+		StringBuilder fileSet = new StringBuilder();
+
+		List<MultipartFile> data = Optional.of(files).filter(v -> !v.isEmpty())
+				.map(res -> {
+					res.forEach(v -> {
+						fileName.add(LocalDateTime.now() + "_" + v.getOriginalFilename());
+						fileType.add(v.getContentType());
+						fileLength.add(v.getSize());
+					});
+					return res;
+				}).orElseThrow(() -> new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND));
+
+		try {
+			for (int i = 0; i < files.size(); i++)
+				uploadUrl[i] = awsS3.upload(data.get(i), "vehicle/" + fileName.get(i), fileType.get(i), fileLength.get(i));
+		} catch (AmazonS3Exception | IOException ae) {
+			log.error("차량 이미지 URL 업로드 에러" + METHOD_NAME, ae);
+		}
+		for (String s : uploadUrl)
+			fileSet.append(awsPath).append(s).append(" ");
+		uploadUrl = new String[3];
+		uploadUrl[0] = String.valueOf(fileSet);
+		fileSet.setLength(0);
+
+		fileType.forEach(res -> fileSet.append(res).append(" "));
+		uploadUrl[1] = String.valueOf(fileSet);
+		fileSet.setLength(0);
+
+		fileLength.forEach(res -> fileSet.append(res).append(" "));
+		uploadUrl[2] = String.valueOf(fileSet);
+
+		return VehicleImgDTO.builder()
+				.path(String.valueOf(uploadUrl[0]))
+				.type(String.valueOf(uploadUrl[1]))
+				.imgSize(String.valueOf(uploadUrl[2])).build();
+	}
+
+	public void deleteVehicleImg(String fileName) {
+		fileName = fileName.substring(50);
+		awsS3.delete("vehicle/" + fileName);
 	}
 }

@@ -30,11 +30,13 @@ public class Vehicle extends BaseAtTime {
 	private String color;
 	private int capacity;
 
-	public void updateVehicle(VehicleUpdateDTO vehicleUpdateDTO) {
+	public Long updateVehicle(VehicleUpdateDTO vehicleUpdateDTO) {
 		this.name = vehicleUpdateDTO.getName();
 		this.number = vehicleUpdateDTO.getNumber();
 		this.model = vehicleUpdateDTO.getModel();
 		this.color = vehicleUpdateDTO.getColor();
 		this.capacity = vehicleUpdateDTO.getCapacity();
+
+		return this.id;
 	}
 }
