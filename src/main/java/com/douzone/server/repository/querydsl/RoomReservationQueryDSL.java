@@ -1,9 +1,14 @@
 package com.douzone.server.repository.querydsl;
 
 
+
 import com.douzone.server.dto.reservation.QRoomWeekReservationCountDTO;
 import com.douzone.server.dto.reservation.RegistReservationReqDto;
 import com.douzone.server.dto.reservation.RoomWeekReservationCountDTO;
+import com.douzone.server.dto.reservation.QWeekCountHourResDTO;
+import com.douzone.server.dto.reservation.QWeekCountResDTO;
+import com.douzone.server.dto.reservation.WeekCountHourResDTO;
+import com.douzone.server.dto.reservation.WeekCountResDTO;
 import com.douzone.server.entity.RoomReservation;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +27,8 @@ public class RoomReservationQueryDSL {
 	private final JPAQueryFactory jpaQueryFactory;
 
 	public List<RoomReservation> findRecentReservation(int limit) {
-		return jpaQueryFactory.select(roomReservation).from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom).fetchJoin().innerJoin(roomReservation.employee, employee).fetchJoin().where(roomReservation.startedAt.gt(LocalDateTime.now())).orderBy(roomReservation.modifiedAt.desc()).limit(limit).fetch();
+		return jpaQueryFactory.select(roomReservation).from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom).fetchJoin().innerJoin(roomReservation.employee, employee).fetchJoin()
+				.where(roomReservation.startedAt.gt(LocalDateTime.now())).orderBy(roomReservation.modifiedAt.desc()).limit(limit).fetch();
 	}
 
 	public LocalDateTime findBySoonStartTime(LocalDateTime now, long empId) {
@@ -49,9 +55,9 @@ public class RoomReservationQueryDSL {
 				.where(roomReservation.startedAt.lt(LocalDateTime.now()).and(employee.id.eq(empId))).orderBy(roomReservation.modifiedAt.desc()).fetch();
 	}
 
-	public List<RoomWeekReservationCountDTO> findByWeekReservationCount(LocalDateTime now, LocalDateTime nowMinusWeek) {
-		return jpaQueryFactory.select(new QRoomWeekReservationCountDTO(
-						meetingRoom.id.as( "roomId"),
+	public List<WeekCountResDTO> findByWeekAndMonthReservationCount(LocalDateTime now, LocalDateTime nowMinusWeek) {
+		return jpaQueryFactory.select(new QWeekCountResDTO(
+						meetingRoom.id.as("roomId"),
 						meetingRoom.content,
 						meetingRoom.categoryName,
 						meetingRoom.roomNo,
@@ -73,6 +79,21 @@ public class RoomReservationQueryDSL {
 	/**
 	 * 회의실 예약 6/18 오후 2시 오윤성
 	 */
-
-
+	public List<WeekCountHourResDTO> findByWeekAndMonthReservationCountHour(LocalDateTime now, LocalDateTime nowMinusWeek) {
+		return jpaQueryFactory.select(
+						new QWeekCountHourResDTO(
+								meetingRoom.id.as("roomId"),
+								meetingRoom.content,
+								meetingRoom.categoryName,
+								meetingRoom.roomNo,
+								meetingRoom.capacity,
+								meetingRoom.modifiedAt,
+								meetingRoom.id.count().as("count"),
+								roomReservation.startedAt.hour().as("hour")
+						))
+				.from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom)
+				.where(roomReservation.modifiedAt.lt(now).and(roomReservation.modifiedAt.gt(nowMinusWeek)))
+				.groupBy(roomReservation.startedAt.hour())
+				.orderBy(roomReservation.startedAt.hour().asc()).fetch();
+	}
 }
