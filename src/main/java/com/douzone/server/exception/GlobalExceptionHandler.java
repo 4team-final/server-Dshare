@@ -19,9 +19,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({EmpAlreadyExistException.class})
     public ResponseEntity<ErrorResponseDTO> EmpAlreadyExistException(EmpAlreadyExistException e) {
-        log.error("EmpAlreadyExistException : ", e.getMessage());
-        ErrorCode errorCode = e.getErrorCode();
-        return new ResponseEntity<>(new ErrorResponseDTO(errorCode.getStatus(), errorCode.getMessage()), HttpStatus.valueOf(errorCode.getStatus()));
+        return CustomExceptionReturn.returnException(e);
+    }
+
+    @ExceptionHandler({EmpNotFoundException.class})
+    public ResponseEntity<ErrorResponseDTO> EmpNotExistException(EmpAlreadyExistException e) {
+        return CustomExceptionReturn.returnException(e);
+    }
+    @ExceptionHandler({reservationNotFoundException.class})
+    public ResponseEntity<ErrorResponseDTO> ResNotExistException(reservationNotFoundException e) {
+        return CustomExceptionReturn.returnException(e);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
@@ -33,9 +40,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DshareServerException.class)
     public ResponseEntity<ErrorResponseDTO> serverExceptionHandler(DshareServerException e) {
-        log.error("DshareServerException : ", e.getMessage());
-        ErrorCode errorCode = e.getErrorCode();
-        return new ResponseEntity<>(new ErrorResponseDTO(errorCode.getStatus(), errorCode.getMessage()), HttpStatus.valueOf(errorCode.getStatus()));
+        return new CustomExceptionReturn().returnException(e);
     }
 
     @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
@@ -69,7 +74,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponseDTO> handleException(final Exception e) {
         log.error("Exception : " + e.getMessage());
-        log.error("Exception = {}",  e.getStackTrace());
         ErrorResponseDTO response = new ErrorResponseDTO(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

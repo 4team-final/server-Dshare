@@ -2,9 +2,6 @@ package com.douzone.server.repository.querydsl;
 
 
 
-import com.douzone.server.dto.reservation.QRoomWeekReservationCountDTO;
-import com.douzone.server.dto.reservation.RegistReservationReqDto;
-import com.douzone.server.dto.reservation.RoomWeekReservationCountDTO;
 import com.douzone.server.dto.reservation.QWeekCountHourResDTO;
 import com.douzone.server.dto.reservation.QWeekCountResDTO;
 import com.douzone.server.dto.reservation.WeekCountHourResDTO;
@@ -76,9 +73,7 @@ public class RoomReservationQueryDSL {
 				.where(roomReservation.meetingRoom.id.eq(roomId).and(roomReservation.modifiedAt.lt(now).and(roomReservation.modifiedAt.gt(nowMinusWeek))))
 				.orderBy(roomReservation.modifiedAt.desc()).fetch();
 	}
-	/**
-	 * 회의실 예약 6/18 오후 2시 오윤성
-	 */
+
 	public List<WeekCountHourResDTO> findByWeekAndMonthReservationCountHour(LocalDateTime now, LocalDateTime nowMinusWeek) {
 		return jpaQueryFactory.select(
 						new QWeekCountHourResDTO(
@@ -93,6 +88,24 @@ public class RoomReservationQueryDSL {
 						))
 				.from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom)
 				.where(roomReservation.modifiedAt.lt(now).and(roomReservation.modifiedAt.gt(nowMinusWeek)))
+				.groupBy(roomReservation.startedAt.hour())
+				.orderBy(roomReservation.startedAt.hour().asc()).fetch();
+	}
+
+	public List<WeekCountHourResDTO> findByWeekAndMonthMeetingCountHour(LocalDateTime now, LocalDateTime nowMinusWeek) {
+		return jpaQueryFactory.select(
+						new QWeekCountHourResDTO(
+								meetingRoom.id.as("roomId"),
+								meetingRoom.content,
+								meetingRoom.categoryName,
+								meetingRoom.roomNo,
+								meetingRoom.capacity,
+								meetingRoom.modifiedAt,
+								meetingRoom.id.count().as("count"),
+								roomReservation.startedAt.hour().as("hour")
+						))
+				.from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom)
+				.where(roomReservation.startedAt.lt(now).and(roomReservation.startedAt.gt(nowMinusWeek)))
 				.groupBy(roomReservation.startedAt.hour())
 				.orderBy(roomReservation.startedAt.hour().asc()).fetch();
 	}
