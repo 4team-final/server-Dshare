@@ -2,6 +2,7 @@ package com.douzone.server;
 
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.reservation.RegistReservationReqDto;
 import com.douzone.server.exception.EmpAlreadyExistException;
 import com.douzone.server.exception.ErrorCode;
 import com.douzone.server.repository.EmployeeRepository;
@@ -9,11 +10,17 @@ import javafx.util.converter.LocalDateTimeStringConverter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * admin test
@@ -28,7 +35,26 @@ class ServerApplicationTests {
 	private EmployeeRepository employeeRepository;
 	@Autowired
 	private DecodeEncodeHandler decodeEncodeHandler;
+	@Autowired
+	private MessageSource messageSource;
 
+	@Test
+	void 메세지() {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+
+		System.out.println(messageSource.getMessage("hello", null, null));
+		RegistReservationReqDto registReservationReqDto = new RegistReservationReqDto(
+				null, null, " ", " ", null, null);
+
+		Set<ConstraintViolation<RegistReservationReqDto>> violations = validator.validate(registReservationReqDto);
+
+		for (ConstraintViolation<RegistReservationReqDto> violation : violations) {
+			System.out.println("violation = " + violation);
+			System.out.println("violation.getMessage() = " + violation.getMessage());
+		}
+
+	}
 //	@Test
 //	void 사원등록() {
 //		//when

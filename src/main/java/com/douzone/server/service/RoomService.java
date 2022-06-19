@@ -295,4 +295,29 @@ public class RoomService {
 
 		return roomId;
 	}
+
+	@Transactional
+	public Long save(RegistReservationReqDto registReservationReqDto) {
+		return roomReservationRepository.save(RoomReservation.builder().build().of(registReservationReqDto)).getId();
+	}
+
+	@Transactional
+	public Long update(RegistReservationReqDto registReservationReqDto, long id) {
+		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
+		roomReservation.updateReservation(
+				registReservationReqDto.getRoomId(),
+				registReservationReqDto.getReason(),
+				registReservationReqDto.getTitle(),
+				registReservationReqDto.getStartedAt(),
+				registReservationReqDto.getEndedAt()
+		);
+		return roomReservation.getId();
+	}
+
+	@Transactional
+	public Long deleteRes(long id) {
+		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
+		roomReservationRepository.deleteById(id);
+		return roomReservation.getId();
+	}
 }
