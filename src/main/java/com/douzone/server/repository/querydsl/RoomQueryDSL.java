@@ -1,9 +1,10 @@
 package com.douzone.server.repository.querydsl;
-
 import com.douzone.server.dto.room.QRoomBookmarkDTO;
 import com.douzone.server.dto.room.RoomBookmarkDTO;
 import com.douzone.server.entity.*;
 import com.querydsl.core.Tuple;
+import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.RoomReservation;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -76,6 +77,7 @@ public class RoomQueryDSL {
                 .limit(limit)
                 .fetch();
     }
+
 
 
 

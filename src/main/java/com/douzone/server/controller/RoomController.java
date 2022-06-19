@@ -118,10 +118,22 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE, roomService.save(registReservationReqDto)));
 	}
 
+	/**
+	 * 6/19 18:51 회의실 예약 수정 오윤성
+	 */
 	@PostMapping("/my/update/{id}")
-	public ResponseEntity<ResponseDTO> updateReservation(@Validated  RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
+	public ResponseEntity<ResponseDTO> updateReservation(@Validated @RequestBody RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_UPDATE, roomService.update(registReservationReqDto, id)));
 	}
+	/**
+	 * 6/19 18:51 회의실 예약 삭제 오윤성
+	 */
+	@GetMapping("/delete/{id}")
+	public ResponseEntity<ResponseDTO> deleteReservation(@PathVariable("id") long id) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_DELETE, roomService.deleteRes(id)));
+	}
+
+
 
 
 

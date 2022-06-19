@@ -317,4 +317,10 @@ public class RoomService {
 		);
 		return roomReservation.getId();
 	}
+	@Transactional
+	public Long deleteRes(long id) {
+		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
+		roomReservationRepository.deleteById(id);
+		return roomReservation.getId();
+	}
 }
