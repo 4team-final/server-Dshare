@@ -1,6 +1,9 @@
 package com.douzone.server.service;
 
 
+import com.douzone.server.dto.reservation.*;
+import com.douzone.server.dto.room.RoomBookmarkDTO;
+import com.douzone.server.entity.*;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.reservation.*;
@@ -294,5 +297,9 @@ public class RoomService {
 		}).collect(Collectors.toList());
 
 		return roomId;
+	}
+	@Transactional
+	public ReservationResDTO save(RegistReservationReqDto registReservationReqDto) {
+		return ReservationResDTO.builder().build().ofSave(roomReservationRepository.save(new RoomReservation().of(registReservationReqDto)));
 	}
 }

@@ -1,6 +1,7 @@
 package com.douzone.server.entity;
 
 import com.douzone.server.config.utils.BaseAtTime;
+import com.douzone.server.dto.reservation.RegistReservationReqDto;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class RoomReservation extends BaseAtTime {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +35,16 @@ public class RoomReservation extends BaseAtTime {
 	private String title;
 	private LocalDateTime startedAt;
 	private LocalDateTime endedAt;
+
+	public RoomReservation of(RegistReservationReqDto registReservationReqDto) {
+		return RoomReservation.builder()
+				.meetingRoom(MeetingRoom.builder().id(registReservationReqDto.getRoomId()).build())
+				.employee(Employee.builder().id(registReservationReqDto.getEmpId()).build())
+				.reason(registReservationReqDto.getReason())
+				.title(registReservationReqDto.getTitle())
+				.startedAt(registReservationReqDto.getStartedAt())
+				.endedAt(registReservationReqDto.getEndedAt())
+				.build();
+	}
+	
 }

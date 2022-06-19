@@ -13,16 +13,17 @@ import lombok.Getter;
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum ErrorCode {
 
-	ROOM_OBJECT_NOT_FOUND(404, "회의실의 물건을 찾을 수 없습니다."),
+
+  //EMP
+  EMP_NOT_FOUND(404, "사원을 찾을 수 없습니다."), EMP_ALREADY_EXIST(400, "이미 존재하는 사원 입니다."),
+	
+  ROOM_OBJECT_NOT_FOUND(404, "회의실의 물건을 찾을 수 없습니다."),
 	ROOM_IMG_NOT_FOUND(404, "회의실의 이미지를 찾을 수 없습니다."),
 	ROOM_NOT_FOUND(404, "회의실을 찾을 수 없습니다."),
 
-	//EMP
-	EMP_NOT_FOUND(404, "사원을 찾을 수 없습니다."),
-	EMP_ALREADY_EXIST(400, "이미 존재하는 사원 입니다."),
-
 	//500
 	INTERNAL_SERVER_ERROR(500, "내부 서버 오류 입니다."),
+
 
 	//400
 	INVALID_INPUT_VALUE(400, "유효하지 않은 입력값입니다."),
