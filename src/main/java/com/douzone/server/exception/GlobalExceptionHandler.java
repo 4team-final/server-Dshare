@@ -2,6 +2,7 @@ package com.douzone.server.exception;
 
 import com.douzone.server.config.utils.ErrorResponseDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -43,7 +44,10 @@ public class GlobalExceptionHandler {
     }
     /**기본키에 없는 외래키를 입력했을 때
      */
-//    DataIntegrityViolationException
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> PasswordNotMatchException(DataIntegrityViolationException e, ErrorCode ec) {
+        return ExceptionReturn.returnException(e, ec);
+    }
 
     /**함수에 인자가 안들어갔을 때 -> validation시 필드에 널값들어가면 발생
      */

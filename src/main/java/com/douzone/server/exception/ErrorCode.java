@@ -30,13 +30,13 @@ public enum ErrorCode {
 	MISSING_REQUEST_PARAMETER(400, "요청 파라미터를 잃어버렸습니다."),
 	METHOD_NOT_ALLOWED(400, "허락되지 않은 메소드 입니다."),
 
+	NOT_PRIMARY_KEY(400, "고유 키가 존재 하지 않습니다."),
 	//end point
 	MISS_MATCH_ENDPOINT(404, "해당 end point는 요청 할 수 없습니다."),
 
 	IMG_NOT_FOUND(404, "이미지 파일을 찾을 수 없습니다."),
 
 	MAX_UPLOAD_SIZE_EXCEEDED(400, "파일 용량이 초과하였습니다.");
-
 
 	private final int status;
 	private final String message;

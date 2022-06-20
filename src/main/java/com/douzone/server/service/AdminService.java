@@ -99,5 +99,33 @@ public class AdminService {
 
 		return employee.getId();
 	}
+	/**
+	 * 관리자에 의한 비밀번호 변경
+	 * */
+	@Transactional
+	public long updatePw(SignModReqDTO signModReqDTO, long id) throws RuntimeException {
+		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
+
+		//팀, 부서, 포지션을 영속성 컨텍스트의 임플로이 테이블로 가져옴
+
+
+		//관리자에 의한 비밀번호 변경
+//		if (passwordEncoder.matches(signModReqDTO.getOriginPassword(), employee.getPassword())) {
+//				log.info("기존 패스워드가 일치 합니다 기존 패스워드 : {} ", employee.getPassword());
+//		} else {
+//			throw new PasswordNotMatchException(ErrorCode.PW_NOT_MATCH);
+//		}
+//		String password = decodeEncodeHandler.passwordEncode(signModReqDTO.getPassword());
+
+		//팀id랑 부서 id는 못바꿈
+		long teamId = signModReqDTO.getTeamId();
+		long positionId = signModReqDTO.getPositionId();
+		employee.updateProf(signModReqDTO);
+		employeeRepository.updateTP(teamId, positionId, employee.getId());
+
+
+		return employee.getId();
+	}
+
 
 }

@@ -49,6 +49,10 @@ public class AdminController {
 	public ResponseEntity<ResponseDTO> update(@RequestBody @Validated(mod.class) SignModReqDTO signModReqDTO ,@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_MOD, adminService.update(signModReqDTO, principalDetails.getEmployee().getId())));
 	}
+
+	/**
+	 *  사원 비밀번호 수정 - 오윤성
+	 */
 	@GetMapping("/check")
 	public ResponseEntity<ResponseDTO> check() {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));
