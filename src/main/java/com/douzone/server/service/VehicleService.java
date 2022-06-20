@@ -36,8 +36,8 @@ public class VehicleService {
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 
 	@Transactional
-	public ResponseDTO createReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
-		log.info(METHOD_NAME + "- createReservation");
+	public ResponseDTO registerByVehicleReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
+		log.info(METHOD_NAME + "- registerByVehicleReservation");
 
 		VehicleReservationDTO vehicleReservationDTO = VehicleReservationDTO.builder()
 				.vehicleId(vehicleParseDTO.getVehicleId())
@@ -66,8 +66,8 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO createBookmark(Long empId, Long vId) {
-		log.info(METHOD_NAME + "- createBookmark");
+	public ResponseDTO registerByVehicleBookmark(Long empId, Long vId) {
+		log.info(METHOD_NAME + "- registerByVehicleBookmark");
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
@@ -84,95 +84,95 @@ public class VehicleService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findAllReserved() {
-		log.info(METHOD_NAME + "- findAllReserved");
+	public ResponseDTO findByAllReservation() {
+		log.info(METHOD_NAME + "- findByAllReservation");
 
 		return Optional.of(new ResponseDTO())
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL, vehicleRepository.findAllReserved()))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL, vehicleRepository.findByAllReservation()))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findAllReservedPaging(int pageNum) {
-		log.info(METHOD_NAME + "- findAllReservedPaging");
+	public ResponseDTO findByPaginationReservation(int pageNum) {
+		log.info(METHOD_NAME + "- findByPaginationReservation");
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> (pageNum < 0) ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_REQUEST_PARAMETER) :
-						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + pageNum, vehicleRepository.findAllReservedPaging(PageRequest.of(pageNum, 5))))
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + pageNum, vehicleRepository.findByPaginationReservation(PageRequest.of(pageNum, 5))))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findAllUnreserved() {
-		log.info(METHOD_NAME + "- findAllUnreserved");
+	public ResponseDTO findByAllNotReservation() {
+		log.info(METHOD_NAME + "- findByAllNotReservation");
 
 		return Optional.of(new ResponseDTO())
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NONE, vehicleRepository.findAllUnreserved(LocalDateTime.now().plusHours(1L))))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NONE, vehicleRepository.findByAllNotReservation(now().plusHours(1L))))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NONE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findTypeReserved(String model) {
-		log.info(METHOD_NAME + "- findTypeReserved");
+	public ResponseDTO findByModelReservation(String model) {
+		log.info(METHOD_NAME + "- findByModelReservation");
 		return Optional.of(new ResponseDTO())
 				.map(u -> (model == null || model.equals("")) ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + FAIL_REQUEST_PARAMETER) :
-						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_TYPE, vehicleRepository.findTypeReserved(model)))
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_TYPE, vehicleRepository.findByModelReservation(model)))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findDateReserved(String start, String end) {
-		log.info(METHOD_NAME + "- findDateReserved");
+	public ResponseDTO findByDateTimeReservation(String start, String end) {
+		log.info(METHOD_NAME + "- findByDateTimeReservation");
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> (start == null || start.equals("") || end == null || end.equals("")) ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_REQUEST_PARAMETER) :
-						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_DATE, vehicleRepository.findDateReserved(
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_DATE, vehicleRepository.findByDateTimeReservation(
 								LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
 								LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findEmpBefore(Long id) {
-		log.info(METHOD_NAME + "- findEmpBefore");
+	public ResponseDTO findByMyPastReservation(Long id) {
+		log.info(METHOD_NAME + "- findByMyPastReservation");
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> (id != null) ?
-						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEFORE, vehicleRepository.findEmpBefore(id)) :
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEFORE, vehicleRepository.findByMyPastReservation(id)) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + FAIL_REQUEST_PARAMETER)
 				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findEmpAfter(Long id) {
-		log.info(METHOD_NAME + "- findEmpAfter");
+	public ResponseDTO findByMyCurrentReservation(Long id) {
+		log.info(METHOD_NAME + "- findByMyCurrentReservation");
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> (id != null) ?
-						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_AFTER, vehicleRepository.findEmpAfter(id)) :
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_AFTER, vehicleRepository.findByMyCurrentReservation(id)) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_REQUEST_PARAMETER)
 				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findWeekVehicle() {
-		log.info(METHOD_NAME + "- findWeekVehicle");
+	public ResponseDTO weekMostReservedVehicle() {
+		log.info(METHOD_NAME + "- weekMostReservedVehicle");
 
 		return Optional.of(new ResponseDTO())
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_WEEK, vehicleRepository.findWeekVehicle(LocalDateTime.now().minusDays(7L))))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_WEEK, vehicleRepository.weekMostReservedVehicle(now().minusDays(7L))))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findWeekDate() {
-		log.info(METHOD_NAME + "- findWeekDate");
+	public ResponseDTO weekMostReservedTime() {
+		log.info(METHOD_NAME + "- weekMostReservedTime");
 
 		return Optional.of(new ResponseDTO()).map(u -> {
 			Map<String, Integer> map = new HashMap<>();
-			List<VehicleWeekTimeDTO> result = vehicleRepository.findWeekDate(LocalDateTime.now().minusDays(7L), LocalDateTime.now());
+			List<VehicleWeekTimeDTO> result = vehicleRepository.weekMostReservedTime(now().minusDays(7L), now());
 			for (VehicleWeekTimeDTO vehicleWeekTimeDTO : result) {
 				String s = vehicleWeekTimeDTO.getSubstring();
 
@@ -186,35 +186,35 @@ public class VehicleService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findRecentVehicle() {
-		log.info(METHOD_NAME + "- findRecentVehicle");
+	public ResponseDTO findByRecentReservedVehicle() {
+		log.info(METHOD_NAME + "- findByRecentReservedVehicle");
 
 		return Optional.of(new ResponseDTO())
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RECENT, vehicleRepository.findRecentVehicle()))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RECENT, vehicleRepository.findByRecentReservedVehicle()))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RECENT + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findMarkVehicle(String empNo) {
+	public ResponseDTO findByMyBookMarkVehicle(String empNo) {
 		log.info(METHOD_NAME + "- findMarkVehicle");
 
 		return Optional.of(new ResponseDTO())
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_MARK, vehicleBookmarkRepository.findMarkVehicle(empNo)))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_MARK, vehicleBookmarkRepository.findByMyBookMarkVehicle(empNo)))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional
-	public ResponseDTO findMarkBest() {
-		log.info(METHOD_NAME + "- findMarkBest");
+	public ResponseDTO selectByBookMarkTop3Vehicle() {
+		log.info(METHOD_NAME + "- selectByBookMarkTop3Vehicle");
 
 		return Optional.of(new ResponseDTO())
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_MARK, vehicleBookmarkRepository.findMarkBest(PageRequest.of(0, 3))))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_MARK, vehicleBookmarkRepository.selectByBookMarkTop3Vehicle(PageRequest.of(0, 3))))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_MARK + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional
-	public ResponseDTO updateReserved(VehicleParseDTO vehicleParseDTO, Long id) {
-		log.info(METHOD_NAME + "- updateReserved");
+	public ResponseDTO updateByMyReservation(VehicleParseDTO vehicleParseDTO, Long id) {
+		log.info(METHOD_NAME + "- updateByMyReservation");
 
 		VehicleReqDTO vehicleReqDTO = VehicleReqDTO.builder()
 				.id(vehicleParseDTO.getId())
@@ -238,8 +238,8 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO deleteReserved(Long id, Long empId) {
-		log.info(METHOD_NAME + "- deleteReserved");
+	public ResponseDTO deleteByMyReservation(Long id, Long empId) {
+		log.info(METHOD_NAME + "- deleteByMyReservation");
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> (id != null))
@@ -255,8 +255,8 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO deleteMark(Long id) {
-		log.info(METHOD_NAME + "- deleteMark");
+	public ResponseDTO deleteByMyBookMark(Long id) {
+		log.info(METHOD_NAME + "- deleteByMyBookMark");
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> (id != null))
@@ -269,12 +269,12 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO findVehicleReserved(Long id) {
-		log.info(METHOD_NAME + "- findVehicleReserved");
+	public ResponseDTO selectByVehicleReservation(Long id) {
+		log.info(METHOD_NAME + "- selectByVehicleReservation");
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> (id != null))
-				.map(v -> vehicleRepository.findCustom(id))
+				.map(v -> vehicleRepository.selectByVehicleReservation(id))
 				.map(res ->
 						res.map(iVehicleListResDTO -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NO, iVehicleListResDTO))
 								.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + FAIL_FIND_RESULT)))
@@ -293,11 +293,14 @@ public class VehicleService {
 				.map(res -> res.get(0).getId() == null ?
 						(code == 0 ? ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + FAIL_FIND_RESULT) :
 								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + FAIL_FIND_RESULT)) :
-						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getTimeTime())) :
-								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getTimeTime()))))
+						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), res.get(0).getTimeTime())) :
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), res.get(0).getTimeTime()))))
 				.orElseGet(() -> code == 0 ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
 	}
 
+	public LocalDateTime now() {
+		return LocalDateTime.now();
+	}
 }

@@ -24,7 +24,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch VehicleImg vi on vi.vehicle.id = v.id " +
 			"where startedAt > current_time " +
 			"order by id desc")
-	List<IVehicleListResDTO> findAllReserved();
+	List<IVehicleListResDTO> findByAllReservation();
 
 	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
@@ -36,14 +36,14 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch VehicleImg vi on vi.vehicle.id = v.id " +
 			"where startedAt > current_time " +
 			"order by id desc")
-	List<IVehicleListResDTO> findAllReservedPaging(Pageable pageable);
+	List<IVehicleListResDTO> findByPaginationReservation(Pageable pageable);
 
 	@Query("select distinct v.id as id, v.name as name, v.number as number, " +
 			"v.model as model, v.color as color, v.capacity as capacity, vi.path as vehicleImg from Vehicle v " +
 			"left outer join VehicleReservation vr on vr.vehicle.id = v.id " +
 			"left join fetch VehicleImg vi on v.id = vi.vehicle.id " +
 			"where vr.endedAt < current_time or vr.id is null and vr.startedAt > :date")
-	List<IVehicleResDTO> findAllUnreserved(@Param("date") LocalDateTime date);
+	List<IVehicleResDTO> findByAllNotReservation(@Param("date") LocalDateTime date);
 
 	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
@@ -55,7 +55,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch VehicleImg vi on vi.vehicle.id = v.id " +
 			"where v.model = :model " +
 			"order by id desc ")
-	List<IVehicleListResDTO> findTypeReserved(@Param("model") String model);
+	List<IVehicleListResDTO> findByModelReservation(@Param("model") String model);
 
 	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
@@ -67,7 +67,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch VehicleImg vi on vi.vehicle.id = v.id " +
 			"where startedAt between :startDate and :endDate " +
 			"order by id desc ")
-	List<IVehicleListResDTO> findDateReserved(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+	List<IVehicleListResDTO> findByDateTimeReservation(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
@@ -77,7 +77,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch Employee e on vr.employee.id = e.id " +
 			"left join fetch VehicleImg vi on vi.vehicle.id = v.id " +
 			"where e.id = :id and vr.endedAt < current_time  ")
-	List<IVehicleEmpResDTO> findEmpBefore(@Param("id") Long id);
+	List<IVehicleEmpResDTO> findByMyPastReservation(@Param("id") Long id);
 
 	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
@@ -87,7 +87,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch Employee e on vr.employee.id = e.id " +
 			"left join fetch VehicleImg vi on vi.vehicle.id = v.id " +
 			"where e.id = :id and vr.startedAt > current_time  ")
-	List<IVehicleEmpResDTO> findEmpAfter(@Param("id") Long id);
+	List<IVehicleEmpResDTO> findByMyCurrentReservation(@Param("id") Long id);
 
 	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, vr.reason as reason, vr.title as title, " +
@@ -95,7 +95,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from VehicleReservation vr " +
 			"left join fetch VehicleImg vi on vr.vehicle.id = vi.vehicle.id " +
 			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
-	List<IVehicleWeekDTO> findWeekVehicle(@Param("date") LocalDateTime date);
+	List<IVehicleWeekDTO> weekMostReservedVehicle(@Param("date") LocalDateTime date);
 
 	@Query("select substring(vr.startedAt, 12, 2) as substring, vr.id as id, " +
 			"vr.startedAt as startedAt, vr.endedAt as endedAt, vr.reason as reason, vr.title as title, " +
@@ -106,14 +106,14 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch Employee e on vr.employee.id = e.id " +
 			"left join fetch VehicleImg vi on v.id = vi.id " +
 			"where startedAt > :date and endedAt < :end")
-	List<VehicleWeekTimeDTO> findWeekDate(@Param("date") LocalDateTime date, @Param("end") LocalDateTime end);
+	List<VehicleWeekTimeDTO> weekMostReservedTime(@Param("date") LocalDateTime date, @Param("end") LocalDateTime end);
 
 	@Query("select distinct vr.endedAt as endedAt, v as vehicle, vi.path as vehicleImg " +
 			"from Vehicle v " +
 			"left join fetch VehicleReservation vr on v.id = vr.vehicle.id " +
 			"left join fetch VehicleImg vi on v.id = vi.vehicle.id " +
 			"where endedAt is not null order by vr.modifiedAt desc")
-	List<IVehicleDateResDTO> findRecentVehicle();
+	List<IVehicleDateResDTO> findByRecentReservedVehicle();
 
 
 	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
@@ -125,7 +125,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch Employee e on vr.employee.id = e.id " +
 			"left join fetch VehicleImg vi on vi.vehicle.id = v.id " +
 			"where vr.id = :id")
-	Optional<IVehicleListResDTO> findCustom(@Param("id") Long id);
+	Optional<IVehicleListResDTO> selectByVehicleReservation(@Param("id") Long id);
 
 	@Query("select vr.id as id, vr.title as title, vr.startedAt as timeTime " +
 			"from VehicleReservation vr " +
