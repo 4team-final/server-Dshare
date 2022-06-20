@@ -7,13 +7,12 @@ import com.douzone.server.dto.employee.SignModReqDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Team;
 import com.douzone.server.exception.*;
-import com.douzone.server.repository.EmployeeRepository;
-import com.douzone.server.repository.VehicleRepository;
-import com.douzone.server.repository.VehicleReservationRepository;
+import com.douzone.server.repository.*;
 import com.douzone.server.repository.querydsl.AdminQueryDSL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,8 @@ public class AdminService {
 	private static final String METHOD_NAME = VehicleService.class.getSimpleName();
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	private final EmployeeRepository employeeRepository;
+	private final TeamRepository teamRepository;
+	private final PositionRepository positionRepository;
 	private final VehicleRepository vehicleRepository;
 	private final VehicleReservationRepository vehicleReservationRepository;
 	private final DecodeEncodeHandler decodeEncodeHandler;
@@ -77,25 +78,15 @@ public class AdminService {
 	 */
 	@Transactional
 	public long update(SignModReqDTO signModReqDTO, long id) throws RuntimeException {
+
 		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
 
-		//팀, 부서, 포지션을 영속성 컨텍스트의 임플로이 테이블로 가져옴
+		long teamId = signModReqDTO.getTeamId(); long positionId = signModReqDTO.getPositionId();
+		if(teamId > teamRepository.findLastTeam() && teamId <= 0) new DataIntegrityViolationException(teamId+"가 없습니다.");
+		if(positionId > positionRepository.findLastPosition() && teamId <= 0) new DataIntegrityViolationException(positionId+"가 없습니다.");
 
-
-		//관리자에 의한 비밀번호 변경
-//		if (passwordEncoder.matches(signModReqDTO.getOriginPassword(), employee.getPassword())) {
-//				log.info("기존 패스워드가 일치 합니다 기존 패스워드 : {} ", employee.getPassword());
-//		} else {
-//			throw new PasswordNotMatchException(ErrorCode.PW_NOT_MATCH);
-//		}
-//		String password = decodeEncodeHandler.passwordEncode(signModReqDTO.getPassword());
-
-		//팀id랑 부서 id는 못바꿈
-		long teamId = signModReqDTO.getTeamId();
-		long positionId = signModReqDTO.getPositionId();
-		employee.updateProf(signModReqDTO);
+		employee.update(signModReqDTO);
 		employeeRepository.updateTP(teamId, positionId, employee.getId());
-
 
 		return employee.getId();
 	}
@@ -106,23 +97,15 @@ public class AdminService {
 	public long updatePw(SignModReqDTO signModReqDTO, long id) throws RuntimeException {
 		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
 
-		//팀, 부서, 포지션을 영속성 컨텍스트의 임플로이 테이블로 가져옴
-
-
 		//관리자에 의한 비밀번호 변경
-//		if (passwordEncoder.matches(signModReqDTO.getOriginPassword(), employee.getPassword())) {
-//				log.info("기존 패스워드가 일치 합니다 기존 패스워드 : {} ", employee.getPassword());
-//		} else {
-//			throw new PasswordNotMatchException(ErrorCode.PW_NOT_MATCH);
-//		}
-//		String password = decodeEncodeHandler.passwordEncode(signModReqDTO.getPassword());
+		if (passwordEncoder.matches(signModReqDTO.getOriginPassword(), employee.getPassword())) {
+				log.info("기존 패스워드가 일치 합니다 기존 패스워드 : {} ", employee.getPassword());
+		} else {
+			throw new PasswordNotMatchException(ErrorCode.PW_NOT_MATCH);
+		}
 
-		//팀id랑 부서 id는 못바꿈
-		long teamId = signModReqDTO.getTeamId();
-		long positionId = signModReqDTO.getPositionId();
-		employee.updateProf(signModReqDTO);
-		employeeRepository.updateTP(teamId, positionId, employee.getId());
-
+		String newPassword = decodeEncodeHandler.passwordEncode(signModReqDTO.getNewPassword());
+		employee.update(newPassword);
 
 		return employee.getId();
 	}

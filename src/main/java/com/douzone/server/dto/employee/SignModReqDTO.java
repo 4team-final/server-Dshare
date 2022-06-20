@@ -42,7 +42,9 @@ public class SignModReqDTO {
 	@NotBlank(message = "비밀번호가 없습니다.", groups = signUp.class)
 	private String password;
 
-	@NotBlank(groups = {modPw.class}) //비밀번호 변경시 검증용입니다.
+	@NotBlank(groups = modPw.class)//비밀번호 변경시 입니다.
+	private String newPassword;
+	@NotBlank(groups = modPw.class) //비밀번호 변경시 검증용입니다.
 	private String originPassword;
 
 	@NotBlank(message = "이름이 없습니다.", groups = {mod.class, signUp.class})

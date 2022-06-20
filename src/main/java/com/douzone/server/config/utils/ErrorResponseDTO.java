@@ -39,6 +39,10 @@ public class ErrorResponseDTO {
         this.status = code.getStatus();
         this.message = code.getMessage();
     }
+    public ErrorResponseDTO(ErrorCode code, String msg) {
+        this.status = code.getStatus();
+        this.message = msg;
+    }
 
     @Getter
     @JsonInclude(JsonInclude.Include.NON_NULL)

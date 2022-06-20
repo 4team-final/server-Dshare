@@ -52,11 +52,13 @@ public class GlobalExceptionHandler {
     /**기본키에 없는 외래키를 입력했을 때
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponseDTO> PasswordNotMatchException(DataIntegrityViolationException e, ErrorCode ec) {
-        return ExceptionReturn.returnException(e, ec);
+    public ResponseEntity<ErrorResponseDTO> DataIntegrityViolationException(DataIntegrityViolationException e) {
+		log.error(String.format("{} : {} ", e.getClass().getSimpleName(), e.getMessage()));
+		ErrorResponseDTO response = new ErrorResponseDTO(ErrorCode.NOT_PRIMARY_KEY, e.getMessage());
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    /**함수에 인자가 안들어갔을 때 -> validation시 필드에 널값들어가면 발생
+    /**함수에 인자가 들어갔을 때 -> validation시 필드에 널값들어가면 발생
      */
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(BindException e) {
