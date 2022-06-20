@@ -1,6 +1,8 @@
 package com.douzone.server.entity;
 
+import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.utils.BaseAtTime;
+import com.douzone.server.dto.employee.SignModReqDTO;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -41,6 +43,14 @@ public class Employee extends BaseAtTime {
 
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
+    }
+
+    public void updateProf(SignModReqDTO signModReqDTO) {
+        this.name = signModReqDTO.getName();
+        this.email = signModReqDTO.getEmail();
+        this.birthday = signModReqDTO.getBirthday();
+        this.tel = signModReqDTO.getTel();
+
     }
 
 }

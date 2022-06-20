@@ -4,7 +4,9 @@ import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Message;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.dto.employee.SignupReqDTO;
+import com.douzone.server.dto.employee.SignModReqDTO;
+import com.douzone.server.dto.employee.signUp;
+import com.douzone.server.dto.employee.mod;
 import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.service.AdminService;
 import com.douzone.server.service.RoomService;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,11 +35,20 @@ public class AdminController {
 	private final AdminService adminService;
 	private final RoomService roomService;
 
+	/**
+	 *  사원등록 - 정재빈
+	 */
 	@PostMapping("/register")
-	public ResponseEntity<ResponseDTO> register(@RequestBody @Valid SignupReqDTO signupReqDTO) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, adminService.register(signupReqDTO)));
+	public ResponseEntity<ResponseDTO> register(@RequestBody @Validated(signUp.class) SignModReqDTO signModReqDTO) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, adminService.register(signModReqDTO)));
 	}
-
+	/**
+	 *  사원수정 - 오윤성
+	 */
+	@PutMapping("/update")
+	public ResponseEntity<ResponseDTO> update(@RequestBody @Validated(mod.class) SignModReqDTO signModReqDTO ,@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_MOD, adminService.update(signModReqDTO, principalDetails.getEmployee().getId())));
+	}
 	@GetMapping("/check")
 	public ResponseEntity<ResponseDTO> check() {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));
@@ -61,4 +73,6 @@ public class AdminController {
 	public ResponseEntity<ResponseDTO> update(@NotNull List<MultipartFile> files, @PathVariable("roomId") long roomId, RoomReqDTO roomReqDTO) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_UPDATE, roomService.update(files, roomId, roomReqDTO)));
 	}
+
+
 }

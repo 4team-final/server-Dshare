@@ -21,6 +21,7 @@ public enum ErrorCode {
 	ROOM_OBJECT_NOT_FOUND(404, "회의실의 물건을 찾을 수 없습니다."),
 	ROOM_IMG_NOT_FOUND(404, "회의실의 이미지를 찾을 수 없습니다."),
 	ROOM_NOT_FOUND(404, "회의실을 찾을 수 없습니다."),
+	PW_NOT_MATCH(404, "기존 패스워드가 일치하지 않습니다."),
 	//500
 	INTERNAL_SERVER_ERROR(500, "내부 서버 오류 입니다."),
 	//400
@@ -35,6 +36,7 @@ public enum ErrorCode {
 	IMG_NOT_FOUND(404, "이미지 파일을 찾을 수 없습니다."),
 
 	MAX_UPLOAD_SIZE_EXCEEDED(400, "파일 용량이 초과하였습니다.");
+
 
 	private final int status;
 	private final String message;

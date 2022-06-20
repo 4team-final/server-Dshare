@@ -1,7 +1,7 @@
 package com.douzone.server.service;
 
 import com.douzone.server.dto.employee.EmpTestDTO;
-import com.douzone.server.dto.employee.ProfileDto;
+import com.douzone.server.dto.employee.ProfileRes;
 import com.douzone.server.dto.room.RoomBookmarkDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.repository.querydsl.EmployeeQueryDSL;
@@ -30,10 +30,10 @@ public class EmployeeService {
 		return empTestDTOList;
 	}
 
-	public ProfileDto readProfile(long id) {
+	public ProfileRes readProfile(long id) {
 		List<Employee> MyInfoList = employeeQueryDSL.findMyProfile(id);
-		ProfileDto MyInfo = MyInfoList.stream().map(employee -> {
-			return ProfileDto.builder().build().of(employee);
+		ProfileRes MyInfo = MyInfoList.stream().map(employee -> {
+			return ProfileRes.builder().build().of(employee);
 		}).collect(Collectors.toList()).get(0);
 		return MyInfo;
 	}
