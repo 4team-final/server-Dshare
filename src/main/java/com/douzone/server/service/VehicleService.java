@@ -243,10 +243,10 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> (id != null))
-				.map(v -> vehicleReservationRepository.findById(id))
-				.map(res -> res.isPresent() ? res.get() : -1L)
-				.filter(uid -> uid == empId)
-				.map(fi -> {
+				.map(u -> vehicleReservationRepository.findById(id))
+				.map(res -> res.isPresent() ? res.get().getEmployee().getId() : -1L)
+				.filter(v -> v.equals(empId))
+				.map(v -> {
 					vehicleReservationRepository.deleteById(id);
 					return (vehicleReservationRepository.findById(id).isPresent()) ?
 							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + FAIL_FIND_RESULT) :

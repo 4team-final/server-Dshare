@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -121,11 +122,13 @@ public class AdminService {
 				.map(v -> vehicleRepository.findById(id))
 				.filter(Optional::isPresent)
 				.map(res -> res.get().updateVehicle(vehicleUpdateDTO))
-				.map(vehicleImgRepository::findById)
+				.map(vehicleImgRepository::findByVehicleId)
 				.filter(Optional::isPresent)
 				.map(data -> {
 					String[] path = data.get().getPath().split(" ");
-					for (String s : path) deleteVehicleImg(s);
+					ArrayList<String> list = new ArrayList<>();
+					Collections.addAll(list, path);
+					uploadUtils.delete(list);
 
 					VehicleImgDTO vehicleImgDTO = updateVehicleImg(files);
 					vehicleImgDTO.setVehicleId(id);
@@ -144,13 +147,15 @@ public class AdminService {
 				.filter(u -> id >= 0L)
 				.map(v -> vehicleRepository.findById(id))
 				.filter(Optional::isPresent)
-				.map(v -> vehicleImgRepository.findById(id))
+				.map(v -> vehicleImgRepository.findByVehicleId(id))
 				.filter(Optional::isPresent)
 				.map(res -> {
 					String[] path = res.get().getPath().split(" ");
-					for (String s : path) deleteVehicleImg(s);
+					ArrayList<String> list = new ArrayList<>();
+					Collections.addAll(list, path);
+					uploadUtils.delete(list);
 
-					vehicleImgRepository.deleteById(id);
+					vehicleImgRepository.deleteByVehicleId(id);
 					vehicleRepository.deleteById(id);
 
 					return (vehicleRepository.findById(id).isPresent()
@@ -200,10 +205,5 @@ public class AdminService {
 				.path(String.valueOf(uploadUrl[0]))
 				.type(String.valueOf(uploadUrl[1]))
 				.imgSize(String.valueOf(uploadUrl[2])).build();
-	}
-
-	public void deleteVehicleImg(String fileName) {
-		fileName = fileName.substring(50);
-		uploadUtils.getAwsS3().delete("vehicle/" + fileName);
 	}
 }

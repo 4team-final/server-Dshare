@@ -48,17 +48,17 @@ public class AdminController {
 	}
 
 	@PostMapping("/creation/vehicle")
-	public ResponseEntity<ResponseDTO> createVehicle(@RequestBody @Valid VehicleUpdateDTO vehicleUpdateDTO, @NotNull List<MultipartFile> files) {
+	public ResponseEntity<ResponseDTO> createVehicle(@Valid VehicleUpdateDTO vehicleUpdateDTO, @NotNull List<MultipartFile> files) {
 		return ResponseEntity.ok().body(adminService.createVehicle(vehicleUpdateDTO, files));
 	}
 
 	@PatchMapping("/modification/vehicle")
-	public ResponseEntity<ResponseDTO> updateVehicle(@RequestBody @Valid VehicleUpdateDTO vehicleUpdateDTO, @RequestParam("id") Long id, List<MultipartFile> files) {
+	public ResponseEntity<ResponseDTO> updateVehicle(@Valid VehicleUpdateDTO vehicleUpdateDTO, @RequestParam("id") Long id, @NotNull List<MultipartFile> files) {
 		return ResponseEntity.ok().body(adminService.updateVehicle(vehicleUpdateDTO, id, files));
 	}
 
 	@DeleteMapping("/elimination/vehicle")
-	public ResponseEntity<ResponseDTO> deleteVehicle(@RequestBody Long id) {
+	public ResponseEntity<ResponseDTO> deleteVehicle(@RequestParam("id") Long id) {
 		return ResponseEntity.ok().body(adminService.deleteVehicle(id));
 	}
 
