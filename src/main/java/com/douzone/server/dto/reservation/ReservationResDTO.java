@@ -1,6 +1,8 @@
 package com.douzone.server.dto.reservation;
 
 import com.douzone.server.dto.employee.EmpResDTO;
+import com.douzone.server.dto.room.RoomImgResDTO;
+import com.douzone.server.dto.room.RoomObjectResDTO;
 import com.douzone.server.dto.room.RoomResDTO;
 import com.douzone.server.entity.RoomReservation;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,17 +12,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class ReservationResDTO {
 	// 예약
 	private Long id;
 	private RoomResDTO room;
 	private EmpResDTO emp;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Long roomId;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Long empId;
 	private String reason;
 	private String title;
@@ -46,46 +51,17 @@ public class ReservationResDTO {
 		this.modifiedAt = modifiedAt;
 	}
 
+	public ReservationResDTO of(RoomReservation reservation, LocalDateTime rPeriod, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList) {
+
+		return ReservationResDTO.builder().id(reservation.getId()).room(RoomResDTO.builder().build().of(reservation.getMeetingRoom(), roomObjectResDTOList, roomImgResDTOList)).emp(EmpResDTO.builder().build().of(reservation.getEmployee())).reason(reservation.getReason()).title(reservation.getTitle()).rPeriod(rPeriod).startedAt(reservation.getStartedAt()).endedAt(reservation.getEndedAt()).createdAt(reservation.getCreatedAt()).modifiedAt(reservation.getModifiedAt()).build();
+	}
+
+
 	public ReservationResDTO of(RoomReservation reservation, LocalDateTime rPeriod) {
-		return ReservationResDTO.builder()
-				.id(reservation.getId())
-				.room(RoomResDTO.builder().build().of(reservation.getMeetingRoom()))
-				.emp(EmpResDTO.builder().build().of(reservation.getEmployee()))
-				.reason(reservation.getReason())
-				.title(reservation.getTitle())
-				.rPeriod(rPeriod)
-				.startedAt(reservation.getStartedAt())
-				.endedAt(reservation.getEndedAt())
-				.createdAt(reservation.getCreatedAt())
-				.modifiedAt(reservation.getModifiedAt())
-				.build();
+		return ReservationResDTO.builder().id(reservation.getId()).room(RoomResDTO.builder().build().of(reservation.getMeetingRoom())).emp(EmpResDTO.builder().build().of(reservation.getEmployee())).reason(reservation.getReason()).title(reservation.getTitle()).rPeriod(rPeriod).startedAt(reservation.getStartedAt()).endedAt(reservation.getEndedAt()).createdAt(reservation.getCreatedAt()).modifiedAt(reservation.getModifiedAt()).build();
 	}
 
 	public ReservationResDTO of(RoomReservation reservation) {
-		return ReservationResDTO.builder()
-				.id(reservation.getId())
-				.room(RoomResDTO.builder().build().of(reservation.getMeetingRoom()))
-				.emp(EmpResDTO.builder().build().of(reservation.getEmployee()))
-				.reason(reservation.getReason())
-				.title(reservation.getTitle())
-				.startedAt(reservation.getStartedAt())
-				.endedAt(reservation.getEndedAt())
-				.createdAt(reservation.getCreatedAt())
-				.modifiedAt(reservation.getModifiedAt())
-				.build();
-	}
-
-	public ReservationResDTO ofSave(RoomReservation reservation) {
-		return ReservationResDTO.builder()
-				.id(reservation.getId())
-				.roomId(reservation.getMeetingRoom().getId())
-				.empId(reservation.getEmployee().getId())
-				.reason(reservation.getReason())
-				.title(reservation.getTitle())
-				.startedAt(reservation.getStartedAt())
-				.endedAt(reservation.getEndedAt())
-				.createdAt(reservation.getCreatedAt())
-				.modifiedAt(reservation.getModifiedAt())
-				.build();
+		return ReservationResDTO.builder().id(reservation.getId()).room(RoomResDTO.builder().build().of(reservation.getMeetingRoom())).emp(EmpResDTO.builder().build().of(reservation.getEmployee())).reason(reservation.getReason()).title(reservation.getTitle()).startedAt(reservation.getStartedAt()).endedAt(reservation.getEndedAt()).createdAt(reservation.getCreatedAt()).modifiedAt(reservation.getModifiedAt()).build();
 	}
 }
