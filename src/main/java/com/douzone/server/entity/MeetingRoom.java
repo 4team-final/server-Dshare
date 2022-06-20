@@ -24,13 +24,13 @@ public class MeetingRoom extends BaseAtTime {
 	private Long id;
 	private String content;
 	private String categoryName;
-	private int roomNo;
-	private int capacity;
+	private Integer roomNo;
+	private Integer capacity;
 
 	@OneToMany(mappedBy = "meetingRoom", cascade = CascadeType.ALL)
 	List<RoomObject> roomObjectList = new ArrayList<>();
 
-	public void updateRoom(String content, String categoryName, int roomNo, int capacity) {
+	public void updateRoom(String content, String categoryName, Integer roomNo, Integer capacity) {
 		this.content = content;
 		this.categoryName = categoryName;
 		this.roomNo = roomNo;
@@ -38,7 +38,7 @@ public class MeetingRoom extends BaseAtTime {
 	}
 
 	@Builder
-	public MeetingRoom(Long id, String content, String categoryName, int roomNo, int capacity) {
+	public MeetingRoom(Long id, String content, String categoryName, Integer roomNo, Integer capacity) {
 		this.id = id;
 		this.content = content;
 		this.categoryName = categoryName;

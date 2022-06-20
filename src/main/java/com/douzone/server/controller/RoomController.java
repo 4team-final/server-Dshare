@@ -22,7 +22,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 /**
- * <<<<<<< HEAD
  * recentReservation(@RequestParam(value = "limit") @Valid int limit) - 최근에 예약된 회의실 TOP 조회
  * soonAndIngReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) - 내가 예약한 회의실 남은 시간 조회 (회의전 - 곧 시작할,회의중 -회의가 끝나는)
  * myReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) - 내 예약 현황 조회 (과거 예약, 현재 예약)

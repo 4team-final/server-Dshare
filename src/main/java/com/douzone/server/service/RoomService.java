@@ -1,15 +1,10 @@
 package com.douzone.server.service;
 
 
-import com.douzone.server.dto.reservation.*;
-import com.douzone.server.dto.room.RoomBookmarkDTO;
-import com.douzone.server.entity.*;
-import com.douzone.server.exception.ErrorCode;
-import com.douzone.server.exception.reservationNotFoundException;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.reservation.*;
-import com.douzone.server.dto.room.RoomBookmarkDTO;
+import com.douzone.server.dto.room.RoomBookmarkResDTO;
 import com.douzone.server.dto.room.RoomObjectReqDTO;
 import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.entity.MeetingRoom;
@@ -32,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -123,12 +117,12 @@ public class RoomService {
 	}
 
 	@Transactional
-	public List<WeekCountResDTO> weekAndMonthReservationCount(int datetime) {
+	public List<WeekCountHourResDTO> weekAndMonthReservationCount(int datetime) {
 
 		LocalDateTime now = this.now();
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
-		List<WeekCountResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
+		List<WeekCountHourResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
 		weekCountResDTOList.stream().map(weekCountResDTO -> {
 
 			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountResDTO.getRoomId(), now, nowMinusWeek);
@@ -207,7 +201,7 @@ public class RoomService {
 	}
 
 	@Transactional
-	public List<RoomBookmarkDTO> selectByLimitBookmark(int limit) {
+	public List<RoomBookmarkResDTO> selectByLimitBookmark(int limit) {
 		return roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
 	}
 
@@ -301,10 +295,12 @@ public class RoomService {
 
 		return roomId;
 	}
+
 	@Transactional
-	public ReservationResDTO save(RegistReservationReqDto registReservationReqDto) {
-		return ReservationResDTO.builder().build().ofSave(roomReservationRepository.save(new RoomReservation().of(registReservationReqDto)));
+	public Long save(RegistReservationReqDto registReservationReqDto) {
+		return roomReservationRepository.save(RoomReservation.builder().build().of(registReservationReqDto)).getId();
 	}
+
 	@Transactional
 	public Long update(RegistReservationReqDto registReservationReqDto, long id) {
 		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
@@ -317,6 +313,7 @@ public class RoomService {
 		);
 		return roomReservation.getId();
 	}
+
 	@Transactional
 	public Long deleteRes(long id) {
 		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));

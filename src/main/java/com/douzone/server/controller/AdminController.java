@@ -1,7 +1,6 @@
 package com.douzone.server.controller;
 
 import com.douzone.server.config.security.auth.PrincipalDetails;
-import com.douzone.server.config.utils.Message;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignupReqDTO;
@@ -34,17 +33,17 @@ public class AdminController {
 
 	@PostMapping("/register")
 	public ResponseEntity<ResponseDTO> register(@RequestBody @Valid SignupReqDTO signupReqDTO) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, adminService.register(signupReqDTO)));
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_REGISTER, adminService.register(signupReqDTO)));
 	}
 
 	@GetMapping("/check")
 	public ResponseEntity<ResponseDTO> check() {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));
 	}
 
 	@PostMapping("/image/upload")
 	public ResponseEntity<ResponseDTO> uploadProfileImg(@NotNull List<MultipartFile> files, long TargetEmpId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Message.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
 	}
 
 	@PostMapping("/room")
