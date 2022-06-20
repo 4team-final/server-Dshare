@@ -10,11 +10,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class DepartmentResDTO {
-	private long deptId;
+	private Long deptId;
 	private String deptName;
 
 	@Builder
-	public DepartmentResDTO(long deptId, String deptName) {
+	public DepartmentResDTO(Long deptId, String deptName) {
 		this.deptId = deptId;
 		this.deptName = deptName;
 	}

@@ -12,15 +12,15 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class RoomResDTO {
-	private long roomId;
+	private Long roomId;
 	private String content;
 	private String categoryName;
-	private long roomNo;
-	private long capacity;
+	private Integer roomNo;
+	private Integer capacity;
 	private LocalDateTime modifiedAt;
 
 	@Builder
-	public RoomResDTO(long roomId, String content, String categoryName, long roomNo, long capacity, LocalDateTime modifiedAt) {
+	public RoomResDTO(Long roomId, String content, String categoryName, Integer roomNo, Integer capacity, LocalDateTime modifiedAt) {
 		this.roomId = roomId;
 		this.content = content;
 		this.categoryName = categoryName;

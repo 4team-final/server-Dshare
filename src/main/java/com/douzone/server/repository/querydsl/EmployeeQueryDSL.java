@@ -1,18 +1,17 @@
 package com.douzone.server.repository.querydsl;
 
+import com.douzone.server.dto.room.QRoomBookmarkResDTO;
+import com.douzone.server.dto.room.RoomBookmarkResDTO;
 import com.douzone.server.entity.Employee;
-import com.douzone.server.entity.RoomReservation;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.douzone.server.entity.QEmployee.employee;
-import static com.douzone.server.entity.QMeetingRoom.meetingRoom;
 import static com.douzone.server.entity.QPosition.position;
-import static com.douzone.server.entity.QRoomReservation.roomReservation;
+import static com.douzone.server.entity.QRoomBookmark.roomBookmark;
 import static com.douzone.server.entity.QTeam.team;
 
 
@@ -27,24 +26,6 @@ public class EmployeeQueryDSL {
 				.where(employee.position.id.eq(positionId)).fetch();
 	}
 
-	public List<RoomReservation> reservedLatestRoomTop3(int top) {
-		return jpaQueryFactory
-				.select(roomReservation).from(roomReservation)
-				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
-				.where(roomReservation.startedAt.gt(LocalDateTime.now()))
-				.orderBy(roomReservation.modifiedAt.desc())
-				.limit(top)
-				.fetch();
-	}
-
-	/**
-	 * select emp.*, tName, p.name, dName from (select t.id, t.name tName, d.name dName from team t inner join department d on t.deptId = d.id) td
-	 * inner join employee emp
-	 * on emp.teamId = td.id
-	 * inner join position p
-	 * on emp.positionId = p.id
-	 * where emp.empNo = ?;
-	 */
 	public List<Employee> findMyProfile(long id) {
 		return jpaQueryFactory
 				.select(employee).from(employee)
@@ -54,5 +35,17 @@ public class EmployeeQueryDSL {
 				.fetch();
 	}
 
-
+	public List<RoomBookmarkResDTO> selectByMyBookmark(int empNo) {
+		return jpaQueryFactory
+				.select(new QRoomBookmarkResDTO(
+						roomBookmark.id,
+						roomBookmark.employee.as("employee"),
+						roomBookmark.meetingRoom.as("meetingRoom"),
+						roomBookmark.createdAt,
+						roomBookmark.modifiedAt
+				))
+				.from(roomBookmark)
+				.where(roomBookmark.employee.empNo.eq(String.valueOf(empNo)))
+				.fetch();
+	}
 }
