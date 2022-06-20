@@ -6,6 +6,7 @@ import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignModReqDTO;
 import com.douzone.server.dto.employee.signUp;
 import com.douzone.server.dto.employee.mod;
+import com.douzone.server.dto.employee.modPw;
 import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.service.AdminService;
 import com.douzone.server.service.RoomService;
@@ -44,14 +45,21 @@ public class AdminController {
 	/**
 	 *  사원수정 - 오윤성
 	 */
-	@PutMapping("/update")
-	public ResponseEntity<ResponseDTO> update(@RequestBody @Validated(mod.class) SignModReqDTO signModReqDTO ,@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_MOD, adminService.update(signModReqDTO, principalDetails.getEmployee().getId())));
+	@PostMapping("/update/{id}")
+	public ResponseEntity<ResponseDTO> update(@RequestBody @Validated(mod.class) SignModReqDTO signModReqDTO ,@PathVariable("id")long id) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_MOD, adminService.update(signModReqDTO, id)));
 	}
 
 	/**
 	 *  사원 비밀번호 수정 - 오윤성
 	 */
+	@PostMapping("/updatePw/{id}")
+	public ResponseEntity<ResponseDTO> updatePw(@RequestBody @Validated(modPw.class) SignModReqDTO signModReqDTO, @PathVariable("id")long id) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_MODPW, adminService.updatePw(signModReqDTO, id)));
+	}
+
+
+
 	@GetMapping("/check")
 	public ResponseEntity<ResponseDTO> check() {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));

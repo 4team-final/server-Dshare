@@ -1,6 +1,5 @@
 package com.douzone.server.repository.querydsl;
 
-import com.douzone.server.dto.employee.QSignModReqDTO;
 import com.douzone.server.dto.employee.SignModReqDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.QPosition;

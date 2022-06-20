@@ -45,11 +45,14 @@ public class Employee extends BaseAtTime {
         this.profileImg = profileImg;
     }
 
-    public void updateProf(SignModReqDTO signModReqDTO) {
+    public void update(SignModReqDTO signModReqDTO) {
         this.name = signModReqDTO.getName();
         this.email = signModReqDTO.getEmail();
         this.birthday = signModReqDTO.getBirthday();
         this.tel = signModReqDTO.getTel();
+    }
+    public void update(String newPassword) {
+        this.password = newPassword;
 
     }
 
