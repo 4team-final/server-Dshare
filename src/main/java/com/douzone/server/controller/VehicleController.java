@@ -2,8 +2,7 @@ package com.douzone.server.controller;
 
 import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.dto.vehicle.VehicleReqDTO;
-import com.douzone.server.dto.vehicle.VehicleReservationDTO;
+import com.douzone.server.dto.vehicle.VehicleParseDTO;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,12 +54,12 @@ public class VehicleController {
 	private final VehicleService vehicleService;
 
 	@PostMapping(path = "/creation/reservation")
-	public ResponseEntity<ResponseDTO> createReservation(@RequestBody @Valid VehicleReservationDTO vehicleReservationDTO,
+	public ResponseEntity<ResponseDTO> createReservation(@RequestBody @Valid VehicleParseDTO vehicleParseDTO,
 														 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- createReservation");
 		Long empId = principalDetails.getEmployee().getId();
 
-		return ResponseEntity.ok().body(vehicleService.createReservation(vehicleReservationDTO, empId));
+		return ResponseEntity.ok().body(vehicleService.createReservation(vehicleParseDTO, empId));
 	}
 
 	@PostMapping(path = "/creation/bookmark")
@@ -161,14 +160,14 @@ public class VehicleController {
 
 
 	@PatchMapping(path = "/modification")
-	public ResponseEntity<ResponseDTO> updateReserved(@RequestBody @Valid VehicleReqDTO vehicleReqDTO,
+	public ResponseEntity<ResponseDTO> updateReserved(@RequestBody @Valid VehicleParseDTO vehicleParseDTO,
 													  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
 		log.info(METHOD_NAME + "- updateReserved");
 
 		Long id = principalDetails.getEmployee().getId();
 
-		return ResponseEntity.ok().body(vehicleService.updateReserved(vehicleReqDTO, id));
+		return ResponseEntity.ok().body(vehicleService.updateReserved(vehicleParseDTO, id));
 	}
 
 	@DeleteMapping(path = "/elimination")

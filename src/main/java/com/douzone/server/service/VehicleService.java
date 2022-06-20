@@ -1,6 +1,7 @@
 package com.douzone.server.service;
 
 import com.douzone.server.config.utils.ResponseDTO;
+import com.douzone.server.dto.vehicle.VehicleParseDTO;
 import com.douzone.server.dto.vehicle.VehicleReqDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
@@ -35,8 +36,17 @@ public class VehicleService {
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 
 	@Transactional
-	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId) {
+	public ResponseDTO createReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
 		log.info(METHOD_NAME + "- createReservation");
+
+		VehicleReservationDTO vehicleReservationDTO = VehicleReservationDTO.builder()
+				.vehicleId(vehicleParseDTO.getVehicleId())
+				.empId(vehicleParseDTO.getEmpId())
+				.reason(vehicleParseDTO.getReason())
+				.title(vehicleParseDTO.getTitle())
+				.startedAt(LocalDateTime.parse(vehicleParseDTO.getStartedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.endedAt(LocalDateTime.parse(vehicleParseDTO.getEndedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.build();
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
@@ -203,8 +213,17 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO updateReserved(VehicleReqDTO vehicleReqDTO, Long id) {
+	public ResponseDTO updateReserved(VehicleParseDTO vehicleParseDTO, Long id) {
 		log.info(METHOD_NAME + "- updateReserved");
+
+		VehicleReqDTO vehicleReqDTO = VehicleReqDTO.builder()
+				.id(vehicleParseDTO.getId())
+				.vehicleId(vehicleParseDTO.getVehicleId())
+				.reason(vehicleParseDTO.getReason())
+				.title(vehicleParseDTO.getTitle())
+				.startedAt(LocalDateTime.parse(vehicleParseDTO.getStartedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.endedAt(LocalDateTime.parse(vehicleParseDTO.getEndedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.build();
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> Optional.ofNullable(vehicleReqDTO).map(VehicleReqDTO::getId))
