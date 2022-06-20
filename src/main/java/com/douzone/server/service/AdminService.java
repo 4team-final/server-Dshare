@@ -4,10 +4,16 @@ import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.employee.SignModReqDTO;
+import com.douzone.server.dto.reservation.ReservationResDTO;
+import com.douzone.server.dto.room.RoomImgResDTO;
+import com.douzone.server.dto.room.RoomObjectResDTO;
+import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.exception.*;
 import com.douzone.server.repository.*;
 import com.douzone.server.repository.querydsl.AdminQueryDSL;
+import com.douzone.server.repository.querydsl.RoomQueryDSL;
+import com.douzone.server.service.method.ServiceMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -34,6 +41,9 @@ public class AdminService {
 	private final DecodeEncodeHandler decodeEncodeHandler;
 	private final UploadUtils uploadUtils;
 	private final AdminQueryDSL adminQueryDSL;
+	private final RoomQueryDSL roomQueryDSL;
+	private final RoomService roomService;
+	private final ServiceMethod serviceMethod;
 
 	@Value(value = "${year.current}")
 	private String year;
@@ -108,5 +118,16 @@ public class AdminService {
 		return employee.getId();
 	}
 
+	@Transactional
+	public List<ReservationResDTO> searchVarious(RoomReservationSearchDTO search) {
+		log.info("search : {} , {}, {}, {}", search.getTeamNo(), search.getDeptNo(), search.getEmpNo(), search.getEmpName());
 
+		List<ReservationResDTO> list = roomQueryDSL.selectByVariousColumns(search).stream().map(roomReservation -> {
+			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
+			return reservationResDTO;
+		}).collect(Collectors.toList());
+
+		return list;
+	}
 }

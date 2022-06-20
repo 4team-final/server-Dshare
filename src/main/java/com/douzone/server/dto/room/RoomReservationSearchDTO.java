@@ -6,15 +6,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoomReservationSearchDTO {
 
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer roomNo;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer capacity;
+	private Long teamNo;
+	private Long DeptNo;
+	private String empNo;
+	private String empName;
+
 	private String startedAt;
 	private String endedAt;
 

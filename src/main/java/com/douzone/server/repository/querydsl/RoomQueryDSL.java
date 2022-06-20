@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.douzone.server.entity.QMeetingRoom.meetingRoom;
+import static com.douzone.server.entity.QEmployee.employee;
+import static com.douzone.server.entity.QTeam.team;
 import static com.douzone.server.entity.QRoomBookmark.roomBookmark;
 import static com.douzone.server.entity.QRoomReservation.roomReservation;
 
@@ -97,6 +99,36 @@ public class RoomQueryDSL {
 				.groupBy(meetingRoom.id)
 				.orderBy(roomBookmark.meetingRoom.id.count().desc())
 				.limit(limit)
+				.fetch();
+	}
+	/**
+	 * 팀별/부서별/사원번호별/사원이름별 유저의 회의실 예약 조회 - 관리자
+	 */
+	private BooleanExpression teamIdEq(Long teamNo) {
+		return teamNo != null ? roomReservation.employee.team.id.eq(teamNo) : null;
+	}
+	private BooleanExpression deptIdEq(Long deptNo) {
+		return deptNo != null ? roomReservation.employee.team.department.id.eq(deptNo) : null;
+	}
+	private BooleanExpression empNoEq(String empNo) {
+		return empNo != null ? roomReservation.employee.empNo.eq(empNo) : null;
+	}
+	private BooleanExpression empNameEq(String empName) {
+		return empName != null ? roomReservation.employee.name.eq(empName) : null;
+	}
+
+	public List<RoomReservation> selectByVariousColumns(RoomReservationSearchDTO search) {
+		return jpaQueryFactory
+				.select(roomReservation)
+				.from(roomReservation)
+				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
+				.where(
+						teamIdEq(search.getTeamNo()),
+						deptIdEq(search.getDeptNo()),
+						empNoEq(search.getEmpNo()),
+						empNameEq(search.getEmpName())
+				)
+				.orderBy(roomReservation.modifiedAt.desc())
 				.fetch();
 	}
 
