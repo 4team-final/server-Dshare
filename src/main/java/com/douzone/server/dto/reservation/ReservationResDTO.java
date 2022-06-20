@@ -17,11 +17,11 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReservationResDTO {
 	// 예약
-	private long id;
+	private Long id;
 	private RoomResDTO room;
 	private EmpResDTO emp;
-	private long roomId;
-	private long empId;
+	private Long roomId;
+	private Long empId;
 	private String reason;
 	private String title;
 	private LocalDateTime rPeriod;
@@ -31,7 +31,7 @@ public class ReservationResDTO {
 	private LocalDateTime modifiedAt;
 
 	@Builder
-	public ReservationResDTO(long id, RoomResDTO room, EmpResDTO emp,long roomId, long empId, String reason, String title, LocalDateTime rPeriod, LocalDateTime startedAt, LocalDateTime endedAt, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+	public ReservationResDTO(Long id, RoomResDTO room, EmpResDTO emp, Long roomId, Long empId, String reason, String title, LocalDateTime rPeriod, LocalDateTime startedAt, LocalDateTime endedAt, LocalDateTime createdAt, LocalDateTime modifiedAt) {
 		this.id = id;
 		this.room = room;
 		this.emp = emp;
@@ -60,6 +60,7 @@ public class ReservationResDTO {
 				.modifiedAt(reservation.getModifiedAt())
 				.build();
 	}
+
 	public ReservationResDTO of(RoomReservation reservation) {
 		return ReservationResDTO.builder()
 				.id(reservation.getId())
@@ -73,6 +74,7 @@ public class ReservationResDTO {
 				.modifiedAt(reservation.getModifiedAt())
 				.build();
 	}
+
 	public ReservationResDTO ofSave(RoomReservation reservation) {
 		return ReservationResDTO.builder()
 				.id(reservation.getId())

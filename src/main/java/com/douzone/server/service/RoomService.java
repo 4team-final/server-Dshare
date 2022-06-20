@@ -117,12 +117,12 @@ public class RoomService {
 	}
 
 	@Transactional
-	public List<WeekCountResDTO> weekAndMonthReservationCount(int datetime) {
+	public List<WeekCountHourResDTO> weekAndMonthReservationCount(int datetime) {
 
 		LocalDateTime now = this.now();
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
-		List<WeekCountResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
+		List<WeekCountHourResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
 		weekCountResDTOList.stream().map(weekCountResDTO -> {
 
 			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountResDTO.getRoomId(), now, nowMinusWeek);
