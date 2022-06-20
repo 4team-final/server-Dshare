@@ -1,12 +1,8 @@
 package com.douzone.server;
 
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
-import com.douzone.server.dto.employee.SignupReqDTO;
 import com.douzone.server.dto.reservation.RegistReservationReqDto;
-import com.douzone.server.exception.EmpAlreadyExistException;
-import com.douzone.server.exception.ErrorCode;
 import com.douzone.server.repository.EmployeeRepository;
-import javafx.util.converter.LocalDateTimeStringConverter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +13,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Set;
 
 /**
@@ -58,13 +51,13 @@ class ServerApplicationTests {
 //	@Test
 //	void 사원등록() {
 //		//when
-//		SignupReqDTO signupReqDTO = new SignupReqDTO();
+//		signModReqDTO signModReqDTO = new signModReqDTO();
 //		LocalDateTime localDateTime = LocalDateTime.now();
 //		//?
 //
 ////		String empNo = "1";
 //		String empNo = "220100002";
-//		signupReqDTO.builder()
+//		signModReqDTO.builder()
 //				.deptId(1)
 //				.teamId(1)
 //				.positionId(1)
