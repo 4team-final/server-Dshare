@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -27,6 +28,6 @@ public class VehicleUpdateDTO {
 	private String color;
 
 	@Min(2)
-	@NotEmpty(message = "차량 탑승 가능 인원은 필수 입력 사항입니다.")
+	@NotNull(message = "차량 탑승 가능 인원은 필수 입력 사항입니다.")
 	private int capacity;
 }

@@ -1,6 +1,7 @@
 package com.douzone.server.repository;
 
 import com.douzone.server.dto.vehicle.*;
+import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
 import com.douzone.server.entity.Vehicle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -95,8 +96,16 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
 	List<IVehicleWeekDTO> findWeekVehicle(@Param("date") LocalDateTime date);
 
-	@Query("select substring(vr.startedAt, 12, 2) from VehicleReservation vr where vr.startedAt > :date")
-	List<String> findWeekDate(@Param("date") LocalDateTime date);
+	@Query("select substring(vr.startedAt, 12, 2) as substring, vr.id as id, " +
+			"vr.startedAt as startedAt, vr.endedAt as endedAt, vr.reason as reason, vr.title as title, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, v as vehicle, vi.path as vehicleImg, " +
+			"e.empNo as empNo, e.name as name " +
+			"from VehicleReservation vr " +
+			"left join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"left join fetch Employee e on vr.employee.id = e.id " +
+			"left join fetch VehicleImg vi on v.id = vi.id " +
+			"where startedAt > :date and endedAt < :end")
+	List<VehicleWeekTimeDTO> findWeekDate(@Param("date") LocalDateTime date, @Param("end") LocalDateTime end);
 
 	@Query("select distinct vr.endedAt as endedAt, v as vehicle, vi.path as vehicleImg " +
 			"from Vehicle v " +

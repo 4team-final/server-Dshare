@@ -3,6 +3,7 @@ package com.douzone.server.service;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.VehicleReqDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
+import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
@@ -43,7 +44,7 @@ public class VehicleService {
 					vehicleReservationRepository.save(
 							VehicleReservation.builder()
 									.vehicle(Vehicle.builder().id((long) vehicleReservationDTO.getVehicleId()).build())
-									.employee(Employee.builder().id((long) vehicleReservationDTO.getEmpId()).build())
+									.employee(Employee.builder().id(empId).build())
 									.reason(vehicleReservationDTO.getReason())
 									.title(vehicleReservationDTO.getTitle())
 									.startedAt(vehicleReservationDTO.getStartedAt())
@@ -161,8 +162,10 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO()).map(u -> {
 			Map<String, Integer> map = new HashMap<>();
-			List<String> result = vehicleRepository.findWeekDate(LocalDateTime.now().minusDays(7L));
-			for (String s : result) {
+			List<VehicleWeekTimeDTO> result = vehicleRepository.findWeekDate(LocalDateTime.now().minusDays(7L), LocalDateTime.now());
+			for (VehicleWeekTimeDTO vehicleWeekTimeDTO : result) {
+				String s = vehicleWeekTimeDTO.getSubstring();
+
 				if (!map.containsKey(s)) map.put(s, 1);
 				map.put(s, map.get(s) + 1);
 			}
