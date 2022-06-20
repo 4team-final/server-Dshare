@@ -21,7 +21,10 @@ public class RoomReservationQueryDSL {
 	private final JPAQueryFactory jpaQueryFactory;
 
 	public List<RoomReservation> findRecentReservation(int limit) {
-		return jpaQueryFactory.select(roomReservation).from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom).fetchJoin().innerJoin(roomReservation.employee, employee).fetchJoin()
+		return jpaQueryFactory.select(roomReservation)
+				.from(roomReservation)
+				.innerJoin(roomReservation.meetingRoom, meetingRoom).fetchJoin()
+				.innerJoin(roomReservation.employee, employee).fetchJoin()
 				.where(roomReservation.startedAt.gt(LocalDateTime.now())).orderBy(roomReservation.modifiedAt.desc()).limit(limit).fetch();
 	}
 

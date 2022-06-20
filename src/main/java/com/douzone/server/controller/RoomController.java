@@ -5,21 +5,19 @@ import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.reservation.RegistReservationReqDto;
+import com.douzone.server.dto.reservation.updateRes;
+import com.douzone.server.dto.reservation.registRes;
+import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.service.RoomService;
-import com.douzone.server.repository.RoomReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 /**
  * recentReservation(@RequestParam(value = "limit") @Valid int limit) - 최근에 예약된 회의실 TOP 조회
@@ -82,22 +80,23 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_MEET_START, roomService.weekAndMonthMeetingCountHour(datetime)));
 	}
 
+	//페이지 네이션 해야함
 	@GetMapping("/reservation/all")
 	public ResponseEntity<ResponseDTO> selectAllReservation() {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation()));
 	}
 
-	@GetMapping("/reservation/roomNo/{roomNo}")
-
-	public ResponseEntity<ResponseDTO> selectByRoomNoReservation(@PathVariable("roomNo")int roomNo) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_NO, roomService.selectByRoomNoReservation(roomNo)));
+	// 동적 쿼리 : 호실, 인원수, 특정 시간대 합침.
+	@GetMapping("/reservation/roomNo-capacity-time")
+	public ResponseEntity<ResponseDTO> selectByRoomNoElseCapacityElseReservation(@RequestBody RoomReservationSearchDTO search) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_NO, roomService.selectByRoomNoElseCapacityElseReservation(search)));
 	}//메세지 프로퍼티 활용 예정
 
 	/**
 	 * selectByDateRoomReservation() - 특정시간대별 회의실 조회
 	 */
 	@GetMapping("/reservation/time/{startTime}/{endTime}")
-	public ResponseEntity<ResponseDTO> selectByDateRoomReservation(@PathVariable("startTime")String startTime, @PathVariable("endTime")String endTime) {
+	public ResponseEntity<ResponseDTO> selectByDateRoomReservation(@PathVariable("startTime") String startTime, @PathVariable("endTime") String endTime) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_DATE, roomService.selectByDateRoomReservation(startTime, endTime)));
 	}
 
@@ -105,7 +104,7 @@ public class RoomController {
 	 * selectByLimitBookmark() - 즐겨찾기 상위 top(limit) 회의실 조회
 	 **/
 	@GetMapping("/reservation/my/bookmark/top/{limit}")
-	public ResponseEntity<ResponseDTO> selectByLimitBookmark(@PathVariable("limit")int limit){
+	public ResponseEntity<ResponseDTO> selectByLimitBookmark(@PathVariable("limit") int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_MARK, roomService.selectByLimitBookmark(limit)));
 	}
 
@@ -113,7 +112,7 @@ public class RoomController {
 	 * 6/18 14:17 회의실 예약 오윤성
 	 */
 	@PostMapping("/regist")
-	public ResponseEntity<ResponseDTO> saveReservation(@Validated @RequestBody RegistReservationReqDto registReservationReqDto) {
+	public ResponseEntity<ResponseDTO> saveReservation(@Validated(registRes.class) @RequestBody RegistReservationReqDto registReservationReqDto) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE, roomService.save(registReservationReqDto)));
 	}
 
@@ -121,9 +120,10 @@ public class RoomController {
 	 * 6/19 18:51 회의실 예약 수정 오윤성
 	 */
 	@PostMapping("/my/update/{id}")
-	public ResponseEntity<ResponseDTO> updateReservation(@Validated @RequestBody RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
+	public ResponseEntity<ResponseDTO> updateReservation(@Validated(updateRes.class) @RequestBody RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_UPDATE, roomService.update(registReservationReqDto, id)));
 	}
+
 	/**
 	 * 6/19 18:51 회의실 예약 삭제 오윤성
 	 */
@@ -131,9 +131,6 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> deleteReservation(@PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_DELETE, roomService.deleteRes(id)));
 	}
-
-
-
 
 
 }

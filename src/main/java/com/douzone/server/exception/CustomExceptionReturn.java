@@ -8,7 +8,8 @@ import org.springframework.http.ResponseEntity;
 @Slf4j
 public class CustomExceptionReturn{
 	public static ResponseEntity<ErrorResponseDTO> returnException(DshareServerException e) {
-		log.error("{} : {}",  new Object[]{e.getErrorCode(),  e.getClass().getSimpleName()});
+		//내가 직접 커스텀한 예외일때
+		log.error("{} : {}", new Object[]{e.getErrorCode(), e.getMessage()});
 		ErrorCode errorCode = e.getErrorCode();
 		return new ResponseEntity<>(new ErrorResponseDTO(errorCode.getStatus(), errorCode.getMessage()), HttpStatus.valueOf(errorCode.getStatus()));
 	}

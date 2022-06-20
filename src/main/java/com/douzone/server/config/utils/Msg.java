@@ -19,6 +19,8 @@ public interface Msg {
 
 	// admin
 	String SUCCESS_ADMIN_REGISTER = "관리자가 사원 등록에 성공하였습니다.";
+	String SUCCESS_ADMIN_MOD = "관리자가 사원 수정에 성공하였습니다.";
+	String SUCCESS_ADMIN_MODPW = "관리자가 사원 비밀번호 수정에 성공하였습니다.";
 	String SUCCESS_ADMIN_FIND_ALL = "사원 전체 예약 현황 조회에 성공하였습니다.";
 
 	String FAIL_ADMIN_REGISTER = "관리자가 사원 등록에 실패하였습니다.";

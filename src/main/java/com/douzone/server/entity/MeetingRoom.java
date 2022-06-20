@@ -30,6 +30,9 @@ public class MeetingRoom extends BaseAtTime {
 	@OneToMany(mappedBy = "meetingRoom", cascade = CascadeType.ALL)
 	List<RoomObject> roomObjectList = new ArrayList<>();
 
+	@OneToMany(mappedBy = "meetingRoom", cascade = CascadeType.ALL)
+	List<RoomImg> roomImgList = new ArrayList<>();
+
 	public void updateRoom(String content, String categoryName, Integer roomNo, Integer capacity) {
 		this.content = content;
 		this.categoryName = categoryName;
