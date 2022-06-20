@@ -1,5 +1,6 @@
 package com.douzone.server.dto.reservation;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,23 +13,24 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class WeekCountHourResDTO {
 
-	private long roomId;
+	private Long roomId;
 	private String content;
 	private String categoryName;
-	private int roomNo;
-	private int capacity;
+	private Integer roomNo;
+	private Integer capacity;
 	private LocalDateTime modifiedAt;
 
-	private long count;
-	private int hour;
+	private Long count;
+	private Integer hour;
 
 	private List<ReservationResDTO> reservationResDTOList;
 
 	@Builder
 	@QueryProjection
-	public WeekCountHourResDTO(long roomId, String content, String categoryName, int roomNo, int capacity, LocalDateTime modifiedAt, long count, int hour) {
+	public WeekCountHourResDTO(Long roomId, String content, String categoryName, Integer roomNo, Integer capacity, LocalDateTime modifiedAt, Long count, Integer hour) {
 		this.roomId = roomId;
 		this.content = content;
 		this.categoryName = categoryName;
@@ -39,4 +41,16 @@ public class WeekCountHourResDTO {
 		this.hour = hour;
 	}
 
+	@Builder
+	@QueryProjection
+	public WeekCountHourResDTO(Long roomId, String content, String categoryName, Integer roomNo, Integer capacity, LocalDateTime modifiedAt, Long count) {
+		this.roomId = roomId;
+		this.content = content;
+		this.categoryName = categoryName;
+		this.roomNo = roomNo;
+		this.capacity = capacity;
+		this.modifiedAt = modifiedAt;
+		this.count = count;
+
+	}
 }

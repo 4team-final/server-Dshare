@@ -1,24 +1,24 @@
 package com.douzone.server.repository.querydsl;
 
+import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.MeetingRoom;
 import com.douzone.server.entity.RoomReservation;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
 class RoomQueryDSLTest {
-	@Autowired RoomQueryDSL roomQueryDSL;
+	@Autowired
+	RoomQueryDSL roomQueryDSL;
+
 	@Test
 	public void 전체회의실조회() {
 
@@ -36,11 +36,12 @@ class RoomQueryDSLTest {
 		List<RoomReservation> roomReservations = roomQueryDSL.selectAllReservation();
 
 		//then
-			assertThat(roomReservations.get(0).getId()).isEqualTo(roomReservation.getId());//6
-			assertThat(roomReservations.get(0).getReason()).isEqualTo(roomReservation.getReason());//마케팅부 정기회의
-			assertThat(roomReservations.get(0).getMeetingRoom().getId()).isEqualTo(roomReservation.getMeetingRoom().getId());//3
-			assertThat(roomReservations.get(0).getEmployee().getId()).isEqualTo(roomReservation.getEmployee().getId());//19
+		assertThat(roomReservations.get(0).getId()).isEqualTo(roomReservation.getId());//6
+		assertThat(roomReservations.get(0).getReason()).isEqualTo(roomReservation.getReason());//마케팅부 정기회의
+		assertThat(roomReservations.get(0).getMeetingRoom().getId()).isEqualTo(roomReservation.getMeetingRoom().getId());//3
+		assertThat(roomReservations.get(0).getEmployee().getId()).isEqualTo(roomReservation.getEmployee().getId());//19
 	}
+
 	@Test
 	public void 회의실호수에따른예약조회() {
 		//given
@@ -52,7 +53,8 @@ class RoomQueryDSLTest {
 				.title("마케팅부 정기회의")
 				.build();
 		//when
-		List<RoomReservation> roomReservations = roomQueryDSL.selectRoomNoReservation(103);
+		List<RoomReservation> roomReservations = roomQueryDSL.selectRoomNoElseCapacityReservation(RoomReservationSearchDTO.builder()
+				.roomNo(103).build());
 
 		//then
 		assertThat(roomReservations.get(0).getId()).isEqualTo(roomReservation.getId());//6
@@ -61,7 +63,6 @@ class RoomQueryDSLTest {
 		assertThat(roomReservations.get(0).getEmployee().getId()).isEqualTo(roomReservation.getEmployee().getId());//19
 
 	}
-
 
 
 }

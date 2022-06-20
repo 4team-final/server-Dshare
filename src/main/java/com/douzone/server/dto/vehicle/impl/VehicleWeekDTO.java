@@ -1,16 +1,19 @@
-package com.douzone.server.dto.vehicle;
+package com.douzone.server.dto.vehicle.impl;
 
+import com.douzone.server.dto.vehicle.IVehicleWeekDTO;
 import com.douzone.server.entity.Vehicle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class VehicleRankResDTO implements IVehicleRankResDTO {
+public class VehicleWeekDTO implements IVehicleWeekDTO {
 	private Long id;
 	private LocalDateTime startedAt;
 	private LocalDateTime endedAt;
@@ -20,4 +23,5 @@ public class VehicleRankResDTO implements IVehicleRankResDTO {
 	private String title;
 	private Vehicle vehicle;
 	private int vcount;
+	private String vehicleImg;
 }
