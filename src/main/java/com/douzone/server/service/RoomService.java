@@ -3,6 +3,7 @@ package com.douzone.server.service;
 
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
+import com.douzone.server.dto.exception.*;
 import com.douzone.server.dto.reservation.*;
 import com.douzone.server.dto.room.*;
 import com.douzone.server.entity.MeetingRoom;

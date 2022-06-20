@@ -1,6 +1,5 @@
 package com.douzone.server.service;
 
-import com.douzone.server.dto.employee.SignModReqDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.exception.EmpNotFoundException;
 import com.douzone.server.exception.ErrorCode;
@@ -11,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class AdminServiceTest {
