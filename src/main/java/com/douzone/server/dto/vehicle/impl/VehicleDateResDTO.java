@@ -1,5 +1,6 @@
-package com.douzone.server.dto.vehicle;
+package com.douzone.server.dto.vehicle.impl;
 
+import com.douzone.server.dto.vehicle.IVehicleDateResDTO;
 import com.douzone.server.entity.Vehicle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,13 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehicleEmpResDTO implements IVehicleEmpResDTO {
-	private Long id;
-	private LocalDateTime startedAt;
+public class VehicleDateResDTO implements IVehicleDateResDTO {
 	private LocalDateTime endedAt;
-	private LocalDateTime createdAt;
-	private LocalDateTime modifiedAt;
-	private String reason;
-	private String title;
 	private Vehicle vehicle;
+	private String vehicleImg;
 }
