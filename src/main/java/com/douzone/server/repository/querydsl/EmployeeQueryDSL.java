@@ -39,8 +39,8 @@ public class EmployeeQueryDSL {
 		return jpaQueryFactory
 				.select(new QRoomBookmarkResDTO(
 						roomBookmark.id,
-						roomBookmark.employee.as("employee"),
-						roomBookmark.meetingRoom.as("meetingRoom"),
+						roomBookmark.employee.id.as("empId"),
+						roomBookmark.meetingRoom.id.as("roomId"),
 						roomBookmark.createdAt,
 						roomBookmark.modifiedAt
 				))
