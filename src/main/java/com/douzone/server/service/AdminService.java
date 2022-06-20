@@ -1,9 +1,10 @@
 package com.douzone.server.service;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.douzone.server.config.s3.AwsS3;
 import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.utils.ResponseDTO;
+import com.douzone.server.config.utils.UploadDTO;
+import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.employee.SignupReqDTO;
 import com.douzone.server.dto.vehicle.VehicleImgDTO;
 import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
@@ -43,13 +44,10 @@ public class AdminService {
 	private final VehicleRepository vehicleRepository;
 	private final VehicleImgRepository vehicleImgRepository;
 	private final DecodeEncodeHandler decodeEncodeHandler;
-	private final AwsS3 awsS3;
+	private final UploadUtils uploadUtils;
 
 	@Value(value = "${year.current}")
 	private String year;
-
-	@Value(value = "${aws-client.path}")
-	private String awsPath;
 
 	@Transactional
 	public Long register(SignupReqDTO signupReqDTO) {
@@ -75,51 +73,16 @@ public class AdminService {
 
 	@Transactional
 	public Long uploadProfileImg(List<MultipartFile> files, long id) {
-
-		if (files.isEmpty() || files == null) {
+		String basePath = "profile/";
+		List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
+		if (uploadDTOS == null) {
 			throw new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND);
 		}
-		String basePath = "profile/";
+		String profileImg = uploadDTOS.get(0).getPath();
+		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
 
-		ArrayList<String> fileName = new ArrayList<String>();
-		ArrayList<String> fileType = new ArrayList<String>();
-		ArrayList<Long> fileLength = new ArrayList<Long>();
-		try {
-			for (int i = 0; i < files.size(); i++) {
-				fileName.add(LocalDateTime.now().toString() + "_" + files.get(i).getOriginalFilename());
-				fileType.add(files.get(i).getContentType());
-				fileLength.add(files.get(i).getSize());
-			}
-			// 업로드 될 버킷 객체 url
-			String[] uploadUrl = new String[files.size()];
-
-			for (int i = 0; i < files.size(); i++) {
-				try {
-					uploadUrl[i] = awsS3.upload(files.get(i), basePath + fileName.get(i), fileType.get(i), fileLength.get(i));
-				} catch (AmazonS3Exception e) {
-					log.error("AmazonS3Exception : AdminService - uploadProfileImg " + e.getMessage());
-					e.printStackTrace();
-				} catch (IOException e) {
-					log.error("IOException : AdminService - uploadProfileImg " + e.getMessage());
-					e.printStackTrace();
-				}
-			}
-
-			//데이터 베이스에 들어갈 url
-			String profileImg = awsPath + uploadUrl[0];
-			Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
-
-			employee.updateProfileImg(profileImg);
-			return employee.getId();
-
-		} catch (IllegalStateException e) {
-			log.error("IllegalStateException : AdminService - uploadProfileImg " + e.getMessage());
-			e.printStackTrace();
-		} catch (Exception e) {
-			log.error("Exception : AdminService - uploadProfileImg " + e.getMessage());
-			e.printStackTrace();
-		}
-		return null;
+		employee.updateProfileImg(profileImg);
+		return employee.getId();
 	}
 
 	@Transactional
@@ -216,12 +179,12 @@ public class AdminService {
 
 		try {
 			for (int i = 0; i < files.size(); i++)
-				uploadUrl[i] = awsS3.upload(data.get(i), "vehicle/" + fileName.get(i), fileType.get(i), fileLength.get(i));
+				uploadUrl[i] = uploadUtils.getAwsS3().upload(data.get(i), "vehicle/" + fileName.get(i), fileType.get(i), fileLength.get(i));
 		} catch (AmazonS3Exception | IOException ae) {
 			log.error("차량 이미지 URL 업로드 에러" + METHOD_NAME, ae);
 		}
 		for (String s : uploadUrl)
-			fileSet.append(awsPath).append(s).append(" ");
+			fileSet.append(uploadUtils.getAwsPath()).append(s).append(" ");
 		uploadUrl = new String[3];
 		uploadUrl[0] = String.valueOf(fileSet);
 		fileSet.setLength(0);
@@ -241,6 +204,6 @@ public class AdminService {
 
 	public void deleteVehicleImg(String fileName) {
 		fileName = fileName.substring(50);
-		awsS3.delete("vehicle/" + fileName);
+		uploadUtils.getAwsS3().delete("vehicle/" + fileName);
 	}
 }

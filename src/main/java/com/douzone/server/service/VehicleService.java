@@ -78,7 +78,7 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL, vehicleRepository.findAllReserved()))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "결과값이 존재하지 않습니다."));
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -87,9 +87,9 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> (pageNum < 0) ?
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "잘못된 파라미터가 전달되었습니다.") :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_REQUEST_PARAMETER) :
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + pageNum, vehicleRepository.findAllReservedPaging(PageRequest.of(pageNum, 5))))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + "결과값이 존재하지 않습니다."));
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -98,7 +98,7 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NONE, vehicleRepository.findAllUnreserved(LocalDateTime.now().plusHours(1L))))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NONE + "결과값이 존재하지 않습니다."));
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NONE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -106,9 +106,9 @@ public class VehicleService {
 		log.info(METHOD_NAME + "- findTypeReserved");
 		return Optional.of(new ResponseDTO())
 				.map(u -> (model == null || model.equals("")) ?
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + "파라미터가 전달되지 않았습니다.") :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + FAIL_REQUEST_PARAMETER) :
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_TYPE, vehicleRepository.findTypeReserved(model)))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + "결과값이 존재하지 않습니다."));
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_TYPE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -117,10 +117,11 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> (start == null || start.equals("") || end == null || end.equals("")) ?
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "파라미터가 전달되지 않았습니다.") :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_REQUEST_PARAMETER) :
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_DATE, vehicleRepository.findDateReserved(
-								LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "결과값이 존재하지 않습니다."));
+								LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+								LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -130,8 +131,8 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.map(u -> (id != null) ?
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEFORE, vehicleRepository.findEmpBefore(id)) :
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "파라미터가 전달되지 않았습니다.")
-				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + "결과값이 존재하지 않습니다."));
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + FAIL_REQUEST_PARAMETER)
+				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEFORE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -141,8 +142,8 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.map(u -> (id != null) ?
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_AFTER, vehicleRepository.findEmpAfter(id)) :
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + "파라미터가 전달되지 않았습니다.")
-				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + "결과값이 존재하지 않습니다."));
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_REQUEST_PARAMETER)
+				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -151,7 +152,7 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_WEEK, vehicleRepository.findWeekVehicle(LocalDateTime.now().minusDays(7L))))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + "결과값이 존재하지 않습니다."));
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -168,7 +169,7 @@ public class VehicleService {
 			List<Map.Entry<String, Integer>> entry = new LinkedList<>(map.entrySet());
 			entry.sort((o1, o2) -> o2.getValue() - o1.getValue());
 			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, entry);
-		}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_DATE + "결과값을 조회에 실패하였습니다."));
+		}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_DATE + FAIL_FIND_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -176,8 +177,8 @@ public class VehicleService {
 		log.info(METHOD_NAME + "- findRecentVehicle");
 
 		return Optional.of(new ResponseDTO())
-				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, vehicleRepository.findRecentVehicle()))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RECENT + "결과값이 존재하지 않습니다."));
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RECENT, vehicleRepository.findRecentVehicle()))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RECENT + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -186,7 +187,7 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_MARK, vehicleBookmarkRepository.findMarkVehicle(empNo)))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK + "결과값이 존재하지 않습니다."));
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional
@@ -195,7 +196,7 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_MARK, vehicleBookmarkRepository.findMarkBest(PageRequest.of(0, 3))))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_MARK + "결과값이 존재하지 않습니다."));
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_MARK + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional
@@ -211,7 +212,7 @@ public class VehicleService {
 				.map(ans -> {
 					ans.get().updateReserved(vehicleReqDTO);
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_UPDATE);
-				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_UPDATE + "결과값이 존재하지 않습니다."));
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_UPDATE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional
@@ -226,9 +227,9 @@ public class VehicleService {
 				.map(fi -> {
 					vehicleReservationRepository.deleteById(id);
 					return (vehicleReservationRepository.findById(id).isPresent()) ?
-							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + "결과값을 조회에 실패하였습니다.") :
+							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + FAIL_FIND_RESULT) :
 							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_DELETE);
-				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + "결과값이 존재하지 않습니다."));
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional
@@ -240,9 +241,9 @@ public class VehicleService {
 				.map(v -> {
 					vehicleBookmarkRepository.deleteById(id);
 					return (vehicleBookmarkRepository.findById(id).isPresent()) ?
-							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE_MARK + "결과값을 조회에 실패하였습니다.") :
+							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE_MARK + FAIL_FIND_RESULT) :
 							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_DELETE_MARK);
-				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE_MARK + "결과값이 존재하지 않습니다."));
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE_MARK + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional
@@ -252,8 +253,10 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> (id != null))
 				.map(v -> vehicleRepository.findCustom(id))
-				.map(res -> res.map(iVehicleListResDTO -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NO, iVehicleListResDTO)).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값을 조회에 실패하였습니다.")))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + "결과값이 존재하지 않습니다."));
+				.map(res ->
+						res.map(iVehicleListResDTO -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_NO, iVehicleListResDTO))
+								.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + FAIL_FIND_RESULT)))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_NO + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional
@@ -265,10 +268,14 @@ public class VehicleService {
 				.map(v -> code == 0 ?
 						vehicleRepository.ingReservationMyTime(empId, PageRequest.of(0, 1)) :
 						vehicleRepository.soonReservationMyTime(empId, PageRequest.of(0, 1)))
-				.map(res -> res.getId() == null ?
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, "" + "잘못된 파라미터가 전달되었습니다.") :
-						ResponseDTO.of(HttpStatus.OK, "", ChronoUnit.SECONDS.between(LocalDateTime.now(), res.getDateTime())))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+				.map(res -> res.get(0).getId() == null ?
+						(code == 0 ? ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + FAIL_FIND_RESULT) :
+								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + FAIL_FIND_RESULT)) :
+						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime())) :
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime()))))
+				.orElseGet(() -> code == 0 ?
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING) :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
 	}
 
 }

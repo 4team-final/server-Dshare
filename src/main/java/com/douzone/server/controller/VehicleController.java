@@ -159,9 +159,11 @@ public class VehicleController {
 		return ResponseEntity.ok().body(vehicleService.findMarkBest());
 	}
 
+
 	@PatchMapping(path = "/modification")
 	public ResponseEntity<ResponseDTO> updateReserved(@RequestBody @Valid VehicleReqDTO vehicleReqDTO,
 													  @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- updateReserved");
 
 		Long id = principalDetails.getEmployee().getId();
@@ -191,19 +193,24 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/own/reservation/next")
+
 	public ResponseEntity<ResponseDTO> soonReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- soonReservationMyTime");
 
 		Long empId = principalDetails.getEmployee().getId();
+
 
 		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(empId, 1));
 	}
 
 	@GetMapping(path = "/own/reservation/ongoing")
 	public ResponseEntity<ResponseDTO> ingReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
 		log.info(METHOD_NAME + "- ingReservationMyTime");
 
 		Long empId = principalDetails.getEmployee().getId();
+
 
 		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(empId, 0));
 	}

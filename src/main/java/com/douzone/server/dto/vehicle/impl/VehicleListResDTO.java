@@ -22,6 +22,7 @@ public class VehicleListResDTO implements IVehicleListResDTO {
 	private String reason;
 	private String title;
 	private Vehicle vehicle;
+	private String vehicleImg;
 	private String empNo;
 	private String name;
 }

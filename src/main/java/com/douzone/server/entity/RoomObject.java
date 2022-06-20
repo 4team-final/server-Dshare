@@ -26,4 +26,8 @@ public class RoomObject {
 
     private String name;
 
+    public void updateRoomObject(String name) {
+        this.name = name;
+    }
+
 }

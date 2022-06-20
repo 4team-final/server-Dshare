@@ -4,7 +4,7 @@ import com.douzone.server.entity.Vehicle;
 
 import java.time.LocalDateTime;
 
-public interface IVehicleListResDTO {
+public interface IVehicleWeekDTO {
 	Long getId();
 
 	LocalDateTime getStartedAt();
@@ -21,9 +21,7 @@ public interface IVehicleListResDTO {
 
 	Vehicle getVehicle();
 
+	int getVcount();
+
 	String getVehicleImg();
-
-	String getEmpNo();
-
-	String getName();
 }
