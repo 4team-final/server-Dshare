@@ -1,12 +1,15 @@
 package com.douzone.server.dto.room;
 
 import com.douzone.server.entity.MeetingRoom;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,15 +22,24 @@ public class RoomResDTO {
 	private Integer capacity;
 	private LocalDateTime modifiedAt;
 
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private List<RoomObjectResDTO> roomObjectResDTOList = new ArrayList<>();
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private List<RoomImgResDTO> roomImgResDTOList = new ArrayList<>();
+
 	@Builder
-	public RoomResDTO(Long roomId, String content, String categoryName, Integer roomNo, Integer capacity, LocalDateTime modifiedAt) {
+	public RoomResDTO(Long roomId, String content, String categoryName, Integer roomNo, Integer capacity, LocalDateTime modifiedAt, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList) {
 		this.roomId = roomId;
 		this.content = content;
 		this.categoryName = categoryName;
 		this.roomNo = roomNo;
 		this.capacity = capacity;
 		this.modifiedAt = modifiedAt;
+		this.roomObjectResDTOList = roomObjectResDTOList;
+		this.roomImgResDTOList = roomImgResDTOList;
 	}
+
 
 	public RoomResDTO of(MeetingRoom room) {
 		return RoomResDTO.builder()
@@ -37,6 +49,19 @@ public class RoomResDTO {
 				.roomNo(room.getRoomNo())
 				.capacity(room.getCapacity())
 				.modifiedAt(room.getModifiedAt())
+				.build();
+	}
+
+	public RoomResDTO of(MeetingRoom room, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList) {
+		return RoomResDTO.builder()
+				.roomId(room.getId())
+				.content(room.getContent())
+				.categoryName(room.getCategoryName())
+				.roomNo(room.getRoomNo())
+				.capacity(room.getCapacity())
+				.modifiedAt(room.getModifiedAt())
+				.roomObjectResDTOList(roomObjectResDTOList)
+				.roomImgResDTOList(roomImgResDTOList)
 				.build();
 	}
 }
