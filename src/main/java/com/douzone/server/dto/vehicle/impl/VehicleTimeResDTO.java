@@ -12,5 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class VehicleTimeResDTO implements IVehicleTimeResDTO {
 	private Long id;
+	private String title;
 	private LocalDateTime dateTime;
 }

@@ -22,4 +22,5 @@ public class VehicleEmpResDTO implements IVehicleEmpResDTO {
 	private String reason;
 	private String title;
 	private Vehicle vehicle;
+	private String vehicleImg;
 }

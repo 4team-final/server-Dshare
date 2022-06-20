@@ -34,7 +34,6 @@ import java.util.Map;
  * findVehicleReserved - 수정 전 차량 단일 조회 /reservation - GET
  * IngReservationMyTime - 내가 현재 진행중인 예약 종료 시간 조회 /own/reservation/ongoing - GET
  * soonReservationMyTime - 나의 다음 예약 시작 시간 조회 /own/reservation/next - GET
->>>>>>> origin/fix/dshare-33
  * Update:
  * updateReserved - 내 차량 예약 현황 수정 /modification - PATCH
  * Delete:
