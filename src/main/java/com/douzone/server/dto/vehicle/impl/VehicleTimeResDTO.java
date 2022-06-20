@@ -13,5 +13,5 @@ import java.time.LocalDateTime;
 public class VehicleTimeResDTO implements IVehicleTimeResDTO {
 	private Long id;
 	private String title;
-	private LocalDateTime dateTime;
+	private LocalDateTime timeTime;
 }
