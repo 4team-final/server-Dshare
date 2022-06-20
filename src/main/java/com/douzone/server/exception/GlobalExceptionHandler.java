@@ -23,19 +23,20 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({EmpAlreadyExistException.class})
-    public ResponseEntity<ErrorResponseDTO> EmpAlreadyExistException(EmpAlreadyExistException e) {
-        return CustomExceptionReturn.returnException(e);
-    }
+	@ExceptionHandler({EmpAlreadyExistException.class})
+	public ResponseEntity<ErrorResponseDTO> EmpAlreadyExistException(EmpAlreadyExistException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
 
-    @ExceptionHandler({EmpNotFoundException.class})
-    public ResponseEntity<ErrorResponseDTO> EmpNotExistException(EmpAlreadyExistException e) {
-        return CustomExceptionReturn.returnException(e);
-    }
-    @ExceptionHandler({reservationNotFoundException.class})
-    public ResponseEntity<ErrorResponseDTO> ResNotExistException(reservationNotFoundException e) {
-        return CustomExceptionReturn.returnException(e);
-    }
+	@ExceptionHandler({EmpNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> EmpNotExistException(EmpAlreadyExistException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	@ExceptionHandler({reservationNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> ResNotExistException(reservationNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
 
 	@ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
 	public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(BindException e) {
@@ -44,10 +45,10 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-    @ExceptionHandler(DshareServerException.class)
-    public ResponseEntity<ErrorResponseDTO> serverExceptionHandler(DshareServerException e) {
-        return new CustomExceptionReturn().returnException(e);
-    }
+	@ExceptionHandler(DshareServerException.class)
+	public ResponseEntity<ErrorResponseDTO> serverExceptionHandler(DshareServerException e) {
+		return new CustomExceptionReturn().returnException(e);
+	}
 
 	@ExceptionHandler({HttpRequestMethodNotSupportedException.class})
 	protected ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
@@ -118,5 +119,11 @@ public class GlobalExceptionHandler {
 	protected ResponseDTO handleNullPointerException(NullPointerException e) {
 		log.error("SERVER ERROR - Vehicle Service" + e.getMessage());
 		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "받은 정보가 비어있습니다.");
+	}
+
+	@ExceptionHandler(IndexOutOfBoundsException.class)
+	protected ResponseDTO handleIndexOutOfBoundsException(IndexOutOfBoundsException e) {
+		log.error("SERVER ERROR - Vehicle Service" + e.getMessage());
+		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "유저의 다음 예약이 존재하지 않습니다.");
 	}
 }

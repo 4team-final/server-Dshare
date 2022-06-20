@@ -274,8 +274,8 @@ public class VehicleService {
 				.map(res -> res.get(0).getId() == null ?
 						(code == 0 ? ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + FAIL_FIND_RESULT) :
 								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + FAIL_FIND_RESULT)) :
-						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime())) :
-								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime()))))
+						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getTimeTime())) :
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getTimeTime()))))
 				.orElseGet(() -> code == 0 ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
