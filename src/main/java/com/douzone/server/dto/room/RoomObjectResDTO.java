@@ -11,20 +11,20 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RoomObjectResDTO {
 	private Long objId;
-	private RoomResDTO room;
+	//	private RoomResDTO room;
 	private String name;
 
 	@Builder
 	public RoomObjectResDTO(Long objId, RoomResDTO room, String name) {
 		this.objId = objId;
-		this.room = room;
+//		this.room = room;
 		this.name = name;
 	}
 
 	public RoomObjectResDTO of(RoomObject object) {
 		return RoomObjectResDTO.builder()
 				.objId(object.getId())
-				.room(RoomResDTO.builder().build().of(object.getMeetingRoom()))
+//				.room(RoomResDTO.builder().build().of(object.getMeetingRoom()))
 				.name(object.getName())
 				.build();
 	}

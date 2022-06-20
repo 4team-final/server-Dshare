@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RoomImgResDTO {
 	private Long imgId;
-	private RoomResDTO room;
+	//	private RoomResDTO room;
 	private String imgPath;
 	private String imgType;
 	private String imgSize;
@@ -19,7 +19,7 @@ public class RoomImgResDTO {
 	@Builder
 	public RoomImgResDTO(Long imgId, RoomResDTO room, String imgPath, String imgType, String imgSize) {
 		this.imgId = imgId;
-		this.room = room;
+//		this.room = room;
 		this.imgPath = imgPath;
 		this.imgType = imgType;
 		this.imgSize = imgSize;
@@ -28,7 +28,7 @@ public class RoomImgResDTO {
 	public RoomImgResDTO of(RoomImg img) {
 		return RoomImgResDTO.builder()
 				.imgId(img.getId())
-				.room(RoomResDTO.builder().build().of(img.getMeetingRoom()))
+//				.room(RoomResDTO.builder().build().of(img.getMeetingRoom()))
 				.imgPath(img.getPath())
 				.imgType(img.getType())
 				.imgSize(img.getImgSize())

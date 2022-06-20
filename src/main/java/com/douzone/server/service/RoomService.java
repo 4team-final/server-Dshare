@@ -104,7 +104,6 @@ public class RoomService {
 
 	public LocalDateTime timeDiff(LocalDateTime startedAt, LocalDateTime endedAt) {
 		long diffMinute = ChronoUnit.MINUTES.between(startedAt, endedAt);
-		System.out.println(diffMinute);
 		LocalDateTime now = LocalDateTime.now();
 		return LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), (int) ((diffMinute % 1440) / 60), (int) (diffMinute % 60));
 	}
@@ -173,12 +172,19 @@ public class RoomService {
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
-		weekCountResDTOList.stream().map(weekCountResDTO -> {
+		weekCountResDTOList.stream().map(WeekCountHourResDTO -> {
 
-			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountResDTO.getRoomId(), now, nowMinusWeek);
+			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(WeekCountHourResDTO.getRoomId(), now, nowMinusWeek);
 
-			weekCountResDTO.setReservationResDTOList(reservationResDTOList);
-			return weekCountResDTO;
+			reservationResDTOList.stream().map(reservationResDTO -> {
+				List<List<?>> twoList = RoomImgListAndRoomObjectList(reservationResDTO);
+				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
+				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
+				return reservationResDTO;
+			}).collect(Collectors.toList());
+
+			WeekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+			return WeekCountHourResDTO;
 		}).collect(Collectors.toList());
 		return weekCountResDTOList;
 	}
@@ -227,32 +233,49 @@ public class RoomService {
 
 			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
 
+			reservationResDTOList.stream().map(reservationResDTO -> {
+				List<List<?>> twoList = RoomImgListAndRoomObjectList(reservationResDTO);
+				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
+				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
+				return reservationResDTO;
+			}).collect(Collectors.toList());
+
 			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
 			return weekCountHourResDTO;
 		}).collect(Collectors.toList());
 		return weekCountHourResDTOList;
 	}
 
+	@Transactional
 	public List<ReservationResDTO> selectAllReservation() {
 
 		List<ReservationResDTO> reservationResDTOList = roomQueryDSL.selectAllReservation().stream().map(roomReservation -> {
-			return ReservationResDTO.builder().build().of(roomReservation);
+			List<List<?>> twoList = this.RoomImgListAndRoomObjectList(roomReservation);
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
+					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
+			return reservationResDTO;
 		}).collect(Collectors.toList());
 
 		return reservationResDTOList;
 	}
 
 	@Transactional
-	public List<ReservationResDTO> selectByRoomNoReservation(int roomNo) {
-		return roomQueryDSL.selectRoomNoReservation(roomNo).stream().map(roomReservation -> {
-			return ReservationResDTO.builder().build().of(roomReservation);
+	public List<ReservationResDTO> selectByRoomNoElseCapacityElseReservation(RoomReservationSearchDTO search) {
+		return roomQueryDSL.selectByRoomNoElseCapacityElseReservation(search).stream().map(roomReservation -> {
+			List<List<?>> twoList = this.RoomImgListAndRoomObjectList(roomReservation);
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
+					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
+			return reservationResDTO;
 		}).collect(Collectors.toList());
 	}
 
 	@Transactional
 	public List<ReservationResDTO> selectByDateRoomReservation(String startTime, String endTime) {
 		return roomQueryDSL.selectDateTimeReservation(startTime, endTime).stream().map(roomReservation -> {
-			return ReservationResDTO.builder().build().of(roomReservation);
+			List<List<?>> twoList = this.RoomImgListAndRoomObjectList(roomReservation);
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
+					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
+			return reservationResDTO;
 		}).collect(Collectors.toList());
 	}
 

@@ -23,19 +23,20 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({EmpAlreadyExistException.class})
-    public ResponseEntity<ErrorResponseDTO> EmpAlreadyExistException(EmpAlreadyExistException e) {
-        return CustomExceptionReturn.returnException(e);
-    }
+	@ExceptionHandler({EmpAlreadyExistException.class})
+	public ResponseEntity<ErrorResponseDTO> EmpAlreadyExistException(EmpAlreadyExistException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
 
-    @ExceptionHandler({EmpNotFoundException.class})
-    public ResponseEntity<ErrorResponseDTO> EmpNotExistException(EmpAlreadyExistException e) {
-        return CustomExceptionReturn.returnException(e);
-    }
-    @ExceptionHandler({reservationNotFoundException.class})
-    public ResponseEntity<ErrorResponseDTO> ResNotExistException(reservationNotFoundException e) {
-        return CustomExceptionReturn.returnException(e);
-    }
+	@ExceptionHandler({EmpNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> EmpNotExistException(EmpAlreadyExistException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	@ExceptionHandler({reservationNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> ResNotExistException(reservationNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
 
 	@ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
 	public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(BindException e) {
@@ -44,10 +45,10 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-    @ExceptionHandler(DshareServerException.class)
-    public ResponseEntity<ErrorResponseDTO> serverExceptionHandler(DshareServerException e) {
-        return new CustomExceptionReturn().returnException(e);
-    }
+	@ExceptionHandler(DshareServerException.class)
+	public ResponseEntity<ErrorResponseDTO> serverExceptionHandler(DshareServerException e) {
+		return new CustomExceptionReturn().returnException(e);
+	}
 
 	@ExceptionHandler({HttpRequestMethodNotSupportedException.class})
 	protected ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
