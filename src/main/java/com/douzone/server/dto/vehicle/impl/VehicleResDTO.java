@@ -1,5 +1,6 @@
 package com.douzone.server.dto.vehicle.impl;
 
+import com.douzone.server.dto.vehicle.IVehicleResDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehicleResDTO {
+public class VehicleResDTO implements IVehicleResDTO {
 	private Long id;
 	private String name;
 	private String number;

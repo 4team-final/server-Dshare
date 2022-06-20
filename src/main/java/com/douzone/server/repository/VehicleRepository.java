@@ -38,7 +38,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"order by id desc")
 	List<IVehicleListResDTO> findAllReservedPaging(Pageable pageable);
 
-	@Query("select distinct v, vi.path as vehicleImg from Vehicle v " +
+	@Query("select distinct v.id as id, v.name as name, v.number as number, " +
+			"v.model as model, v.color as color, v.capacity as capacity, vi.path as vehicleImg from Vehicle v " +
 			"left outer join VehicleReservation vr on vr.vehicle.id = v.id " +
 			"left join fetch VehicleImg vi on v.id = vi.vehicle.id " +
 			"where vr.endedAt < current_time or vr.id is null and vr.startedAt > :date")
