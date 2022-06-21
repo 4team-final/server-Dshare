@@ -19,7 +19,10 @@ public interface Msg {
 
 	// admin
 	String SUCCESS_ADMIN_REGISTER = "관리자가 사원 등록에 성공하였습니다.";
+	String SUCCESS_ADMIN_MOD = "관리자가 사원 수정에 성공하였습니다.";
+	String SUCCESS_ADMIN_MODPW = "관리자가 사원 비밀번호 수정에 성공하였습니다.";
 	String SUCCESS_ADMIN_FIND_ALL = "사원 전체 예약 현황 조회에 성공하였습니다.";
+
 
 	String FAIL_ADMIN_REGISTER = "관리자가 사원 등록에 실패하였습니다.";
 	String FAIL_ADMIN_FIND_ALL = "사원 전체 예약 현황 조회에 실패하였습니다.";
@@ -44,13 +47,13 @@ public interface Msg {
 	String SUCCESS_ROOM_BEST_WEEK = "일주일간 많이 예약된 회의실 개수 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_BEST_DATE = "일주일간 많이 예약하는 시간대 회의실 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_MEET_START = "일주일간 많이 회의가 시작되는 시간대 회의실 조회에 성공하였습니다.";
-	String SUCCESS_ROOM_BEFORE = "사용 후 회의실 예약 기록 조회에 성공하였습니다.";
-	String SUCCESS_ROOM_AFTER = "사용 전 회의실 예약 내역 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_FIND_MARK = "내가 즐겨찾기한 회의실 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_UPDATE = "회의실 예약 정보 수정에 성공하였습니다.";
 	String SUCCESS_ROOM_RESERVATION_DELETE = "회의실 예약 삭제에 성공하였습니다.";
 	String SUCCESS_ROOM_DELETE_MARK = "회의실 즐겨찾기 삭제에 성공하였습니다.";
 	String SUCCESS_ROOM_BOOKMARK = "회의실 즐겨찾기 등록에 성공하였습니다.";
+	String SUCCESS_ROOM_RESERVE_USER = "사원의 팀별/부서별/직급별/사원번호별/이름별 조회 성공하였습니다.";
+
 
 	String FAIL_ROOM_RESERVE = "회의실 예약에 실패하였습니다.";
 	String FAIL_ROOM = "회의실 등록에 성공하였습니다.";
@@ -92,6 +95,9 @@ public interface Msg {
 	String SUCCESS_VEHICLE_DELETE = "차량 예약 삭제에 성공하였습니다.";
 	String SUCCESS_VEHICLE_DELETE_MARK = "차량 즐겨찾기 삭제에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_NO = "차량 예약 현황 단일 조회에 성공하였습니다.";
+	String SUCCESS_VEHICLE_RESISTER = "차량 정보 등록에 성공하였습니다.";
+	String SUCCESS_VEHICLE_INFO_UPDATE = "차량 정보 수정에 성공하였습니다.";
+	String SUCCESS_VEHICLE_INFO_DELETE = "차량 정보 삭제에 성공하였습니다.";
 	String SUCCESS_VEHICLE_SOON = "다음 예약 시작 시간 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_ING = "현재 예약 종료 시간 조회에 성공하였습니다.";
 
@@ -112,28 +118,14 @@ public interface Msg {
 	String FAIL_VEHICLE_DELETE = "차량 예약 삭제에 실패하였습니다.";
 	String FAIL_VEHICLE_DELETE_MARK = "차량 즐겨찾기 삭제에 실패하였습니다.";
 	String FAIL_VEHICLE_FIND_NO = "차량 예약 현황 단일 조회에 실패하였습니다.";
+	String FAIL_VEHICLE_RESISTER = "차량 정보 등록에 실패하였습니다.";
+	String FAIL_VEHICLE_INFO_UPDATE = "차량 정보 수정에 실패하였습니다.";
+	String FAIL_VEHICLE_INFO_DELETE = "차량 정보 삭제에 실패하였습니다.";
 	String FAIL_VEHICLE_SOON = "다음 예약 시작 시간 조회에 실패하였습니다.";
 	String FAIL_VEHICLE_ING = "현재 예약 종료 시간 조회에 실패하였습니다.";
 	String FAIL_FIND_RESULT = "결과값 조회에 실패하였습니다.";
 	String FAIL_EXIST_RESULT = "결과값이 존재하지 않습니다.";
 	String FAIL_REQUEST_PARAMETER = "잘못된 파라미터가 전달되었습니다";
-
-	//전에 있던 Message
-	public static final String SIGN_IN_OK = "로그인에 성공하였습니다.";
-	public static final String SIGN_IN_FAIL = "로그인에 실패하였습니다.";
-
-	public static final String SIGN_OUT_OK = "로그아웃에 성공하였습니다.";
-	public static final String SIGN_OUT_FAIL = "로그아웃에 실패하였습니다.";
-
-	public static final String TOKEN_OK = "토큰 검증에 성공하였습니다.";
-	public static final String TOKEN_FAIL = "토큰 검증에 실패하였습니다.";
-
-	public static final String USER_ROLE_CHECK_OK = "유저 역할 확인에 성공하였습니다.";
-	public static final String USER_ROLE_CHECK_FAIL = "유저 역할 확인에 실패하였습니다.";
-
-	public static final String ACCESS_FAIL = "접속에 실패하였습니다.";
-	public static final String SERVER_ERROR = "서버와의 통신에 실패하였습니다.";
-
 	public static final String SUCCESS_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록에 성공하였습니다.";
 	public static final String FAIL_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록 실패하였습니다.";
 }

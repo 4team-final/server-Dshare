@@ -2,8 +2,6 @@ package com.douzone.server.dto.employee;
 
 
 import com.douzone.server.entity.Employee;
-import com.douzone.server.entity.Position;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Builder
-public class ProfileDto {
+public class ProfileRes {
 
 	private String empNo;
 	private String name;
@@ -30,7 +28,7 @@ public class ProfileDto {
 		this.profileImg = profileImg;
 	}
 
-	public ProfileDto(String empNo, String name, String email, String tel, String position, String team, String dept, LocalDateTime birthday, String profileImg, String role) {
+	public ProfileRes(String empNo, String name, String email, String tel, String position, String team, String dept, LocalDateTime birthday, String profileImg, String role) {
 		this.empNo = empNo;
 		this.name = name;
 		this.email = email;
@@ -43,8 +41,8 @@ public class ProfileDto {
 		this.role = role;
 	}
 
-	public ProfileDto of(Employee employee) {
-		return ProfileDto.builder()
+	public ProfileRes of(Employee employee) {
+		return ProfileRes.builder()
 				.empNo(employee.getEmpNo())
 				.name(employee.getName())
 				.email(employee.getEmail())

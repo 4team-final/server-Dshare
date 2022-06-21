@@ -1,6 +1,7 @@
 package com.douzone.server.entity;
 
 import com.douzone.server.config.utils.BaseAtTime;
+import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,4 +29,14 @@ public class Vehicle extends BaseAtTime {
 	private String model;
 	private String color;
 	private int capacity;
+
+	public Long updateVehicle(VehicleUpdateDTO vehicleUpdateDTO) {
+		this.name = vehicleUpdateDTO.getName();
+		this.number = vehicleUpdateDTO.getNumber();
+		this.model = vehicleUpdateDTO.getModel();
+		this.color = vehicleUpdateDTO.getColor();
+		this.capacity = vehicleUpdateDTO.getCapacity();
+
+		return this.id;
+	}
 }

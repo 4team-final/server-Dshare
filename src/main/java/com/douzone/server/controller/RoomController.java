@@ -5,6 +5,8 @@ import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.reservation.RegistReservationReqDto;
+import com.douzone.server.dto.reservation.updateRes;
+import com.douzone.server.dto.reservation.registRes;
 import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -110,7 +112,7 @@ public class RoomController {
 	 * 6/18 14:17 회의실 예약 오윤성
 	 */
 	@PostMapping("/regist")
-	public ResponseEntity<ResponseDTO> saveReservation(@Validated @RequestBody RegistReservationReqDto registReservationReqDto) {
+	public ResponseEntity<ResponseDTO> saveReservation(@Validated(registRes.class) @RequestBody RegistReservationReqDto registReservationReqDto) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE, roomService.save(registReservationReqDto)));
 	}
 
@@ -118,14 +120,14 @@ public class RoomController {
 	 * 6/19 18:51 회의실 예약 수정 오윤성
 	 */
 	@PostMapping("/my/update/{id}")
-	public ResponseEntity<ResponseDTO> updateReservation(@Validated @RequestBody RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
+	public ResponseEntity<ResponseDTO> updateReservation(@Validated(updateRes.class) @RequestBody RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_UPDATE, roomService.update(registReservationReqDto, id)));
 	}
 
 	/**
 	 * 6/19 18:51 회의실 예약 삭제 오윤성
 	 */
-	@GetMapping("/delete/{id}")
+	@GetMapping("/reservation/delete/{id}")
 	public ResponseEntity<ResponseDTO> deleteReservation(@PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_DELETE, roomService.deleteRes(id)));
 	}

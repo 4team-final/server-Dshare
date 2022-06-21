@@ -22,6 +22,7 @@ public enum ErrorCode {
 	ROOM_OBJECT_NOT_FOUND(404, "회의실의 물건을 찾을 수 없습니다."),
 	ROOM_IMG_NOT_FOUND(404, "회의실의 이미지를 찾을 수 없습니다."),
 	ROOM_NOT_FOUND(404, "회의실을 찾을 수 없습니다."),
+	PW_NOT_MATCH(404, "기존 패스워드가 일치하지 않습니다."),
 
 	//500
 	INTERNAL_SERVER_ERROR(500, "내부 서버 오류 입니다."),
@@ -31,6 +32,7 @@ public enum ErrorCode {
 	MISSING_REQUEST_PARAMETER(400, "요청 파라미터를 잃어버렸습니다."),
 	METHOD_NOT_ALLOWED(400, "허락되지 않은 메소드 입니다."),
 
+	NOT_PRIMARY_KEY(400, "고유 키가 존재 하지 않습니다."),
 	//end point
 	MISS_MATCH_ENDPOINT(404, "해당 end point는 요청 할 수 없습니다."),
 

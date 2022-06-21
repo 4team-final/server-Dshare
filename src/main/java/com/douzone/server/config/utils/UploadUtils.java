@@ -86,4 +86,12 @@ public class UploadUtils {
 			}
 		}
 	}
+
+	public AwsS3 getAwsS3() {
+		return this.awsS3;
+	}
+
+	public String getAwsPath() {
+		return this.awsPath;
+	}
 }

@@ -52,10 +52,11 @@ public class ReservationResDTO {
 	}
 
 	public ReservationResDTO of(RoomReservation reservation, LocalDateTime rPeriod, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList) {
-
 		return ReservationResDTO.builder().id(reservation.getId()).room(RoomResDTO.builder().build().of(reservation.getMeetingRoom(), roomObjectResDTOList, roomImgResDTOList)).emp(EmpResDTO.builder().build().of(reservation.getEmployee())).reason(reservation.getReason()).title(reservation.getTitle()).rPeriod(rPeriod).startedAt(reservation.getStartedAt()).endedAt(reservation.getEndedAt()).createdAt(reservation.getCreatedAt()).modifiedAt(reservation.getModifiedAt()).build();
 	}
-
+	public ReservationResDTO of(RoomReservation reservation, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList) {
+		return ReservationResDTO.builder().id(reservation.getId()).room(RoomResDTO.builder().build().of(reservation.getMeetingRoom(), roomObjectResDTOList, roomImgResDTOList)).emp(EmpResDTO.builder().build().of(reservation.getEmployee())).reason(reservation.getReason()).title(reservation.getTitle()).startedAt(reservation.getStartedAt()).endedAt(reservation.getEndedAt()).createdAt(reservation.getCreatedAt()).modifiedAt(reservation.getModifiedAt()).build();
+	}
 
 	public ReservationResDTO of(RoomReservation reservation, LocalDateTime rPeriod) {
 		return ReservationResDTO.builder().id(reservation.getId()).room(RoomResDTO.builder().build().of(reservation.getMeetingRoom())).emp(EmpResDTO.builder().build().of(reservation.getEmployee())).reason(reservation.getReason()).title(reservation.getTitle()).rPeriod(rPeriod).startedAt(reservation.getStartedAt()).endedAt(reservation.getEndedAt()).createdAt(reservation.getCreatedAt()).modifiedAt(reservation.getModifiedAt()).build();

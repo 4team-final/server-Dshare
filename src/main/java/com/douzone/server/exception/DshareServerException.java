@@ -9,4 +9,6 @@ public class DshareServerException extends RuntimeException {
     public DshareServerException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
+
+
 }
