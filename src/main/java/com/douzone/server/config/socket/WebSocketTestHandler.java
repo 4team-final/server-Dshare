@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-public class WebSocketHandler extends TextWebSocketHandler {
+public class WebSocketTestHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 		String payload = message.getPayload();
