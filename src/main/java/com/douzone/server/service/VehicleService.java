@@ -1,8 +1,10 @@
 package com.douzone.server.service;
 
 import com.douzone.server.config.utils.ResponseDTO;
+import com.douzone.server.dto.vehicle.VehicleParseDTO;
 import com.douzone.server.dto.vehicle.VehicleReqDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
+import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
@@ -34,8 +36,17 @@ public class VehicleService {
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 
 	@Transactional
-	public ResponseDTO createReservation(VehicleReservationDTO vehicleReservationDTO, Long empId) {
+	public ResponseDTO createReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
 		log.info(METHOD_NAME + "- createReservation");
+
+		VehicleReservationDTO vehicleReservationDTO = VehicleReservationDTO.builder()
+				.vehicleId(vehicleParseDTO.getVehicleId())
+				.empId(vehicleParseDTO.getEmpId())
+				.reason(vehicleParseDTO.getReason())
+				.title(vehicleParseDTO.getTitle())
+				.startedAt(LocalDateTime.parse(vehicleParseDTO.getStartedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.endedAt(LocalDateTime.parse(vehicleParseDTO.getEndedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.build();
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
@@ -43,7 +54,7 @@ public class VehicleService {
 					vehicleReservationRepository.save(
 							VehicleReservation.builder()
 									.vehicle(Vehicle.builder().id((long) vehicleReservationDTO.getVehicleId()).build())
-									.employee(Employee.builder().id((long) vehicleReservationDTO.getEmpId()).build())
+									.employee(Employee.builder().id(empId).build())
 									.reason(vehicleReservationDTO.getReason())
 									.title(vehicleReservationDTO.getTitle())
 									.startedAt(vehicleReservationDTO.getStartedAt())
@@ -161,8 +172,10 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO()).map(u -> {
 			Map<String, Integer> map = new HashMap<>();
-			List<String> result = vehicleRepository.findWeekDate(LocalDateTime.now().minusDays(7L));
-			for (String s : result) {
+			List<VehicleWeekTimeDTO> result = vehicleRepository.findWeekDate(LocalDateTime.now().minusDays(7L), LocalDateTime.now());
+			for (VehicleWeekTimeDTO vehicleWeekTimeDTO : result) {
+				String s = vehicleWeekTimeDTO.getSubstring();
+
 				if (!map.containsKey(s)) map.put(s, 1);
 				map.put(s, map.get(s) + 1);
 			}
@@ -200,8 +213,17 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO updateReserved(VehicleReqDTO vehicleReqDTO, Long id) {
+	public ResponseDTO updateReserved(VehicleParseDTO vehicleParseDTO, Long id) {
 		log.info(METHOD_NAME + "- updateReserved");
+
+		VehicleReqDTO vehicleReqDTO = VehicleReqDTO.builder()
+				.id(vehicleParseDTO.getId())
+				.vehicleId(vehicleParseDTO.getVehicleId())
+				.reason(vehicleParseDTO.getReason())
+				.title(vehicleParseDTO.getTitle())
+				.startedAt(LocalDateTime.parse(vehicleParseDTO.getStartedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.endedAt(LocalDateTime.parse(vehicleParseDTO.getEndedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.build();
 
 		return Optional.of(new ResponseDTO())
 				.map(u -> Optional.ofNullable(vehicleReqDTO).map(VehicleReqDTO::getId))
@@ -221,10 +243,10 @@ public class VehicleService {
 
 		return Optional.of(new ResponseDTO())
 				.filter(u -> (id != null))
-				.map(v -> vehicleReservationRepository.findById(id))
-				.map(res -> res.isPresent() ? res.get() : -1L)
-				.filter(uid -> uid == empId)
-				.map(fi -> {
+				.map(u -> vehicleReservationRepository.findById(id))
+				.map(res -> res.isPresent() ? res.get().getEmployee().getId() : -1L)
+				.filter(v -> v.equals(empId))
+				.map(v -> {
 					vehicleReservationRepository.deleteById(id);
 					return (vehicleReservationRepository.findById(id).isPresent()) ?
 							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + FAIL_FIND_RESULT) :
@@ -271,8 +293,8 @@ public class VehicleService {
 				.map(res -> res.get(0).getId() == null ?
 						(code == 0 ? ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + FAIL_FIND_RESULT) :
 								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + FAIL_FIND_RESULT)) :
-						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime())) :
-								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getDateTime()))))
+						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getTimeTime())) :
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(LocalDateTime.now(), res.get(0).getTimeTime()))))
 				.orElseGet(() -> code == 0 ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));

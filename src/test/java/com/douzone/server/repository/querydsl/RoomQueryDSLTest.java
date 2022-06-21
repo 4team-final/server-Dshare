@@ -63,9 +63,10 @@ class RoomQueryDSLTest {
 //		assertThat(roomReservations.get(0).getEmployee().getId()).isEqualTo(roomReservation.getEmployee().getId());//19
 
 	}
+
 	@Test
 	public void 동적쿼리() {
-		RoomReservationSearchDTO search = RoomReservationSearchDTO.builder().deptId(1L).build();
+		RoomReservationSearchDTO search = RoomReservationSearchDTO.builder().deptId(1).build();
 		roomQueryDSL.selectByVariousColumns(search);
 	}
 
