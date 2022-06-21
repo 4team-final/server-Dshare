@@ -5,6 +5,7 @@ import com.douzone.server.entity.MeetingRoom;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 import org.apache.tomcat.jni.Local;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@PropertySource("classpath:messages.properties")
 public class RegistReservationReqDto {
 
 	@NotNull(groups = registRes.class)

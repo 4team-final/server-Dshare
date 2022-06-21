@@ -122,6 +122,19 @@ public class RoomService {
 
 		return MyReservationResDTO.builder().build().of(beforeList, afterList);
 	}
+	//페이징
+	@Transactional
+	public List<ReservationPagingRes> myReservation(Long empId, long lastId, int limit) {
+		List<RoomReservation> ReservationList = roomQueryDSL.selectAllReservationPage(lastId, limit, empId);
+		long total = roomQueryDSL.countReservation(empId);
+		List<ReservationPagingRes> MyList = ReservationList.stream().map(roomReservation -> {
+			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
+			return new ReservationPagingRes().of(reservationResDTO, total, limit, lastId);
+		}).collect(Collectors.toList());
+		return MyList;
+	}
+
 
 	public LocalDateTime now() {
 		return LocalDateTime.now();

@@ -60,6 +60,11 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> myReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_MY, roomService.myReservation(principalDetails.getEmployee().getId())));
 	}
+	//페이징
+	@GetMapping("/reservation/my/{lastId}/{limit}")
+	public ResponseEntity<ResponseDTO> myReservation(@PathVariable("lastId")long lastId, @PathVariable("limit") int limit, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_MY, roomService.myReservation(principalDetails.getEmployee().getId(), lastId, limit)));
+	}
 
 	@GetMapping("/reservation/{empId}")
 	public ResponseEntity<ResponseDTO> myReservation(@PathVariable("empId") @Valid Long empId) {
