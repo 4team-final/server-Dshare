@@ -1,6 +1,7 @@
 package com.douzone.server.repository;
 
 import com.douzone.server.dto.vehicle.*;
+import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
 import com.douzone.server.entity.Vehicle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,7 +38,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"order by id desc")
 	List<IVehicleListResDTO> findAllReservedPaging(Pageable pageable);
 
-	@Query("select distinct v, vi.path as vehicleImg from Vehicle v " +
+	@Query("select distinct v.id as id, v.name as name, v.number as number, " +
+			"v.model as model, v.color as color, v.capacity as capacity, vi.path as vehicleImg from Vehicle v " +
 			"left outer join VehicleReservation vr on vr.vehicle.id = v.id " +
 			"left join fetch VehicleImg vi on v.id = vi.vehicle.id " +
 			"where vr.endedAt < current_time or vr.id is null and vr.startedAt > :date")
@@ -95,8 +97,16 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
 	List<IVehicleWeekDTO> findWeekVehicle(@Param("date") LocalDateTime date);
 
-	@Query("select substring(vr.startedAt, 12, 2) from VehicleReservation vr where vr.startedAt > :date")
-	List<String> findWeekDate(@Param("date") LocalDateTime date);
+	@Query("select substring(vr.startedAt, 12, 2) as substring, vr.id as id, " +
+			"vr.startedAt as startedAt, vr.endedAt as endedAt, vr.reason as reason, vr.title as title, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, v as vehicle, vi.path as vehicleImg, " +
+			"e.empNo as empNo, e.name as name " +
+			"from VehicleReservation vr " +
+			"left join fetch Vehicle v on vr.vehicle.id = v.id " +
+			"left join fetch Employee e on vr.employee.id = e.id " +
+			"left join fetch VehicleImg vi on v.id = vi.id " +
+			"where startedAt > :date and endedAt < :end")
+	List<VehicleWeekTimeDTO> findWeekDate(@Param("date") LocalDateTime date, @Param("end") LocalDateTime end);
 
 	@Query("select distinct vr.endedAt as endedAt, v as vehicle, vi.path as vehicleImg " +
 			"from Vehicle v " +
@@ -117,17 +127,17 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"where vr.id = :id")
 	Optional<IVehicleListResDTO> findCustom(@Param("id") Long id);
 
-	@Query("select vr.id as id, vr.title as title, vr.startedAt as dateTime " +
+	@Query("select vr.id as id, vr.title as title, vr.startedAt as timeTime " +
 			"from VehicleReservation vr " +
 			"left join fetch Vehicle v on vr.vehicle.id = v.id " +
 			"left join fetch Employee e on vr.employee.id = e.id " +
-			"where e.id = :empId and dateTime > current_time")
+			"where e.id = :empId and vr.startedAt > current_time")
 	List<IVehicleTimeResDTO> soonReservationMyTime(@Param("empId") Long empId, Pageable pageable);
 
-	@Query("select vr.id as id, vr.title as title, vr.endedAt as dateTime " +
+	@Query("select vr.id as id, vr.title as title, vr.endedAt as timeTime " +
 			"from VehicleReservation vr " +
 			"left join fetch Vehicle v on vr.vehicle.id = v.id " +
 			"left join fetch Employee e on vr.employee.id = e.id " +
-			"where e.id = :empId and vr.startedAt < current_time and current_time < dateTime")
+			"where e.id = :empId and vr.startedAt < current_time and current_time < vr.endedAt")
 	List<IVehicleTimeResDTO> ingReservationMyTime(@Param("empId") Long empId, Pageable pageable);
 }

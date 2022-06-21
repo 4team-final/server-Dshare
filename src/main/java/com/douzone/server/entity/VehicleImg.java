@@ -1,6 +1,7 @@
 package com.douzone.server.entity;
 
 import com.douzone.server.config.utils.BaseAtTime;
+import com.douzone.server.dto.vehicle.VehicleImgDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,4 +32,11 @@ public class VehicleImg extends BaseAtTime {
 	private String path;
 	private String type;
 	private String imgSize;
+
+	public void updateVehicleImg(VehicleImgDTO vehicleImgDTO) {
+		this.vehicle = Vehicle.builder().id(vehicleImgDTO.getVehicleId()).build();
+		this.path = vehicleImgDTO.getPath();
+		this.type = vehicleImgDTO.getType();
+		this.imgSize = vehicleImgDTO.getImgSize();
+	}
 }

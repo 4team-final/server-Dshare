@@ -4,7 +4,6 @@ import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.employee.SignModReqDTO;
-import com.douzone.server.dto.employee.signUp;
 import com.douzone.server.dto.employee.mod;
 import com.douzone.server.dto.employee.modPw;
 import com.douzone.server.dto.reservation.ReservationResDTO;
@@ -13,6 +12,8 @@ import com.douzone.server.dto.room.RoomObjectResDTO;
 import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.repository.querydsl.RoomQueryDSL;
+import com.douzone.server.dto.employee.signUp;
+import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
 import com.douzone.server.service.AdminService;
 import com.douzone.server.service.RoomService;
 import com.douzone.server.service.method.ServiceMethod;
@@ -48,25 +49,26 @@ public class AdminController {
 	private MessageSource msg;
 
 	/**
-	 *  사원등록 - 정재빈
+	 * 사원등록 - 정재빈
 	 */
 	@PostMapping("/register")
 	public ResponseEntity<ResponseDTO> register(@RequestBody @Validated(signUp.class) SignModReqDTO signModReqDTO) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_REGISTER, adminService.register(signModReqDTO)));
 	}
+
 	/**
-	 *  사원수정 - 오윤성
+	 * 사원수정 - 오윤성
 	 */
 	@PostMapping("/update/{id}")
-	public ResponseEntity<ResponseDTO> update(@RequestBody @Validated(mod.class) SignModReqDTO signModReqDTO ,@PathVariable("id")long id) {
+	public ResponseEntity<ResponseDTO> update(@RequestBody @Validated(mod.class) SignModReqDTO signModReqDTO, @PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_MOD, adminService.update(signModReqDTO, id)));
 	}
 
 	/**
-	 *  사원 비밀번호 수정 - 오윤성
+	 * 사원 비밀번호 수정 - 오윤성
 	 */
 	@PostMapping("/updatePw/{id}")
-	public ResponseEntity<ResponseDTO> updatePw(@RequestBody @Validated(modPw.class) SignModReqDTO signModReqDTO, @PathVariable("id")long id) {
+	public ResponseEntity<ResponseDTO> updatePw(@RequestBody @Validated(modPw.class) SignModReqDTO signModReqDTO, @PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_MODPW, adminService.updatePw(signModReqDTO, id)));
 	}
 
@@ -78,7 +80,6 @@ public class AdminController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,  Msg.SUCCESS_ADMIN_MODPW, adminService.searchVarious(search)));
 	}
 
-
 	@GetMapping("/check")
 	public ResponseEntity<ResponseDTO> check() {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_REGISTER, "admin이 아니면 통과 못합니다."));
@@ -87,6 +88,30 @@ public class AdminController {
 	@PostMapping("/image/upload")
 	public ResponseEntity<ResponseDTO> uploadProfileImg(@NotNull List<MultipartFile> files, long TargetEmpId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
+	}
+
+	/**
+	 * 차량 정보 등록
+	 */
+	@PostMapping("/creation/vehicle")
+	public ResponseEntity<ResponseDTO> createVehicle(@Valid VehicleUpdateDTO vehicleUpdateDTO, @NotNull List<MultipartFile> files) {
+		return ResponseEntity.ok().body(adminService.createVehicle(vehicleUpdateDTO, files));
+	}
+
+	/**
+	 * 차량 정보 수정
+	 */
+	@PatchMapping("/modification/vehicle")
+	public ResponseEntity<ResponseDTO> updateVehicle(@Valid VehicleUpdateDTO vehicleUpdateDTO, @RequestParam("id") Long id, @NotNull List<MultipartFile> files) {
+		return ResponseEntity.ok().body(adminService.updateVehicle(vehicleUpdateDTO, id, files));
+	}
+
+	/**
+	 * 차량 정보 삭제
+	 */
+	@DeleteMapping("/elimination/vehicle")
+	public ResponseEntity<ResponseDTO> deleteVehicle(@RequestParam("id") Long id) {
+		return ResponseEntity.ok().body(adminService.deleteVehicle(id));
 	}
 
 	@PostMapping("/room")

@@ -7,5 +7,5 @@ public interface IVehicleTimeResDTO {
 
 	String getTitle();
 
-	LocalDateTime getDateTime();
+	LocalDateTime getTimeTime();
 }
