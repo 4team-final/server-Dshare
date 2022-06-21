@@ -34,7 +34,6 @@ public class ServiceMethod {
 		int size = roomBookmarkResDTOList.size();
 		List<RoomResDTO> meetingRoomList = new ArrayList<>();
 		for(int i = 0 ; i < size ; i++){
-
 			MeetingRoom meetingRoom = roomRepository.roomList(roomBookmarkResDTOList.get(i).getRoomId()).get(0);
 			
 			List<RoomImgResDTO> roomImgResList = roomImgRepository.findByMeetingRoom_Id(roomBookmarkResDTOList.get(i).getRoomId()).stream().map(roomImg -> {
