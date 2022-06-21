@@ -127,7 +127,7 @@ public class RoomController {
 	/**
 	 * 6/19 18:51 회의실 예약 삭제 오윤성
 	 */
-	@GetMapping("/delete/{id}")
+	@GetMapping("/reservation/delete/{id}")
 	public ResponseEntity<ResponseDTO> deleteReservation(@PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_DELETE, roomService.deleteRes(id)));
 	}
