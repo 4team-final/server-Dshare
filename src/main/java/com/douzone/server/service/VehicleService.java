@@ -303,4 +303,26 @@ public class VehicleService {
 	public LocalDateTime now() {
 		return LocalDateTime.now();
 	}
+
+	@Transactional
+	public ResponseDTO earlyReturnOfVehicle(Long id, Long empId) {
+		log.info(METHOD_NAME + "- earlyReturnOfVehicle");
+
+		return Optional.of(new ResponseDTO())
+				.filter(u -> (id > 0))
+				.map(u -> vehicleReservationRepository.findById(id))
+				.filter(Optional::isPresent)
+				.filter(v -> Objects.equals(v.get().getEmployee().getId(), empId))
+				.map(v -> {
+					v.get().updateReserved(VehicleReqDTO.builder()
+							.vehicleId(v.get().getVehicle().getId())
+							.reason(v.get().getReason())
+							.title(v.get().getTitle())
+							.startedAt(v.get().getStartedAt())
+							.endedAt(now())
+							.build());
+
+					return ResponseDTO.of(HttpStatus.OK, SUCCESS_MOVE_UP_RESERVATION);
+				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_MOVE_UP_RESERVATION));
+	}
 }

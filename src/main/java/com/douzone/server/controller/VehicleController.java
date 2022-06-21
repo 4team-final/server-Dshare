@@ -36,6 +36,7 @@ import java.util.Map;
  * soonReservationMyTime - 나의 다음 예약 시작 시간 조회 /own/reservation/next - GET
  * Update:
  * updateByMyReservation - 내 차량 예약 현황 수정 /modification - PATCH
+ * earlyReturnOfVehicle - 이용 차량 조기 반납 /modification/return - PATCH
  * Delete:
  * deleteByMyReservation - 내 차량 예약 삭제 /elimination
  * deleteByMyBookMark - 내 즐겨찾기 차량 삭제 /elimination/mark
@@ -53,104 +54,85 @@ public class VehicleController {
 	public ResponseEntity<ResponseDTO> registerByVehicleReservation(@RequestBody @Valid VehicleParseDTO vehicleParseDTO,
 																	@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- registerByVehicleReservation");
-		Long empId = principalDetails.getEmployee().getId();
-
-		return ResponseEntity.ok().body(vehicleService.registerByVehicleReservation(vehicleParseDTO, empId));
+		return ResponseEntity.ok().body(vehicleService.registerByVehicleReservation(vehicleParseDTO, principalDetails.getEmployee().getId()));
 	}
 
 	@PostMapping(path = "/creation/bookmark")
 	public ResponseEntity<ResponseDTO> registerByVehicleBookmark(@RequestParam(value = "vId") Long vId,
 																 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- registerByVehicleBookmark");
-		Long empId = principalDetails.getEmployee().getId();
-
-		return ResponseEntity.ok().body(vehicleService.registerByVehicleBookmark(empId, vId));
+		return ResponseEntity.ok().body(vehicleService.registerByVehicleBookmark(principalDetails.getEmployee().getId(), vId));
 	}
 
 	@GetMapping(path = "/list/reservation")
 	public ResponseEntity<ResponseDTO> findByAllReservation() {
 		log.info(METHOD_NAME + "- findByAllReservation");
-
 		return ResponseEntity.ok().body(vehicleService.findByAllReservation());
 	}
 
 	@GetMapping(path = "/list/reservation/paging")
 	public ResponseEntity<ResponseDTO> findByPaginationReservation(@RequestBody Map<String, Integer> pageNum) {
 		log.info(METHOD_NAME + "- findByPaginationReservation");
-
 		return ResponseEntity.ok().body(vehicleService.findByPaginationReservation(pageNum.get("page")));
 	}
 
 	@GetMapping(path = "/list/stock")
 	public ResponseEntity<ResponseDTO> findByAllNotReservation() {
 		log.info(METHOD_NAME + "- findByAllNotReservation");
-
 		return ResponseEntity.ok().body(vehicleService.findByAllNotReservation());
 	}
 
 	@GetMapping(path = "/list/type")
 	public ResponseEntity<ResponseDTO> findByModelReservation(@RequestBody Map<String, String> model) {
 		log.info(METHOD_NAME + "- findByModelReservation");
-		System.out.println(model);
 		return ResponseEntity.ok().body(vehicleService.findByModelReservation(model.get("model")));
 	}
 
 	@GetMapping(path = "/list/time")
 	public ResponseEntity<ResponseDTO> findByDateTimeReservation(@RequestBody Map<String, String> model) {
 		log.info(METHOD_NAME + "- findByDateTimeReservation");
-
 		return ResponseEntity.ok().body(vehicleService.findByDateTimeReservation(model.get("start"), model.get("end")));
 	}
 
 	@GetMapping(path = "/list/own/past")
 	public ResponseEntity<ResponseDTO> findByMyPastReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findByMyPastReservation");
-		Long id = principalDetails.getEmployee().getId();
-
-		return ResponseEntity.ok().body(vehicleService.findByMyPastReservation(id));
+		return ResponseEntity.ok().body(vehicleService.findByMyPastReservation(principalDetails.getEmployee().getId()));
 	}
 
 	@GetMapping(path = "/list/own/current")
 	public ResponseEntity<ResponseDTO> findByMyCurrentReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findByMyCurrentReservation");
-		Long id = principalDetails.getEmployee().getId();
-
-		return ResponseEntity.ok().body(vehicleService.findByMyCurrentReservation(id));
+		return ResponseEntity.ok().body(vehicleService.findByMyCurrentReservation(principalDetails.getEmployee().getId()));
 	}
 
 	@GetMapping(path = "/best/vehicle")
 	public ResponseEntity<ResponseDTO> weekMostReservedVehicle() {
 		log.info(METHOD_NAME + "- weekMostReservedVehicle");
-
 		return ResponseEntity.ok().body(vehicleService.weekMostReservedVehicle());
 	}
 
 	@GetMapping(path = "/best/time")
 	public ResponseEntity<ResponseDTO> weekMostReservedTime() {
 		log.info(METHOD_NAME + "- weekMostReservedTime");
-
 		return ResponseEntity.ok().body(vehicleService.weekMostReservedTime());
 	}
 
 	@GetMapping(path = "/list/recent")
 	public ResponseEntity<ResponseDTO> findByRecentReservedVehicle() {
 		log.info(METHOD_NAME + "- findByRecentReservedVehicle");
-
 		return ResponseEntity.ok().body(vehicleService.findByRecentReservedVehicle());
 	}
 
 	@GetMapping(path = "/list/own/mark")
 	public ResponseEntity<ResponseDTO> findByMyBookMarkVehicle(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findByMyBookMarkVehicle");
-		String empNo = principalDetails.getEmployee().getEmpNo();
-
-		return ResponseEntity.ok().body(vehicleService.findByMyBookMarkVehicle(empNo));
+		return ResponseEntity.ok().body(vehicleService.findByMyBookMarkVehicle(principalDetails.getEmployee().getEmpNo()));
 	}
 
 	@GetMapping(path = "/best/mark")
 	public ResponseEntity<ResponseDTO> selectByBookMarkTop3Vehicle() {
 		log.info(METHOD_NAME + "- selectByBookMarkTop3Vehicle");
-
 		return ResponseEntity.ok().body(vehicleService.selectByBookMarkTop3Vehicle());
 	}
 
@@ -158,56 +140,44 @@ public class VehicleController {
 	@PatchMapping(path = "/modification")
 	public ResponseEntity<ResponseDTO> updateByMyReservation(@RequestBody @Valid VehicleParseDTO vehicleParseDTO,
 															 @AuthenticationPrincipal PrincipalDetails principalDetails) {
-
 		log.info(METHOD_NAME + "- updateByMyReservation");
-
-		Long id = principalDetails.getEmployee().getId();
-
-		return ResponseEntity.ok().body(vehicleService.updateByMyReservation(vehicleParseDTO, id));
+		return ResponseEntity.ok().body(vehicleService.updateByMyReservation(vehicleParseDTO, principalDetails.getEmployee().getId()));
 	}
 
 	@DeleteMapping(path = "/elimination")
 	public ResponseEntity<ResponseDTO> deleteByMyReservation(@RequestParam("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- deleteByMyReservation");
-		Long empId = principalDetails.getEmployee().getId();
-		return ResponseEntity.ok().body(vehicleService.deleteByMyReservation(id, empId));
+		return ResponseEntity.ok().body(vehicleService.deleteByMyReservation(id, principalDetails.getEmployee().getId()));
 	}
 
 	@DeleteMapping(path = "/elimination/mark")
 	public ResponseEntity<ResponseDTO> deleteByMyBookMark(@RequestParam("id") Long id) {
 		log.info(METHOD_NAME + "- deleteByMyBookMark");
-
 		return ResponseEntity.ok().body(vehicleService.deleteByMyBookMark(id));
 	}
 
 	@GetMapping(path = "/reservation")
 	public ResponseEntity<ResponseDTO> selectByVehicleReservation(@RequestParam("id") Long id) {
 		log.info(METHOD_NAME + "- selectByVehicleReservation");
-
 		return ResponseEntity.ok().body(vehicleService.selectByVehicleReservation(id));
 	}
 
 	@GetMapping(path = "/own/reservation/next")
-
 	public ResponseEntity<ResponseDTO> soonReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
 		log.info(METHOD_NAME + "- soonReservationMyTime");
-
-		Long empId = principalDetails.getEmployee().getId();
-
-
-		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(empId, 1));
+		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(principalDetails.getEmployee().getId(), 1));
 	}
 
 	@GetMapping(path = "/own/reservation/ongoing")
 	public ResponseEntity<ResponseDTO> ingReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
 		log.info(METHOD_NAME + "- ingReservationMyTime");
-
-		Long empId = principalDetails.getEmployee().getId();
-
-
-		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(empId, 0));
+		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(principalDetails.getEmployee().getId(), 0));
 	}
 
+	@PatchMapping("/modification/return")
+	public ResponseEntity<ResponseDTO> earlyReturnOfVehicle(@RequestParam("id") Long id,
+															@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- earlyReturnOfVehicle");
+		return ResponseEntity.ok().body(vehicleService.earlyReturnOfVehicle(id, principalDetails.getEmployee().getId()));
+	}
 }
