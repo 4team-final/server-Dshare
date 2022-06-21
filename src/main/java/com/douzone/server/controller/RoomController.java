@@ -11,6 +11,7 @@ import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -80,10 +81,15 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_MEET_START, roomService.weekAndMonthMeetingCountHour(datetime)));
 	}
 
-	//페이지 네이션 해야함
+
 	@GetMapping("/reservation/all")
 	public ResponseEntity<ResponseDTO> selectAllReservation() {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation()));
+	}
+	//페이지 네이션 해야함
+	@GetMapping("/reservation/all/{lastId}/{limit}")
+	public ResponseEntity<ResponseDTO> selectAllReservationPage(@PathVariable("lastId") long lastId, @PathVariable("limit")int limit, Pageable pageable) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation(lastId, limit)));
 	}
 
 	// 동적 쿼리 : 호실, 인원수, 특정 시간대 합침.
