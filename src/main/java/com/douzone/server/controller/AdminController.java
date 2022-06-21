@@ -75,13 +75,7 @@ public class AdminController {
 	 */
 	@GetMapping("/reservation/read/various")
 	public ResponseEntity<ResponseDTO> VariousSearch(@RequestBody RoomReservationSearchDTO search) {
-		log.info("search : {} , {}, {}, {}", search.getTeamNo(), search.getDeptNo(), search.getEmpNo(), search.getEmpName());
-		List<ReservationResDTO> list = roomQueryDSL.selectByVariousColumns(search).stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
-			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
-			return reservationResDTO;
-		}).collect(Collectors.toList());
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,  Msg.SUCCESS_ADMIN_MODPW, list));
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,  Msg.SUCCESS_ADMIN_MODPW, adminService.searchVarious(search)));
 	}
 
 

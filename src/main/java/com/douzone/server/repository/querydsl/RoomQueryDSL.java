@@ -1,12 +1,16 @@
 package com.douzone.server.repository.querydsl;
 
 import com.douzone.server.dto.room.QRoomBookmarkResDTO;
+import com.douzone.server.dto.room.QRoomReservationSearchDTO;
 import com.douzone.server.dto.room.RoomBookmarkResDTO;
 import com.douzone.server.dto.room.RoomReservationSearchDTO;
+import com.douzone.server.entity.Department;
 import com.douzone.server.entity.RoomReservation;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -14,12 +18,13 @@ import java.util.List;
 
 import static com.douzone.server.entity.QMeetingRoom.meetingRoom;
 import static com.douzone.server.entity.QEmployee.employee;
-import static com.douzone.server.entity.QTeam.team;
 import static com.douzone.server.entity.QRoomBookmark.roomBookmark;
 import static com.douzone.server.entity.QRoomReservation.roomReservation;
+import static com.douzone.server.entity.QDepartment.department;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class RoomQueryDSL {
 	private final JPAQueryFactory jpaQueryFactory;
 
@@ -107,8 +112,8 @@ public class RoomQueryDSL {
 	private BooleanExpression teamIdEq(Long teamNo) {
 		return teamNo != null ? roomReservation.employee.team.id.eq(teamNo) : null;
 	}
-	private BooleanExpression deptIdEq(Long deptNo) {
-		return deptNo != null ? roomReservation.employee.team.department.id.eq(deptNo) : null;
+	private BooleanExpression deptIdEq(Integer deptId) {
+		return deptId != null ? roomReservation.employee.team.department.id.eq(Long.valueOf(deptId)) : null;
 	}
 	private BooleanExpression empNoEq(String empNo) {
 		return empNo != null ? roomReservation.employee.empNo.eq(empNo) : null;
@@ -117,14 +122,23 @@ public class RoomQueryDSL {
 		return empName != null ? roomReservation.employee.name.eq(empName) : null;
 	}
 
+
+//	select *
+//				from room_reservation rr
+//				join employee e on rr.empId =e.id
+//				join team t on e.teamId = t.id
+//				join department d on t.deptId = d.id
+//				where(
+//						deptId = 1
+//				);
 	public List<RoomReservation> selectByVariousColumns(RoomReservationSearchDTO search) {
+
 		return jpaQueryFactory
 				.select(roomReservation)
 				.from(roomReservation)
-				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
 				.where(
 						teamIdEq(search.getTeamNo()),
-						deptIdEq(search.getDeptNo()),
+						deptIdEq(search.getDeptId()),
 						empNoEq(search.getEmpNo()),
 						empNameEq(search.getEmpName())
 				)

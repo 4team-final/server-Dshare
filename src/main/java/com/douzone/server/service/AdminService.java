@@ -120,8 +120,7 @@ public class AdminService {
 
 	@Transactional
 	public List<ReservationResDTO> searchVarious(RoomReservationSearchDTO search) {
-		log.info("search : {} , {}, {}, {}", search.getTeamNo(), search.getDeptNo(), search.getEmpNo(), search.getEmpName());
-
+		log.info("search : {} , {}, {}, {}", search.getTeamNo(), search.getDeptId(), search.getEmpNo(), search.getEmpName());
 		List<ReservationResDTO> list = roomQueryDSL.selectByVariousColumns(search).stream().map(roomReservation -> {
 			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
