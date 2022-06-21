@@ -10,9 +10,9 @@ import com.douzone.server.dto.reservation.ReservationResDTO;
 import com.douzone.server.dto.room.RoomImgResDTO;
 import com.douzone.server.dto.room.RoomObjectResDTO;
 import com.douzone.server.dto.room.RoomReservationSearchDTO;
-import com.douzone.server.entity.Employee;
 import com.douzone.server.dto.vehicle.VehicleImgDTO;
 import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
+import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleImg;
 import com.douzone.server.exception.*;
@@ -35,8 +35,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import static com.douzone.server.config.utils.Msg.*;
 
 
@@ -258,7 +259,7 @@ public class AdminService {
 
 	@Transactional
 	public List<ReservationResDTO> searchVarious(RoomReservationSearchDTO search) {
-		log.info("search : {} , {}, {}, {}", search.getTeamNo(), search.getDeptId(), search.getEmpNo(), search.getEmpName());
+		log.info("search : {} , {}, {}, {}", search.getTeamId(), search.getDeptId(), search.getEmpNo(), search.getEmpName());
 		List<ReservationResDTO> list = roomQueryDSL.selectByVariousColumns(search).stream().map(roomReservation -> {
 			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));

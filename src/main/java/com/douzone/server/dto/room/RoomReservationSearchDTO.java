@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,15 +15,17 @@ public class RoomReservationSearchDTO {
 
 	private Integer roomNo;
 	private Integer capacity;
-	private Long teamNo;
-	private Integer deptId;
+
+	private Long positionId;
+	private Long teamId;
+	private Long deptId;
 	private String empNo;
 	private String empName;
 
 	private String startedAt;
 	private String endedAt;
 
-//	@Builder
+	//	@Builder
 //	public RoomReservationSearchDTO(Integer roomNo, Integer capacity, String startedAt, String endedAt) {
 //		this.roomNo = roomNo;
 //		this.capacity = capacity;
@@ -34,20 +34,23 @@ public class RoomReservationSearchDTO {
 //	}
 	@Builder
 	@QueryProjection
-	public RoomReservationSearchDTO(Integer roomNo, Integer capacity, Long teamNo, Integer deptId, String empNo, String empName, String startedAt, String endedAt) {
+	public RoomReservationSearchDTO(Integer roomNo, Integer capacity, Long positionId, Long teamId, Long deptId, String empNo, String empName, String startedAt, String endedAt) {
 		this.roomNo = roomNo;
 		this.capacity = capacity;
-		this.teamNo = teamNo;
+		this.positionId = positionId;
+		this.teamId = teamId;
 		this.deptId = deptId;
 		this.empNo = empNo;
 		this.empName = empName;
 		this.startedAt = startedAt;
 		this.endedAt = endedAt;
 	}
+
 	@Builder
 	@QueryProjection
-	public RoomReservationSearchDTO(Long teamNo, Integer deptId, String empNo, String empName) {
-		this.teamNo = teamNo;
+	public RoomReservationSearchDTO(Long positionId, Long teamId, Long deptId, String empNo, String empName) {
+		this.positionId = positionId;
+		this.teamId = teamId;
 		this.deptId = deptId;
 		this.empNo = empNo;
 		this.empName = empName;
