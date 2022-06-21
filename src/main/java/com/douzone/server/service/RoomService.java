@@ -16,6 +16,7 @@ import com.douzone.server.repository.RoomRepository;
 import com.douzone.server.repository.RoomReservationRepository;
 import com.douzone.server.repository.querydsl.RoomQueryDSL;
 import com.douzone.server.repository.querydsl.RoomReservationQueryDSL;
+import com.douzone.server.service.method.BookmarkMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 
 @Slf4j
@@ -280,8 +282,9 @@ public class RoomService {
 	}
 
 	@Transactional
-	public List<RoomBookmarkResDTO> selectByLimitBookmark(int limit) {
-		return roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
+	public List<RoomResDTO> selectByLimitBookmark(int limit) {
+		List<RoomBookmarkResDTO> roomBookmarkResDTOList = roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
+		return BookmarkMethod.getBookmarkRoomList(roomBookmarkResDTOList, roomRepository, roomImgRepository, roomObjectRepository);
 	}
 
 	@Transactional

@@ -41,11 +41,13 @@ public class MeetingRoom extends BaseAtTime {
 	}
 
 	@Builder
-	public MeetingRoom(Long id, String content, String categoryName, Integer roomNo, Integer capacity) {
+	public MeetingRoom(Long id, String content, String categoryName, Integer roomNo, Integer capacity, List<RoomObject> roomObjectList, List<RoomImg> roomImgList) {
 		this.id = id;
 		this.content = content;
 		this.categoryName = categoryName;
 		this.roomNo = roomNo;
 		this.capacity = capacity;
+		this.roomObjectList = roomObjectList;
+		this.roomImgList = roomImgList;
 	}
 }

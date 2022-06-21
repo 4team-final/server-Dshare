@@ -80,7 +80,9 @@ public class RoomQueryDSL {
 				.orderBy(roomReservation.modifiedAt.desc())
 				.fetch();
 	}
-
+//select empId, roomId, createdAt, modifiedAt, count(roomId)
+//				from room_bookmark group by roomId order by count(roomId) desc
+//				limit 3;
 	public List<RoomBookmarkResDTO> selectTop3BookmarkMeetingRoom(long limit) {
 		return jpaQueryFactory
 				.select(new QRoomBookmarkResDTO(
@@ -92,9 +94,8 @@ public class RoomQueryDSL {
 						roomBookmark.meetingRoom.id.count().as("count")
 				))
 				.from(roomBookmark)
-				.join(roomBookmark.meetingRoom, meetingRoom)
 				.groupBy(meetingRoom.id)
-				.orderBy(roomBookmark.meetingRoom.count().desc())
+				.orderBy(roomBookmark.meetingRoom.id.count().desc())
 				.limit(limit)
 				.fetch();
 	}
