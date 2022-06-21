@@ -210,7 +210,6 @@ public class RoomService {
 
 	@Transactional
 	public List<ReservationResDTO> selectAllReservation() {
-
 		List<ReservationResDTO> reservationResDTOList = roomQueryDSL.selectAllReservation().stream().map(roomReservation -> {
 			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,

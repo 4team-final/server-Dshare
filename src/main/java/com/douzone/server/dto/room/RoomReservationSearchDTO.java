@@ -18,7 +18,7 @@ public class RoomReservationSearchDTO {
 	private Integer roomNo;
 	private Integer capacity;
 	private Long teamNo;
-	private Integer deptId;
+	private Long deptId;
 	private String empNo;
 	private String empName;
 
@@ -34,7 +34,7 @@ public class RoomReservationSearchDTO {
 //	}
 	@Builder
 	@QueryProjection
-	public RoomReservationSearchDTO(Integer roomNo, Integer capacity, Long teamNo, Integer deptId, String empNo, String empName, String startedAt, String endedAt) {
+	public RoomReservationSearchDTO(Integer roomNo, Integer capacity, Long teamNo, Long deptId, String empNo, String empName, String startedAt, String endedAt) {
 		this.roomNo = roomNo;
 		this.capacity = capacity;
 		this.teamNo = teamNo;
@@ -46,7 +46,7 @@ public class RoomReservationSearchDTO {
 	}
 	@Builder
 	@QueryProjection
-	public RoomReservationSearchDTO(Long teamNo, Integer deptId, String empNo, String empName) {
+	public RoomReservationSearchDTO(Long teamNo, Long deptId, String empNo, String empName) {
 		this.teamNo = teamNo;
 		this.deptId = deptId;
 		this.empNo = empNo;

@@ -30,8 +30,6 @@ public class RoomQueryDSL {
 
 	/**
 	 * 전체 회의실 예약 조회
-	 *
-	 * @return
 	 */
 	public List<RoomReservation> selectAllReservation() {
 		return jpaQueryFactory
@@ -63,7 +61,6 @@ public class RoomQueryDSL {
 	}
 
 	public List<RoomReservation> selectByRoomNoElseCapacityElseReservation(RoomReservationSearchDTO search) {
-
 		return jpaQueryFactory
 				.select(roomReservation)
 				.from(roomReservation)
@@ -112,8 +109,8 @@ public class RoomQueryDSL {
 	private BooleanExpression teamIdEq(Long teamNo) {
 		return teamNo != null ? roomReservation.employee.team.id.eq(teamNo) : null;
 	}
-	private BooleanExpression deptIdEq(Integer deptId) {
-		return deptId != null ? roomReservation.employee.team.department.id.eq(Long.valueOf(deptId)) : null;
+	private BooleanExpression deptIdEq(Long deptId) {
+		return deptId != null ?	roomReservation.employee.team.department.id.eq(deptId) : null;
 	}
 	private BooleanExpression empNoEq(String empNo) {
 		return empNo != null ? roomReservation.employee.empNo.eq(empNo) : null;
@@ -122,20 +119,13 @@ public class RoomQueryDSL {
 		return empName != null ? roomReservation.employee.name.eq(empName) : null;
 	}
 
-
-//	select *
-//				from room_reservation rr
-//				join employee e on rr.empId =e.id
-//				join team t on e.teamId = t.id
-//				join department d on t.deptId = d.id
-//				where(
-//						deptId = 1
-//				);
 	public List<RoomReservation> selectByVariousColumns(RoomReservationSearchDTO search) {
-
+		Long deptId = search.getDeptId();
 		return jpaQueryFactory
 				.select(roomReservation)
 				.from(roomReservation)
+				.join(roomReservation.employee, employee).fetchJoin()
+				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
 				.where(
 						teamIdEq(search.getTeamNo()),
 						deptIdEq(search.getDeptId()),
@@ -145,6 +135,4 @@ public class RoomQueryDSL {
 				.orderBy(roomReservation.modifiedAt.desc())
 				.fetch();
 	}
-
-
 }
