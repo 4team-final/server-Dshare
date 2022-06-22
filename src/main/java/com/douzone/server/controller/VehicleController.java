@@ -3,6 +3,7 @@ package com.douzone.server.controller;
 import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.VehicleParseDTO;
+import com.douzone.server.dto.vehicle.VehicleSearchDTO;
 import com.douzone.server.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ import java.util.Map;
  * selectByVehicleReservation - 수정 전 차량 단일 조회 /reservation - GET
  * IngReservationMyTime - 내가 현재 진행중인 예약 종료 시간 조회 /own/reservation/ongoing - GET
  * soonReservationMyTime - 나의 다음 예약 시작 시간 조회 /own/reservation/next - GET
+ * selectByVariousColumns - 변수 조건을 통한 차량 예약 조회 /list/reservation/various - GET
  * Update:
  * updateByMyReservation - 내 차량 예약 현황 수정 /modification - PATCH
  * earlyReturnOfVehicle - 이용 차량 조기 반납 /modification/return - PATCH
@@ -179,5 +181,11 @@ public class VehicleController {
 															@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- earlyReturnOfVehicle");
 		return ResponseEntity.ok().body(vehicleService.earlyReturnOfVehicle(id, principalDetails.getEmployee().getId()));
+	}
+
+	@GetMapping("/list/reservation/various")
+	public ResponseEntity<ResponseDTO> selectByVariousColumns(@RequestBody VehicleSearchDTO vehicleSearchDTO) {
+		log.info(METHOD_NAME + "- selectByVariousColumns");
+		return ResponseEntity.ok().body(vehicleService.selectByVariousColumns(vehicleSearchDTO));
 	}
 }

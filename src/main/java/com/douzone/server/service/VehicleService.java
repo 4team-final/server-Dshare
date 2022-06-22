@@ -4,6 +4,7 @@ import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.VehicleParseDTO;
 import com.douzone.server.dto.vehicle.VehicleReqDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
+import com.douzone.server.dto.vehicle.VehicleSearchDTO;
 import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
@@ -44,8 +45,8 @@ public class VehicleService {
 				.empId(vehicleParseDTO.getEmpId())
 				.reason(vehicleParseDTO.getReason())
 				.title(vehicleParseDTO.getTitle())
-				.startedAt(LocalDateTime.parse(vehicleParseDTO.getStartedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-				.endedAt(LocalDateTime.parse(vehicleParseDTO.getEndedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.startedAt(parsing(vehicleParseDTO.getStartedAt()))
+				.endedAt(parsing(vehicleParseDTO.getEndedAt()))
 				.build();
 
 		return Optional.of(new ResponseDTO())
@@ -130,8 +131,8 @@ public class VehicleService {
 				.map(u -> (start == null || start.equals("") || end == null || end.equals("")) ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_REQUEST_PARAMETER) :
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_DATE, vehicleRepository.findByDateTimeReservation(
-								LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-								LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
+								parsing(start),
+								parsing(end))))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_EXIST_RESULT));
 	}
 
@@ -221,8 +222,8 @@ public class VehicleService {
 				.vehicleId(vehicleParseDTO.getVehicleId())
 				.reason(vehicleParseDTO.getReason())
 				.title(vehicleParseDTO.getTitle())
-				.startedAt(LocalDateTime.parse(vehicleParseDTO.getStartedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-				.endedAt(LocalDateTime.parse(vehicleParseDTO.getEndedAt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.startedAt(parsing(vehicleParseDTO.getStartedAt()))
+				.endedAt(parsing(vehicleParseDTO.getEndedAt()))
 				.build();
 
 		return Optional.of(new ResponseDTO())
@@ -304,6 +305,10 @@ public class VehicleService {
 		return LocalDateTime.now();
 	}
 
+	public LocalDateTime parsing(String time) {
+		return LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+	}
+
 	@Transactional
 	public ResponseDTO earlyReturnOfVehicle(Long id, Long empId) {
 		log.info(METHOD_NAME + "- earlyReturnOfVehicle");
@@ -324,5 +329,17 @@ public class VehicleService {
 
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_MOVE_UP_RESERVATION);
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_MOVE_UP_RESERVATION));
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseDTO selectByVariousColumns(VehicleSearchDTO vehicleSearchDTO) {
+		log.info(METHOD_NAME + "- selectByVariousColumns");
+
+		return Optional.of(new ResponseDTO())
+				.map(v -> vehicleRepository.selectByVariousColumns(vehicleSearchDTO))
+				.map(v -> v.isEmpty() ?
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_EXIST_RESULT) :
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_VARIOUS_COLUMNS, v))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_FIND_RESULT));
 	}
 }

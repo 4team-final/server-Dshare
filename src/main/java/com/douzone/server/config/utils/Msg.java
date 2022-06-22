@@ -100,6 +100,7 @@ public interface Msg {
 	String SUCCESS_VEHICLE_SOON = "다음 예약 시작 시간 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_ING = "현재 예약 종료 시간 조회에 성공하였습니다.";
 	String SUCCESS_MOVE_UP_RESERVATION = "차량 조기 반납에 성공하였습니다.";
+	String SUCCESS_SELECT_VARIOUS_COLUMNS = "변수 조건 조회에 성공하였습니다.";
 
 	String FAIL_VEHICLE_RESERVE = "차량 예약에 실패하였습니다.";
 	String FAIL_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 실패하였습니다.";
@@ -124,6 +125,7 @@ public interface Msg {
 	String FAIL_VEHICLE_SOON = "다음 예약 시작 시간 조회에 실패하였습니다.";
 	String FAIL_VEHICLE_ING = "현재 예약 종료 시간 조회에 실패하였습니다.";
 	String FAIL_MOVE_UP_RESERVATION = "차량 조기 반납에 실패하였습니다.";
+	String FAIL_SELECT_VARIOUS_COLUMNS = "변수 조건 조회에 실패하였습니다.";
 	String FAIL_FIND_RESULT = "결과값 조회에 실패하였습니다.";
 	String FAIL_EXIST_RESULT = "결과값이 존재하지 않습니다.";
 	String FAIL_REQUEST_PARAMETER = "잘못된 파라미터가 전달되었습니다";

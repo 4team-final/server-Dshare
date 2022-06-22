@@ -140,4 +140,28 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join fetch Employee e on vr.employee.id = e.id " +
 			"where e.id = :empId and vr.startedAt < current_time and current_time < vr.endedAt")
 	List<IVehicleTimeResDTO> ingReservationMyTime(@Param("empId") Long empId, Pageable pageable);
+
+	@Query(value = "select vr.id as id, vr.reason as reason, vr.title as title, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+			"v.name as vName, v.number as vNumber, v.model as model, v.color as color, v.capacity as capacity, vi.path as vehicleImg, " +
+			"e.empNo as empNo, e.name eName, e.email as email, e.tel as tel, e.birthday as birthday, e.profileImg as profileImg, " +
+			"t.name as team, d.name as dept , p.name as position " +
+			"from vehicle_reservation vr " +
+			"left join vehicle v on vr.vehicleId = v.id " +
+			"left join vehicle_img vi on v.id = vi.vehicleId " +
+			"left join employee e on vr.empId = e.id " +
+			"left join position p on p.id = e.positionId " +
+			"left join team t on e.teamId = t.id " +
+			"left join department d on t.deptId = d.id " +
+			"where 1=1 and " +
+			"(case when :#{#dto.vehicleId} is not null then vr.vehicleId = :#{#dto.vehicleId} " +
+			"when :#{#dto.capacity} is not null then v.capacity = :#{#dto.capacity} " +
+			"when :#{#dto.positionId} is not null then e.positionId = :#{#dto.positionId} " +
+			"when :#{#dto.deptId} is not null then t.deptId = :#{#dto.deptId} " +
+			"when :#{#dto.teamId} is not null then t.id = :#{#dto.teamId} " +
+			"when :#{#dto.empNo} is not null then e.empNo = :#{#dto.empNo} " +
+			"when :#{#dto.startedAt} is not null then vr.startedAt <= :#{#dto.startedAt} " +
+			"when :#{#dto.endedAt} is not null then vr.startedAt >= :#{#dto.endedAt} END)" +
+			"order by vr.modifiedAt desc", nativeQuery = true)
+	List<IVehicleVariousDTO> selectByVariousColumns(@Param("dto") VehicleSearchDTO vehicleSearchDTO);
 }
