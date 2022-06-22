@@ -4,6 +4,10 @@ package com.douzone.server.config.utils;
  * 컨트롤러,필터 성공/실패 MSG
  */
 public interface Msg {
+
+	String SUCCESS_CREATE_ROOM = "날짜방 생성에 성공하였습니다.";
+	String SUCCESS_LIST_ROOM = "날짜방 목록 조회에 성공하였습니다.";
+
 	// spring security, interceptor
 	String SUCCESS_SIGN_IN = "로그인에 성공하였습니다.";
 	String SUCCESS_SIGN_OUT = "로그아웃에 성공하였습니다.";
