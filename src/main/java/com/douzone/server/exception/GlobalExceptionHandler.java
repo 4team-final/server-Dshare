@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -71,8 +72,7 @@ public class GlobalExceptionHandler {
 	 * 함수에 인자가 들어갔을 때 -> validation시 필드에 널값들어가면 발생
 	 */
 	@ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
-	public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(BindException e) {
-		log.error("MethodArgumentNotValidException : ", e.getMessage());
+	public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(BindException e){
 		ErrorResponseDTO response = new ErrorResponseDTO(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
