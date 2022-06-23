@@ -17,7 +17,6 @@ public class ErrorResponseDTO {
     private final int status;
     private final String message;
     private List<Error> errors;
-    private List<FieldError> fieldError;
 
 
     @Override
@@ -28,11 +27,6 @@ public class ErrorResponseDTO {
     public ErrorResponseDTO(int status, String message) {
         this.status = status;
         this.message = message;
-    }
-    public ErrorResponseDTO(int status, String message, List<FieldError> fieldError) {
-        this.status = status;
-        this.message = message;
-        this.fieldError = fieldError;
     }
 
     public ErrorResponseDTO(ErrorCode code, BindingResult bindingResult) {
