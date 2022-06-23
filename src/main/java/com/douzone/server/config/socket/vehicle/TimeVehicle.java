@@ -1,5 +1,6 @@
 package com.douzone.server.config.socket.vehicle;
 
+import com.douzone.server.config.socket.Calendar;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,12 +8,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "time_vehicle")
 @DynamicInsert
 @DynamicUpdate
 @Getter
@@ -24,7 +23,9 @@ public class TimeVehicle {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String uid;
+	@ManyToOne
+	@JoinColumn(name = "uId")
+	private Calendar calendar;
 	private String time;
 	private Integer isSeat;
 	private String empNo;

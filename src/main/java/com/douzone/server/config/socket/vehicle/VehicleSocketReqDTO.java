@@ -15,9 +15,8 @@ public class VehicleSocketReqDTO {
 	}
 
 	private VehicleSocketReqDTO.MessageType type;
-	private String roomId;
-	private String sender;
 	private String uid;
+	private String time;
 	private Integer isSeat;
 	private String empNo;
 	private String message;

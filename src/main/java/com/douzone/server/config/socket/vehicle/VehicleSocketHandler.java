@@ -21,7 +21,7 @@ public class VehicleSocketHandler extends TextWebSocketHandler {
 		log.info("{}", payload);
 		VehicleSocketReqDTO vehicleSocketReqDTO = objectMapper.readValue(payload, VehicleSocketReqDTO.class);
 
-		VehicleSocketRoom room = service.findRoomById(vehicleSocketReqDTO.getRoomId());
+		VehicleRoomDTO room = service.findRoomById(vehicleSocketReqDTO.getUid());
 		room.handlerActions(session, vehicleSocketReqDTO, service);
 	}
 }
