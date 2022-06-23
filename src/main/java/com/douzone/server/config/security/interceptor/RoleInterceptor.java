@@ -15,8 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.douzone.server.config.utils.Msg.FAIL_TOKEN_VALIDATE;
-import static com.douzone.server.config.utils.Msg.FAIL_USER_ROLE;
+import static com.douzone.server.config.utils.Msg.*;
 
 /**
  * 지정되지 않은 모든 URL 을 가져와 검사
@@ -89,6 +88,8 @@ public class RoleInterceptor implements HandlerInterceptor {
 							break Outer;
 						}
 						log.warn("Unverified role ACCESS ... ");
+						response.setContentType("text/html; charset=UTF-8");
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_UNVERIFIED_SERVER_ADDRESS));
 					} else {
 						log.warn("Request User is not exist " + METHOD_NAME);
 						response.setContentType("text/html; charset=UTF-8");
