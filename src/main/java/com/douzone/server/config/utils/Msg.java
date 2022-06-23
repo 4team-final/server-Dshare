@@ -16,6 +16,7 @@ public interface Msg {
 	String FAIL_TOKEN_VALIDATE = "토큰 검증에 실패하였습니다.";
 	String FAIL_USER_ROLE = "유저 역할 확인에 실패하였습니다.";
 	String FAIL_ACCESS = "서버 접근에 실패하였습니다.";
+	String FAIL_UNVERIFIED_SERVER_ADDRESS = "잘못된 주소로 접근하였습니다.";
 
 	// admin
 	String SUCCESS_ADMIN_REGISTER = "관리자가 사원 등록에 성공하였습니다.";

@@ -13,6 +13,7 @@ import com.douzone.server.entity.VehicleReservation;
 import com.douzone.server.repository.VehicleBookmarkRepository;
 import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
+import com.douzone.server.repository.querydsl.VehicleQueryDSL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +36,7 @@ public class VehicleService {
 	private final VehicleRepository vehicleRepository;
 	private final VehicleReservationRepository vehicleReservationRepository;
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
+	private final VehicleQueryDSL vehicleQueryDSL;
 
 	@Transactional
 	public ResponseDTO registerByVehicleReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
@@ -336,7 +338,7 @@ public class VehicleService {
 		log.info(METHOD_NAME + "- selectByVariousColumns");
 
 		return Optional.of(new ResponseDTO())
-				.map(v -> vehicleRepository.selectByVariousColumns(vehicleSearchDTO))
+				.map(v -> vehicleQueryDSL.selectByVariousColumns(vehicleSearchDTO))
 				.map(v -> v.isEmpty() ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_EXIST_RESULT) :
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_VARIOUS_COLUMNS, v))
