@@ -11,6 +11,7 @@ import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -59,6 +60,11 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> myReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_MY, roomService.myReservation(principalDetails.getEmployee().getId())));
 	}
+	//페이징
+	@GetMapping("/reservation/my/{lastId}/{limit}")
+	public ResponseEntity<ResponseDTO> myReservation(@PathVariable("lastId")long lastId, @PathVariable("limit") int limit, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_MY, roomService.myReservation(principalDetails.getEmployee().getId(), lastId, limit)));
+	}
 
 	@GetMapping("/reservation/{empId}")
 	public ResponseEntity<ResponseDTO> myReservation(@PathVariable("empId") @Valid Long empId) {
@@ -80,10 +86,15 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_MEET_START, roomService.weekAndMonthMeetingCountHour(datetime)));
 	}
 
-	//페이지 네이션 해야함
+
 	@GetMapping("/reservation/all")
 	public ResponseEntity<ResponseDTO> selectAllReservation() {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation()));
+	}
+	//페이지 네이션 해야함
+	@GetMapping("/reservation/all/{lastId}/{limit}")
+	public ResponseEntity<ResponseDTO> selectAllReservationPage(@PathVariable("lastId") long lastId, @PathVariable("limit")int limit, Pageable pageable) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation(lastId, limit)));
 	}
 
 	// 동적 쿼리 : 호실, 인원수, 특정 시간대 합침.
@@ -127,7 +138,7 @@ public class RoomController {
 	/**
 	 * 6/19 18:51 회의실 예약 삭제 오윤성
 	 */
-	@GetMapping("/delete/{id}")
+	@GetMapping("/reservation/delete/{id}")
 	public ResponseEntity<ResponseDTO> deleteReservation(@PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_DELETE, roomService.deleteRes(id)));
 	}

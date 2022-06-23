@@ -31,7 +31,7 @@ public class EmployeeController {
 	/**
 	 * 6/17 19:55 나의 즐겨찾기 테이블 조회(회의실, 사원정보까지 줄줄이 소세지)
 	 */
-	@GetMapping("/room/bookmark")
+	@GetMapping("/my/bookmark")
 	public ResponseEntity<ResponseDTO> selectByMyBookmark(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
 				Msg.SUCCESS_ROOM_FIND_MARK, employeeService.selectByMyBookmark(Integer.parseInt(principalDetails.getEmployee().getEmpNo()))));

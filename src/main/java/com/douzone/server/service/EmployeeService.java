@@ -3,12 +3,13 @@ package com.douzone.server.service;
 import com.douzone.server.dto.employee.EmpTestDTO;
 import com.douzone.server.dto.employee.ProfileRes;
 import com.douzone.server.dto.room.RoomBookmarkResDTO;
+import com.douzone.server.dto.room.RoomResDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.MeetingRoom;
 import com.douzone.server.entity.RoomBookmark;
-import com.douzone.server.repository.EmployeeRepository;
-import com.douzone.server.repository.RoomBookmarkRepository;
+import com.douzone.server.repository.*;
 import com.douzone.server.repository.querydsl.EmployeeQueryDSL;
+import com.douzone.server.service.method.ServiceMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,10 @@ public class EmployeeService {
 	private final EmployeeQueryDSL employeeQueryDSL;
 	private final EmployeeRepository employeeRepository;
 	private final RoomBookmarkRepository roomBookmarkRepository;
+	private final RoomRepository roomRepository;
+	private final RoomImgRepository roomImgRepository;
+	private final RoomObjectRepository roomObjectRepository;
+	private final ServiceMethod serviceMethod;
 
 	@Transactional
 	public List<EmpTestDTO> queryDSLTest(long positionId) {
@@ -47,9 +52,11 @@ public class EmployeeService {
 	}
 
 	@Transactional
-	public List<RoomBookmarkResDTO> selectByMyBookmark(int empNo) {
-		return employeeQueryDSL.selectByMyBookmark(empNo);
+	public List<RoomResDTO> selectByMyBookmark(int empNo) {
+		List<RoomBookmarkResDTO> roomBookmarkResDTOList = employeeQueryDSL.selectByMyBookmark(empNo);
+		return serviceMethod.RoomImgListAndRoomObjectList(roomBookmarkResDTOList);
 	}
+
 
 	@Transactional
 	public Long bookmarkRegisterAndDelete(long roomId, long empId) {

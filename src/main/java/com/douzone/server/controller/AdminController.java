@@ -8,11 +8,15 @@ import com.douzone.server.dto.employee.mod;
 import com.douzone.server.dto.employee.modPw;
 import com.douzone.server.dto.employee.signUp;
 import com.douzone.server.dto.room.RoomReqDTO;
+import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
+import com.douzone.server.repository.querydsl.RoomQueryDSL;
 import com.douzone.server.service.AdminService;
 import com.douzone.server.service.RoomService;
+import com.douzone.server.service.method.ServiceMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +39,10 @@ public class AdminController {
 	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final AdminService adminService;
 	private final RoomService roomService;
+	//테스트
+	private final RoomQueryDSL roomQueryDSL;
+	private final ServiceMethod serviceMethod;
+	private MessageSource msg;
 
 	/**
 	 * 사원등록 - 정재빈
@@ -60,6 +68,13 @@ public class AdminController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_MODPW, adminService.updatePw(signModReqDTO, id)));
 	}
 
+	/**
+	 * 직급별/팀별/부서별/사원번호별/사원이름별 유저의 회의실 예약 조회 - 관리자
+	 */
+	@GetMapping("/reservation/read/various")
+	public ResponseEntity<ResponseDTO> VariousSearch(@RequestBody RoomReservationSearchDTO search) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_USER, adminService.searchVarious(search)));
+	}
 
 	@GetMapping("/check")
 	public ResponseEntity<ResponseDTO> check() {
@@ -109,6 +124,5 @@ public class AdminController {
 	public ResponseEntity<ResponseDTO> update(@NotNull List<MultipartFile> files, @PathVariable("roomId") long roomId, RoomReqDTO roomReqDTO) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_UPDATE, roomService.update(files, roomId, roomReqDTO)));
 	}
-
 
 }

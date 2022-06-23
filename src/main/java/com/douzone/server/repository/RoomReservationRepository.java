@@ -1,7 +1,10 @@
 package com.douzone.server.repository;
 
+import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.entity.RoomReservation;
+import com.querydsl.core.annotations.QueryProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,5 +13,6 @@ import java.util.List;
 public interface RoomReservationRepository extends JpaRepository<RoomReservation, Long> {
 
 	List<RoomReservation> findByMeetingRoom_Id(Long roomId);
+
 
 }
