@@ -29,8 +29,9 @@ public class ErrorResponseDTO {
         this.status = status;
         this.message = message;
     }
-    public ErrorResponseDTO(int status, List<FieldError> fieldError) {
+    public ErrorResponseDTO(int status, String message, List<FieldError> fieldError) {
         this.status = status;
+        this.message = message;
         this.fieldError = fieldError;
     }
 
