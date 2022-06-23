@@ -19,14 +19,14 @@ public class VehicleSocketRoom {
 		this.name = name;
 	}
 
-	public void handlerActions(WebSocketSession session, VehicleSocketDTO vehicleSocketDTO, VehicleSocketService service) {
-		if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.ENTER)) {
+	public void handlerActions(WebSocketSession session, VehicleSocketReqDTO vehicleSocketReqDTO, VehicleSocketService service) {
+		if (vehicleSocketReqDTO.getType().equals(VehicleSocketReqDTO.MessageType.ENTER)) {
 			sessions.add(session);
-			vehicleSocketDTO.setMessage(vehicleSocketDTO.getSender() + "님이 입장했습니다.");
-		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.TALK)) {
-			sendMessage(vehicleSocketDTO, service);
-		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.QUIT)) {
-			sendMessage(vehicleSocketDTO, service);
+			vehicleSocketReqDTO.setMessage(vehicleSocketReqDTO.getSender() + "님이 입장했습니다.");
+		} else if (vehicleSocketReqDTO.getType().equals(VehicleSocketReqDTO.MessageType.TALK)) {
+			sendMessage(vehicleSocketReqDTO, service);
+		} else if (vehicleSocketReqDTO.getType().equals(VehicleSocketReqDTO.MessageType.QUIT)) {
+			sendMessage(vehicleSocketReqDTO, service);
 		}
 
 	}
@@ -34,5 +34,9 @@ public class VehicleSocketRoom {
 	private <T> void sendMessage(T message, VehicleSocketService service) {
 		sessions.parallelStream()
 				.forEach(session -> service.sendMessage(session, message));
+	}
+
+	public Integer getSize() {
+		return sessions.size();
 	}
 }
