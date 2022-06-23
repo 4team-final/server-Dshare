@@ -1,7 +1,7 @@
 package com.douzone.server.repository;
 
-import com.douzone.server.dto.vehicle.*;
 import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
+import com.douzone.server.dto.vehicle.jpainterface.*;
 import com.douzone.server.entity.Vehicle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
