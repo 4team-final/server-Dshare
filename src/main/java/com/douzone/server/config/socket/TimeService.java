@@ -5,17 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Slf4j
@@ -31,9 +25,9 @@ public class TimeService {
 	 * <p>
 	 * ObjectMapper를 이용하면 JSON을 Java 객체로 변환할 수 있고, 반대로 Java 객체를 JSON 객체로 serialization 할 수 있다.
 	 */
-	private Map<String, TestCalendarRoom> chatRooms;
+	private Map<String, CalendarRoom> chatRooms;
 
-	private final TestCalendarRepository testCalendarRepository;
+	private final CalendarRepository calendarRepository;
 
 	@PostConstruct
 	private void init() {
@@ -41,26 +35,29 @@ public class TimeService {
 	}
 
 
-	public List<TestCalendarRoom> findAllRoom() {
+	public List<CalendarRoom> findAllRoom() {
+		List<CalendarRoom> calendarRooms = new ArrayList<>(chatRooms.values());
+		Collections.reverse(calendarRooms);
 
-		return new ArrayList<>(chatRooms.values());
+		return calendarRooms;
 //		return testCalendarRepository.findAll();
 	}
 
-	public TestCalendarRoom findRoomByUId(String uId) {
+	public CalendarRoom findRoomByUId(String uId) {
+		System.out.println("---------");
+		System.out.println(chatRooms.get(uId));
 		return chatRooms.get(uId);
 //		return testCalendarRepository.findByUId(uId);
 	}
 
 
-	public TestCalendarRoom createRoom(String name) {
+	public CalendarRoom createRoom(String name) {
 //		String randomId = UUID.randomUUID().toString();
 		//2022-06-21T
 		String uId = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
-				.substring(0, 11).replace("-", "");
+				.substring(0, 10).replace("-", "");
 
-
-		TestCalendarRoom calendarRoom = TestCalendarRoom.builder()
+		CalendarRoom calendarRoom = CalendarRoom.builder()
 				.uId(uId)
 				.year(uId.substring(0, 4))
 				.month(uId.substring(4, 6))
@@ -72,13 +69,6 @@ public class TimeService {
 		return calendarRoom;
 	}
 
-	public <T> void sendMessage(WebSocketSession session, T message) {
-		try {
-			session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
-		} catch (IOException e) {
-			log.error(e.getMessage(), e);
-		}
-	}
 }
 
 

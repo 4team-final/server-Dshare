@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TestTimeMessage {
+public class TimeMessage {
 
 	public enum MessageType {
 		ENTER, TALK
