@@ -115,3 +115,7 @@ function start(){
     sudo nohup java -jar -Dserver.port=$WAS_SERVER_PORT $WAR_FILE /tmp 2>> /dev/null >> /dev/null &
     sudo echo "server start"
 }
+
+## Function Call
+stop
+start
