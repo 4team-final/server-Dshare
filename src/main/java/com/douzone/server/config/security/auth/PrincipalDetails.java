@@ -1,6 +1,5 @@
 package com.douzone.server.config.security.auth;
 
-import com.douzone.server.entity.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +13,8 @@ import java.util.Collection;
 @AllArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
-	private Employee employee;
+	private EmployeeDTO employee;
+
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

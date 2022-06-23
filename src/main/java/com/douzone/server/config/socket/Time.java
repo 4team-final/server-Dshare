@@ -1,4 +1,4 @@
-package com.douzone.server.config.socket.vehicle;
+package com.douzone.server.config.socket;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,25 +7,30 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-@Entity
 @DynamicInsert
 @DynamicUpdate
+@Entity
+@Table(name = "time")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TimeVehicle {
+public class Time {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String uid;
+	@ManyToOne
+	@JoinColumn(name = "uId")
+	private Calendar calendar;
+
 	private String time;
+
 	private Integer isSeat;
+
 	private String empNo;
+
 }

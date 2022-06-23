@@ -10,14 +10,15 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSocket
-public class ChatConfig implements WebSocketConfigurer {
+public class WebsocketConfig implements WebSocketConfigurer {
 
 	private final VehicleSocketHandler vehicleSocketHandler;
+	private final WebSocketHandler webSocketHandler;
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(vehicleSocketHandler, "emp/vehicle/chat").setAllowedOrigins("*");
+		registry.addHandler(webSocketHandler, "ws/room").setAllowedOrigins("*");
 	}
-
 }
 
