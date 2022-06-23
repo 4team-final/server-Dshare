@@ -66,7 +66,7 @@ class RoomQueryDSLTest {
 
 	@Test
 	public void 동적쿼리() {
-		RoomReservationSearchDTO search = RoomReservationSearchDTO.builder().deptId(1).build();
+		RoomReservationSearchDTO search = RoomReservationSearchDTO.builder().deptId(1L).build();
 		roomQueryDSL.selectByVariousColumns(search);
 	}
 
