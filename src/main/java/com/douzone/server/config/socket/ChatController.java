@@ -1,4 +1,4 @@
-package com.douzone.server.config.socket2;
+package com.douzone.server.config.socket;
 
 
 import com.douzone.server.config.utils.Msg;
@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//채팅방과 관련된 비즈니스 로직을 담은 Service
 import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/emp/chat")

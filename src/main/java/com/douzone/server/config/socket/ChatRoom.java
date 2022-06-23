@@ -1,14 +1,12 @@
-package com.douzone.server.config.socket2;
+package com.douzone.server.config.socket;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 @Getter
 public class ChatRoom {
 	private String roomId;
@@ -25,9 +23,9 @@ public class ChatRoom {
 		if (chatMessage.getType().equals(ChatMessage.MessageType.ENTER)) {
 			sessions.add(session);
 			chatMessage.setMessage(chatMessage.getSender() + "님이 입장했습니다.");
-		}else if(chatMessage.getType().equals(ChatMessage.MessageType.TALK)){
+		} else if (chatMessage.getType().equals(ChatMessage.MessageType.TALK)) {
 			sendMessage(chatMessage, chatService);
-		}else if(chatMessage.getType().equals(ChatMessage.MessageType.QUIT)){
+		} else if (chatMessage.getType().equals(ChatMessage.MessageType.QUIT)) {
 			sendMessage(chatMessage, chatService);
 		}
 

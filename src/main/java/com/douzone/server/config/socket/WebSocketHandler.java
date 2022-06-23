@@ -1,4 +1,4 @@
-package com.douzone.server.config.socket2;
+package com.douzone.server.config.socket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

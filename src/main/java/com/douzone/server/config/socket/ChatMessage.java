@@ -1,21 +1,17 @@
 package com.douzone.server.config.socket;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class TestMessage {
-
+public class ChatMessage {
 	public enum MessageType {
-		ENTER, TALK
+		ENTER, TALK, QUIT
 	}
 
 	private MessageType type;
-
+	private String roomId;
+	private String sender;
 	private String message;
-
-
 }
