@@ -1,20 +1,21 @@
 package com.douzone.server.config.socket.vehicle;
 
-import com.douzone.server.config.socket.Calendar;
 import com.douzone.server.config.socket.CalendarRepository;
+import com.douzone.server.exception.VehicleSocketServerException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.douzone.server.exception.ErrorCode.TIME_TABLE_UPDATE_ERROR;
 
 
 @Slf4j
@@ -24,6 +25,7 @@ public class VehicleSocketService {
 	private final ObjectMapper objectMapper;
 	private Map<String, VehicleRoomDTO> reservedRooms;
 	private final CalendarRepository calendarRepository;
+	private final TimeVehicleRepository timeVehicleRepository;
 
 	@PostConstruct
 	private void init() {
@@ -55,23 +57,26 @@ public class VehicleSocketService {
 		return reservedRooms.get(uid);
 	}
 
-	public VehicleRoomDTO createRoom() {
-		String uid = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE)
-				.substring(0, 10).replace("-", "");
-		VehicleRoomDTO vehicleRoomDTO = VehicleRoomDTO.builder()
-				.uid(uid)
-				.build();
-		calendarRepository.save(Calendar.builder()
-				.uid(vehicleRoomDTO.getUid())
-				.build());
-		return vehicleRoomDTO;
-	}
-
 	public <T> void sendMessage(WebSocketSession session, T message) {
 		try {
 			session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+
+	@Transactional
+	public void updateIsSeat(String uid, Integer[] time, String empNo) {
+		Optional.ofNullable(uid)
+				.map(timeVehicleRepository::findByCalendar_Uid)
+				.filter(Optional::isPresent)
+				.map(res -> {
+					for (int i = 0; i < res.get().size(); i++) {
+						if (time[i] == 1)
+							res.get().get(i).updateTimeVehicle(time[i], empNo);
+					}
+					return res.get();
+				})
+				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
 	}
 }

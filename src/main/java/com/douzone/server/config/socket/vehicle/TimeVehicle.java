@@ -29,4 +29,9 @@ public class TimeVehicle {
 	private String time;
 	private Integer isSeat;
 	private String empNo;
+
+	public void updateTimeVehicle(Integer isSeat, String empNo) {
+		this.isSeat = isSeat;
+		this.empNo = empNo;
+	}
 }

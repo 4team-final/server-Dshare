@@ -19,9 +19,9 @@ public class VehicleSocketHandler extends TextWebSocketHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String payload = message.getPayload();
 		log.info("{}", payload);
-		VehicleSocketReqDTO vehicleSocketReqDTO = objectMapper.readValue(payload, VehicleSocketReqDTO.class);
+		VehicleSocketDTO vehicleSocketDTO = objectMapper.readValue(payload, VehicleSocketDTO.class);
 
-		VehicleRoomDTO room = service.findRoomById(vehicleSocketReqDTO.getUid());
-		room.handlerActions(session, vehicleSocketReqDTO, service);
+		VehicleRoomDTO room = service.findRoomById(vehicleSocketDTO.getUid());
+		room.handlerActions(session, vehicleSocketDTO, service);
 	}
 }
