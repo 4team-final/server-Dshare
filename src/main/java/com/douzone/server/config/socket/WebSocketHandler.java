@@ -20,22 +20,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		String payload = message.getPayload();
 		log.info("{}", payload);
 
-		System.out.println(session.getId());
-		System.out.println(message);
+		TimeMessageReqDTO timeMessageReqDTO = objectMapper.readValue(payload, TimeMessageReqDTO.class);
 
-//		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-		TimeMessageDTO timeMessageDTO = objectMapper.readValue(payload, TimeMessageDTO.class);
-
-		System.out.println(timeMessageDTO.getMessage());
-		System.out.println(timeMessageDTO.getUid());
-		System.out.println(timeMessageDTO.getTime());
-		System.out.println(timeMessageDTO.getType());
-		System.out.println(timeMessageDTO.getIsSeat());
-		System.out.println(timeMessageDTO.getEmpNo());
-
-
-		CalendarRoomDTO calendarRoomDTO = calendarService.findRoomById(timeMessageDTO.getUid());
-		calendarRoomDTO.handlerActions(session, timeMessageDTO, calendarService);
+		CalendarRoomDTO calendarRoomDTO = calendarService.findRoomById(timeMessageReqDTO.getUid());
+		calendarRoomDTO.handlerActions(session, timeMessageReqDTO, calendarService);
 	}
 }
