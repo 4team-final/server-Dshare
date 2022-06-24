@@ -141,4 +141,8 @@ public interface Msg {
 	String TIMEOUT_CONNECT_VEHICLE_SOCKET = "시간 만료로 인하여 소켓과의 통신이 종료되었습니다.";
 	String SUCCESS_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록에 성공하였습니다.";
 	String FAIL_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록 실패하였습니다.";
+
+	String FAIL_ACCESS_SOCKET_CONNECT = "잘못된 접근으로 인하여 소켓과의 통신이 종료되었습니다.";
+
+
 }

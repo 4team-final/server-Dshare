@@ -40,6 +40,9 @@ public class CalendarService {
 		for (int i = 0; i < calendarRoomDTOList.size(); i++) {
 			calRooms.put(calendarRoomDTOList.get(i).getUid(), calendarRoomDTOList.get(i));
 		}
+
+		//
+		
 	}
 
 	@Transactional
