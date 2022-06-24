@@ -98,12 +98,10 @@ public class AdminService {
 	@Transactional
 	public ResponseDTO createVehicle(VehicleUpdateDTO vehicleUpdateDTO, List<MultipartFile> files) {
 		log.info(METHOD_NAME + "- createVehicle");
-
 		return Optional.of(new ResponseDTO())
 				.filter(u -> !files.isEmpty())
 				.map(res -> {
 					VehicleImgDTO vehicleImgDTO = updateVehicleImg(files);
-
 					Long vId = vehicleRepository.save(Vehicle.builder()
 							.name(vehicleUpdateDTO.getName())
 							.number(vehicleUpdateDTO.getNumber())
@@ -111,7 +109,6 @@ public class AdminService {
 							.color(vehicleUpdateDTO.getColor())
 							.capacity(vehicleUpdateDTO.getCapacity())
 							.build()).getId();
-
 					vehicleImgRepository.save(VehicleImg.builder()
 							.vehicle(Vehicle.builder().id(vId).build())
 							.path(vehicleImgDTO.getPath())
@@ -125,7 +122,6 @@ public class AdminService {
 	@Transactional
 	public ResponseDTO updateVehicle(VehicleUpdateDTO vehicleUpdateDTO, Long id, List<MultipartFile> files) {
 		log.info(METHOD_NAME + "- updateVehicle");
-
 		return Optional.of(new ResponseDTO())
 				.filter(u -> id > 0L)
 				.map(v -> vehicleRepository.findById(id))
@@ -138,11 +134,9 @@ public class AdminService {
 					ArrayList<String> list = new ArrayList<>();
 					Collections.addAll(list, path);
 					uploadUtils.delete(list);
-
 					VehicleImgDTO vehicleImgDTO = updateVehicleImg(files);
 					vehicleImgDTO.setVehicleId(id);
 					data.get().updateVehicleImg(vehicleImgDTO);
-
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_UPDATE);
 				})
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_UPDATE));
@@ -151,7 +145,6 @@ public class AdminService {
 	@Transactional
 	public ResponseDTO deleteVehicle(Long id) {
 		log.info(METHOD_NAME + "- deleteVehicle");
-
 		return Optional.of(new ResponseDTO())
 				.filter(u -> id >= 0L)
 				.map(v -> vehicleRepository.findById(id))
@@ -163,10 +156,8 @@ public class AdminService {
 					ArrayList<String> list = new ArrayList<>();
 					Collections.addAll(list, path);
 					uploadUtils.delete(list);
-
 					vehicleImgRepository.deleteByVehicleId(id);
 					vehicleRepository.deleteById(id);
-
 					return (vehicleRepository.findById(id).isPresent()
 							|| vehicleImgRepository.findById(id).isPresent()) ?
 							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_DELETE) :
@@ -175,12 +166,10 @@ public class AdminService {
 	}
 
 	public VehicleImgDTO updateVehicleImg(List<MultipartFile> files) {
-
 		String[] uploadUrl = new String[files.size()];
 		ArrayList<String> fileName = new ArrayList<>(), fileType = new ArrayList<>();
 		ArrayList<Long> fileLength = new ArrayList<>();
 		StringBuilder fileSet = new StringBuilder();
-
 		List<MultipartFile> data = Optional.of(files).filter(v -> !v.isEmpty())
 				.map(res -> {
 					res.forEach(v -> {
@@ -190,7 +179,6 @@ public class AdminService {
 					});
 					return res;
 				}).orElseThrow(() -> new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND));
-
 		try {
 			for (int i = 0; i < files.size(); i++)
 				uploadUrl[i] = uploadUtils.getAwsS3().upload(data.get(i), "vehicle/" + fileName.get(i), fileType.get(i), fileLength.get(i));

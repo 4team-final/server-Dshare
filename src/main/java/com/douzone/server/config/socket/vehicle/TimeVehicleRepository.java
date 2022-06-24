@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TimeVehicleRepository extends JpaRepository<TimeVehicle, Long> {
+	List<TimeVehicle> findByCalendar_Uid(String uid);
+
 	@Query("select tv from TimeVehicle tv where tv.calendar.uid = :uid and tv.vehicleId = :vid")
 	Optional<List<TimeVehicle>> selectByUidAndVid(@Param("uid") String uid, @Param("vid") Long vehicleId);
-//
-//	@Query("update TimeVehicle tv set tv.isSeat = 1 where tv.calendar.uid = :uid and tv.vehicleId = :vid")
-//	void updateByStartDay(@Param("uid") String uid, @Param("vid") Long vehicleId, @Param("time") Integer time);
 }
