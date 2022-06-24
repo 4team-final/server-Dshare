@@ -15,27 +15,26 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	private final ObjectMapper objectMapper;
 	private final CalendarService calendarService;
 
+//	@Override
+//	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+//		super.afterConnectionClosed(session, status);
+//	}
+//
+//	@Override
+//	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+//		super.afterConnectionEstablished(session);
+//	}
+
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String payload = message.getPayload();
 		log.info("{}", payload);
 
-		System.out.println(session.getId());
-		System.out.println(message);
+		TimeMessageReqDTO timeMessageReqDTO = objectMapper.readValue(payload, TimeMessageReqDTO.class);
 
-//		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-		TimeMessageDTO timeMessageDTO = objectMapper.readValue(payload, TimeMessageDTO.class);
-
-		System.out.println(timeMessageDTO.getMessage());
-		System.out.println(timeMessageDTO.getUid());
-		System.out.println(timeMessageDTO.getTime());
-		System.out.println(timeMessageDTO.getType());
-		System.out.println(timeMessageDTO.getIsSeat());
-		System.out.println(timeMessageDTO.getEmpNo());
-
-
-		CalendarRoomDTO calendarRoomDTO = calendarService.findRoomById(timeMessageDTO.getUid());
-		calendarRoomDTO.handlerActions(session, timeMessageDTO, calendarService);
+		CalendarRoomDTO calendarRoomDTO = calendarService.findRoomById(timeMessageReqDTO.getUid());
+		calendarRoomDTO.handlerActions(session, timeMessageReqDTO, calendarService);
 	}
+
+
 }

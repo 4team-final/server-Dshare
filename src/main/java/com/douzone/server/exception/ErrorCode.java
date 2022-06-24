@@ -39,7 +39,10 @@ public enum ErrorCode {
 	IMG_NOT_FOUND(404, "이미지 파일을 찾을 수 없습니다."),
 
 	MAX_UPLOAD_SIZE_EXCEEDED(400, "파일 용량이 초과하였습니다."),
-	TIME_TABLE_UPDATE_ERROR(400, "이미 예약된 시간대의 차량입니다.");
+	TIME_TABLE_UPDATE_ERROR(400, "이미 예약된 시간대의 차량입니다."),
+
+	SOCKET_NOT_CLOSE_ERROR(500, "소켓이 정상적으로 종료되지 않았습니다.");
+
 
 	private final int status;
 	private final String message;
