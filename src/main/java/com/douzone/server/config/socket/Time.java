@@ -33,9 +33,12 @@ public class Time {
 
 	private String empNo;
 
-	public void updateIsSeat(Integer isSeat, String empNo) {
+	private Integer roomId;
+
+	public void updateIsSeat(Integer isSeat, String empNo, Integer roomId) {
 		this.isSeat = isSeat;
 		this.empNo = empNo;
+		this.roomId = roomId;
 	}
 
 }

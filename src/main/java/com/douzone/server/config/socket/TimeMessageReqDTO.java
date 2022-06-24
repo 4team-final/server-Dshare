@@ -20,5 +20,6 @@ public class TimeMessageReqDTO {
 	private String uid;
 	private Integer[] time = new Integer[18];
 	private String empNo;
+	private Integer roomId;
 
 }

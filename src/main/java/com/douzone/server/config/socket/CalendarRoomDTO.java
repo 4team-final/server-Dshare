@@ -46,7 +46,7 @@ public class CalendarRoomDTO {
 
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.TALK)) {
 
-			calendarService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo());
+			calendarService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo(), timeMessageReqDTO.getRoomId());
 			List<TimeMessageResDTO> resDTOList = calendarService.selectTime(timeMessageReqDTO.getUid());
 			sendMessage(resDTOList, calendarService);
 			sessions.remove(session);

@@ -42,7 +42,7 @@ public class CalendarService {
 		}
 
 		//
-		
+
 	}
 
 	@Transactional
@@ -110,13 +110,13 @@ public class CalendarService {
 	}
 
 	@Transactional
-	public void updateTime(String uid, Integer[] time, String empNo) {
+	public void updateTime(String uid, Integer[] time, String empNo, Integer roomId) {
 
-		List<Time> timeList = timeRepository.findByCalendar_Uid(uid);
+		List<Time> timeList = timeRepository.findByCalendar_UidAndRoomId(uid, roomId);
 
 		for (int i = 0; i < timeList.size(); i++) {
 			if (time[i] == 0) continue;
-			timeList.get(i).updateIsSeat(time[i], empNo);
+			timeList.get(i).updateIsSeat(time[i], empNo, roomId);
 		}
 		log.info("updateTime - success");
 
