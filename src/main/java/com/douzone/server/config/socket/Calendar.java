@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @DynamicInsert
 @DynamicUpdate
@@ -20,14 +22,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Calendar extends BaseAtTime {
 	@Id
-	@Column(name = "uId", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private String uId;
-
-	private String year;
-	private String month;
-	private String day;
-	private String name;
-
+	private String uid;
 
 }

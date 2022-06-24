@@ -7,7 +7,7 @@ public interface Msg {
 
 	String SUCCESS_CREATE_ROOM = "날짜방 생성에 성공하였습니다.";
 	String SUCCESS_LIST_ROOM = "날짜방 목록 조회에 성공하였습니다.";
-
+	String SUCCESS_DETAIL_ROOM = "날짜방 목록 상세조회에 성공하였습니다.";
 	// spring security, interceptor
 	String SUCCESS_SIGN_IN = "로그인에 성공하였습니다.";
 	String SUCCESS_SIGN_OUT = "로그아웃에 성공하였습니다.";
@@ -107,6 +107,7 @@ public interface Msg {
 	String SUCCESS_VEHICLE_ING = "현재 예약 종료 시간 조회에 성공하였습니다.";
 	String SUCCESS_MOVE_UP_RESERVATION = "차량 조기 반납에 성공하였습니다.";
 	String SUCCESS_SELECT_VARIOUS_COLUMNS = "변수 조건 조회에 성공하였습니다.";
+	String SUCCESS_DISCONNECT_VEHICLE_SOCKET = "소켓과의 통신이 정상적으로 종료되었습니다.";
 
 	String FAIL_VEHICLE_RESERVE = "차량 예약에 실패하였습니다.";
 	String FAIL_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 실패하였습니다.";
@@ -135,6 +136,14 @@ public interface Msg {
 	String FAIL_FIND_RESULT = "결과값 조회에 실패하였습니다.";
 	String FAIL_EXIST_RESULT = "결과값이 존재하지 않습니다.";
 	String FAIL_REQUEST_PARAMETER = "잘못된 파라미터가 전달되었습니다";
+	String FAIL_ACCESS_SOCKET_TYPE = "잘못된 타입을 사용한 접근입니다.";
+	String FAIL_TIMEOUT_SETTING_SOCKET = "스레드가 비정상 종료 되었습니다.";
+	String TIMEOUT_CONNECT_VEHICLE_SOCKET = "시간 만료로 인하여 소켓과의 통신이 종료되었습니다.";
 	String SUCCESS_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록에 성공하였습니다.";
 	String FAIL_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록 실패하였습니다.";
+
+	String FAIL_ACCESS_SOCKET_CONNECT = "잘못된 접근으로 인하여 소켓과의 통신이 종료되었습니다.";
+	String FAIL_DOUBLE_ACCESS_SOCKET_CONNECT = "중복된 세션의 접근으로 인하여 소켓과의 통신이 종료되었습니다.";
+
+
 }
