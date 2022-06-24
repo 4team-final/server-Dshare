@@ -10,10 +10,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 import static com.douzone.server.config.utils.Msg.*;
 
@@ -40,16 +38,28 @@ public class CalendarRoomDTO {
 	public void handlerActions(WebSocketSession session, TimeMessageReqDTO timeMessageReqDTO, CalendarService calendarService) {
 
 		if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.ENTER)) {
-			sessions.add(session);
-			autoDisconnect(session, calendarService); // 시간
-			sendMessage(timeMessageReqDTO.getEmpNo() + VehicleSocketDTO.MessageType.ENTER, calendarService);
 
+			String empNo = session.getPrincipal().getName();
+			Iterator<WebSocketSession> res = sessions.iterator();
+			while (res.hasNext()) {
+				String compareEmpNo = res.next().getPrincipal().getName();
+				if (compareEmpNo.equals(empNo)) {
+					sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, calendarService);
+					return;
+				}
+			}
+
+			sessions.add(session);
+			sendMessage(timeMessageReqDTO.getEmpNo() + " " + VehicleSocketDTO.MessageType.ENTER, calendarService);
+			autoDisconnect(session, calendarService); // 시간
+			this.close(session);
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.TALK)) {
 
 			calendarService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo(), timeMessageReqDTO.getRoomId());
 			List<TimeMessageResDTO> resDTOList = calendarService.selectTime(timeMessageReqDTO.getUid());
 			sendMessage(resDTOList, calendarService);
 			sessions.remove(session);
+			this.close(session);
 
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.QUIT)) {
 			// 시간 - 날짜  : 버튼 (다시 날짜를 선택하게)
@@ -60,19 +70,28 @@ public class CalendarRoomDTO {
 
 			sendMessage(timeMessageResDTO, calendarService);
 			sessions.remove(session);
-
+			this.close(session);
 		} else {
 			// find sesstion
 			if (sessions.contains(session)) {
-				sessions.remove(session);
 				sendMessage(session, FAIL_ACCESS_SOCKET_CONNECT, calendarService);
+				sessions.remove(session);
+				this.close(session);
 				return;
 			}
 			sendMessage(session, FAIL_ACCESS_SOCKET_TYPE, calendarService);
+			this.close(session);
 		}
 	}
 
-
+	private void close(WebSocketSession session) {
+		try {
+			session.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private <T> void sendMessage(T message, CalendarService calendarService) {
 		sessions.parallelStream()
 				.forEach(session -> calendarService.sendMessage(session, message));
@@ -82,7 +101,6 @@ public class CalendarRoomDTO {
 		calendarService.sendMessage(s, message);
 	}
 
-
 	public CalendarRoomDTO of(Calendar calendar) {
 		return CalendarRoomDTO.builder()
 				.uid(calendar.getUid())
@@ -91,11 +109,27 @@ public class CalendarRoomDTO {
 
 	public void autoDisconnect(WebSocketSession session, CalendarService calendarService) {
 		try {
-			Thread.sleep(180000);
-			sendMessage(session, TIMEOUT_CONNECT_VEHICLE_SOCKET, calendarService);
-			sessions.remove(session);
-		} catch (InterruptedException ie) {
-			log.error(FAIL_TIMEOUT_SETTING_SOCKET, ie);
+			Timer timer = new Timer();
+			timer.scheduleAtFixedRate(new TimerTask() {
+				int i = 60;
+
+				@Override
+				public void run() {
+					i--;
+					if (i < 0) {
+						sendMessage(session, TIMEOUT_CONNECT_VEHICLE_SOCKET, calendarService);
+						sessions.remove(session);
+						try {
+							session.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						timer.cancel();
+					}
+				}
+			}, 0, 1000);
+		} catch (Exception e) {
+			log.info(e.getMessage());
 		}
 	}
 }
