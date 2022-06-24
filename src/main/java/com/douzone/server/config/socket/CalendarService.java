@@ -112,8 +112,11 @@ public class CalendarService {
 		List<Time> timeList = timeRepository.findByCalendar_Uid(uid);
 
 		for (int i = 0; i < timeList.size(); i++) {
+			if (time[i] == 0) continue;
 			timeList.get(i).updateIsSeat(time[i], empNo);
 		}
+		log.info("updateTime - success");
+
 	}
 
 	@Transactional
@@ -122,6 +125,8 @@ public class CalendarService {
 				.stream().map(time -> {
 					return TimeMessageResDTO.builder().build().of(time);
 				}).collect(Collectors.toList());
+
+		log.info("selectTime - success");
 
 		return timeMessageResDTOList;
 	}

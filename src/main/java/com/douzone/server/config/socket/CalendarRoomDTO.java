@@ -33,26 +33,29 @@ public class CalendarRoomDTO {
 	}
 
 	public void handlerActions(WebSocketSession session, TimeMessageReqDTO timeMessageReqDTO, CalendarService calendarService) {
-		TimeMessageResDTO timeMessageResDTO = new TimeMessageResDTO();
+		Object value = new Object();
 
 		if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.ENTER)) {
 			sessions.add(session);
-//			timeMessageReqDTO.setMessage(timeMessageReqDTO.getEmpNo() + "님이 입장했습니다.");
+
 
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.TALK)) {
-			System.out.println(timeMessageReqDTO.getEmpNo());
-			for (int i = 0; i < timeMessageReqDTO.getTime().length; i++) {
-				System.out.println(timeMessageReqDTO.getTime()[i]);
-			}
+
 			calendarService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo());
+			List<TimeMessageResDTO> resDTOList = calendarService.selectTime(timeMessageReqDTO.getUid());
+			sendMessage(resDTOList, calendarService);
 
-
-			sendMessage(timeMessageResDTO, calendarService);
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.QUIT)) {
+
+			TimeMessageResDTO timeMessageResDTO = TimeMessageResDTO.builder()
+					.uid(timeMessageReqDTO.getUid())
+					.empNo(timeMessageReqDTO.getEmpNo())
+					.build();
+
 			sendMessage(timeMessageResDTO, calendarService);
 		}
-
 	}
+
 
 	private <T> void sendMessage(T message, CalendarService calendarService) {
 		sessions.parallelStream()

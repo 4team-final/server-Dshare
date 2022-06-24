@@ -15,6 +15,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	private final ObjectMapper objectMapper;
 	private final CalendarService calendarService;
 
+//	@Override
+//	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+//		super.afterConnectionClosed(session, status);
+//	}
+//
+//	@Override
+//	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+//		super.afterConnectionEstablished(session);
+//	}
+
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String payload = message.getPayload();
@@ -25,4 +35,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		CalendarRoomDTO calendarRoomDTO = calendarService.findRoomById(timeMessageReqDTO.getUid());
 		calendarRoomDTO.handlerActions(session, timeMessageReqDTO, calendarService);
 	}
+
+
 }
