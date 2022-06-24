@@ -40,5 +40,4 @@ public class Time {
 		this.empNo = empNo;
 		this.roomId = roomId;
 	}
-
 }

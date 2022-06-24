@@ -21,5 +21,4 @@ public class TimeMessageReqDTO {
 	private Integer[] time = new Integer[18];
 	private String empNo;
 	private Integer roomId;
-
 }

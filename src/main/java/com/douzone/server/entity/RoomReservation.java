@@ -41,7 +41,7 @@ public class RoomReservation extends BaseAtTime {
 		this.meetingRoom.builder().id(roomId).build();
 		this.reason = reason;
 		this.title = title;
-		this.startedAt =startedAt;
+		this.startedAt = startedAt;
 		this.endedAt = endedAt;
 	}
 
@@ -55,5 +55,4 @@ public class RoomReservation extends BaseAtTime {
 				.endedAt(registReservationReqDto.getEndedAt())
 				.build();
 	}
-	
 }

@@ -21,7 +21,6 @@ public class TimeMessageResDTO {
 	private Integer isSeat;
 	private String empNo;
 
-
 	@Builder
 	public TimeMessageResDTO(MessageType type, String uid, String time, Integer isSeat, String empNo) {
 		this.type = type;

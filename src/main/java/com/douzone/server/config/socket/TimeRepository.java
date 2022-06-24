@@ -11,5 +11,4 @@ public interface TimeRepository extends JpaRepository<Time, Long> {
 	List<Time> findByCalendar_Uid(String uid);
 
 	List<Time> findByCalendar_UidAndRoomId(String uid, Integer roomId);
-
 }

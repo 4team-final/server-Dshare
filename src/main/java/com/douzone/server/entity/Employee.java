@@ -52,8 +52,6 @@ public class Employee extends BaseAtTime {
 
 	public void update(String newPassword) {
 		this.password = newPassword;
-
 	}
-
 }
 

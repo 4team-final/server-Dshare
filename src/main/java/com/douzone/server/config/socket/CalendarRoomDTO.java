@@ -35,7 +35,7 @@ public class CalendarRoomDTO {
 		this.uid = uid;
 	}
 
-	public void handlerActions(WebSocketSession session, TimeMessageReqDTO timeMessageReqDTO, CalendarService calendarService) {
+	public void handlerActions(WebSocketSession session, TimeMessageReqDTO timeMessageReqDTO, CalendarService calendarService, TimeService timeService) {
 
 		if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.ENTER)) {
 
@@ -49,14 +49,15 @@ public class CalendarRoomDTO {
 				}
 			}
 
+
 			sessions.add(session);
 			sendMessage(timeMessageReqDTO.getEmpNo() + " " + VehicleSocketDTO.MessageType.ENTER, calendarService);
 			autoDisconnect(session, calendarService); // 시간
 			this.close(session);
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.TALK)) {
 
-			calendarService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo(), timeMessageReqDTO.getRoomId());
-			List<TimeMessageResDTO> resDTOList = calendarService.selectTime(timeMessageReqDTO.getUid());
+			timeService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo(), timeMessageReqDTO.getRoomId());
+			List<TimeMessageResDTO> resDTOList = timeService.selectTime(timeMessageReqDTO.getUid());
 			sendMessage(resDTOList, calendarService);
 			sessions.remove(session);
 			this.close(session);
@@ -72,7 +73,6 @@ public class CalendarRoomDTO {
 			sessions.remove(session);
 			this.close(session);
 		} else {
-			// find sesstion
 			if (sessions.contains(session)) {
 				sendMessage(session, FAIL_ACCESS_SOCKET_CONNECT, calendarService);
 				sessions.remove(session);
@@ -91,7 +91,7 @@ public class CalendarRoomDTO {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private <T> void sendMessage(T message, CalendarService calendarService) {
 		sessions.parallelStream()
 				.forEach(session -> calendarService.sendMessage(session, message));

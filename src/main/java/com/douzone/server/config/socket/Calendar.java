@@ -23,5 +23,4 @@ import javax.persistence.Table;
 public class Calendar extends BaseAtTime {
 	@Id
 	private String uid;
-
 }
