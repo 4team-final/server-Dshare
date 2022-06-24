@@ -1,4 +1,4 @@
-package com.douzone.server.dto.vehicle;
+package com.douzone.server.dto.vehicle.jpainterface;
 
 import com.douzone.server.entity.Vehicle;
 
