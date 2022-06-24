@@ -20,23 +20,27 @@ public class TimeMessageResDTO {
 	private String time;
 	private Integer isSeat;
 	private String empNo;
+	private Integer roomId;
 
 	@Builder
-	public TimeMessageResDTO(MessageType type, String uid, String time, Integer isSeat, String empNo) {
+	public TimeMessageResDTO(MessageType type, String uid, String time, Integer isSeat, String empNo, Integer roomId) {
 		this.type = type;
 		this.uid = uid;
 		this.time = time;
 		this.isSeat = isSeat;
 		this.empNo = empNo;
+		this.roomId = roomId;
 	}
 
 	public TimeMessageResDTO of(Time time) {
 		return TimeMessageResDTO.builder()
-				.type(MessageType.TALK)
+				.type(MessageType.ENTER)
 				.uid(time.getCalendar().getUid())
 				.time(time.getTime())
 				.isSeat(time.getIsSeat())
 				.empNo(time.getEmpNo())
+				.roomId(time.getRoomId())
 				.build();
 	}
+
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TimeMessageReqDTO {
 
 	public enum MessageType {

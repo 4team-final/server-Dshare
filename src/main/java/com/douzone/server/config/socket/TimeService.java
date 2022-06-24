@@ -25,8 +25,9 @@ public class TimeService {
 	}
 
 	@Transactional
-	public List<TimeMessageResDTO> selectTime(String uid) {
-		List<TimeMessageResDTO> timeMessageResDTOList = timeRepository.findByCalendar_Uid(uid)
+	public List<TimeMessageResDTO> selectTime(String uid, Integer roomId, TimeMessageReqDTO.MessageType messageType) {
+
+		List<TimeMessageResDTO> timeMessageResDTOList = timeRepository.findByCalendar_UidAndRoomId(uid, roomId)
 				.stream().map(time -> {
 					return TimeMessageResDTO.builder().build().of(time);
 				}).collect(Collectors.toList());

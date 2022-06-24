@@ -1,12 +1,8 @@
 package com.douzone.server.config.socket;
 
-import com.douzone.server.config.socket.vehicle.VehicleSocketDTO;
 import com.douzone.server.dto.employee.EmpResDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -49,15 +45,22 @@ public class CalendarRoomDTO {
 				}
 			}
 
-
 			sessions.add(session);
-			sendMessage(timeMessageReqDTO.getEmpNo() + " " + VehicleSocketDTO.MessageType.ENTER, calendarService);
+			List<TimeMessageResDTO> resDTOList = timeService.selectTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getRoomId(), TimeMessageReqDTO.MessageType.ENTER);
+
+			SocketResDTO socketResDTO = SocketResDTO.builder()
+					.results(resDTOList)
+					.message(timeMessageReqDTO.getEmpNo() + " 사번의 사원이 " + timeMessageReqDTO.getUid() + " 날짜의 " + timeMessageReqDTO.getRoomId() + " 번 회의실을 구경중입니다.")
+					.build();
+
+			sendMessage(socketResDTO, calendarService);
+
 			autoDisconnect(session, calendarService); // 시간
-			this.close(session);
+
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.TALK)) {
 
 			timeService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo(), timeMessageReqDTO.getRoomId());
-			List<TimeMessageResDTO> resDTOList = timeService.selectTime(timeMessageReqDTO.getUid());
+			List<TimeMessageResDTO> resDTOList = timeService.selectTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getRoomId(), TimeMessageReqDTO.MessageType.ENTER);
 			sendMessage(resDTOList, calendarService);
 			sessions.remove(session);
 			this.close(session);
@@ -84,6 +87,7 @@ public class CalendarRoomDTO {
 		}
 	}
 
+	@Synchronized
 	private void close(WebSocketSession session) {
 		try {
 			session.close();
@@ -107,11 +111,12 @@ public class CalendarRoomDTO {
 				.build();
 	}
 
+
 	public void autoDisconnect(WebSocketSession session, CalendarService calendarService) {
 		try {
 			Timer timer = new Timer();
 			timer.scheduleAtFixedRate(new TimerTask() {
-				int i = 60;
+				int i = 180;
 
 				@Override
 				public void run() {
@@ -119,15 +124,14 @@ public class CalendarRoomDTO {
 					if (i < 0) {
 						sendMessage(session, TIMEOUT_CONNECT_VEHICLE_SOCKET, calendarService);
 						sessions.remove(session);
-						try {
-							session.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+
+						close(session);
+
 						timer.cancel();
 					}
 				}
 			}, 0, 1000);
+
 		} catch (Exception e) {
 			log.info(e.getMessage());
 		}
