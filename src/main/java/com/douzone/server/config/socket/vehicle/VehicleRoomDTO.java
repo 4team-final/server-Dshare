@@ -3,10 +3,7 @@ package com.douzone.server.config.socket.vehicle;
 import com.douzone.server.config.socket.Calendar;
 import com.douzone.server.exception.WebsocketIOException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.socket.WebSocketSession;
@@ -51,17 +48,23 @@ public class VehicleRoomDTO {
 			sendMessage(vehicleSocketDTO.getEmpNo() + VehicleSocketDTO.MessageType.ENTER, service);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.TALK)) {
 			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getTime(), vehicleSocketDTO.getEmpNo());
-			
+
 
 			sendMessage(vehicleSocketDTO, service);
 			sessions.remove(session);
 			close(session);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.DUAL)) {
 			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getMessage(), vehicleSocketDTO.getTime()[0], vehicleSocketDTO.getTime()[1], vehicleSocketDTO.getEmpNo());
-			sendMessage(vehicleSocketDTO, service);
+			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
+			sendMessage(list, service);
 			sessions.remove(session);
 			close(session);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.QUIT)) {
+			VehicleSocketResDTO vehicleSocketResDTO = VehicleSocketResDTO.builder()
+					.uid(vehicleSocketDTO.getUid())
+					.empNo(vehicleSocketDTO.getEmpNo())
+					.build();
+			sendMessage(vehicleSocketResDTO, service);
 			sendMessage(session, SUCCESS_DISCONNECT_VEHICLE_SOCKET, service);
 			sessions.remove(session);
 			close(session);
@@ -109,6 +112,7 @@ public class VehicleRoomDTO {
 		}, 0, 180000);
 	}
 
+	@Synchronized
 	private void close(WebSocketSession session) {
 		try {
 			session.close();

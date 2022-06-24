@@ -101,7 +101,11 @@ public class VehicleSocketService {
 	}
 
 	@Transactional
-	public List<VehicleSocketResDTO> selectTime(String uid) {
-		return timeVehicleRepository.findByCalendar_Uid(uid).stream().map(time -> VehicleSocketResDTO.builder().build().of(time)).collect(Collectors.toList());
+	public List<VehicleSocketResDTO> selectTime(String uid, Long vehicleId) {
+		return Optional.ofNullable(uid)
+				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vehicleId))
+				.filter(Optional::isPresent)
+				.map(res -> res.get().stream().map(time -> VehicleSocketResDTO.builder().build().of(time)).collect(Collectors.toList()))
+				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
 	}
 }
