@@ -6,7 +6,6 @@ import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Position;
 import com.douzone.server.entity.Team;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,6 @@ import lombok.Setter;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
-// of() dto -> entity
 @Getter
 @Setter
 @NoArgsConstructor
