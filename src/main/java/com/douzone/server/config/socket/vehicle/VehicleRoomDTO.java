@@ -9,9 +9,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.douzone.server.config.utils.Msg.*;
 
@@ -37,13 +35,22 @@ public class VehicleRoomDTO {
 			autoDisconnect(session, service);
 			sendMessage(vehicleSocketDTO.getEmpNo() + VehicleSocketDTO.MessageType.ENTER, service);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.TALK)) {
-			service.updateIsSeat(vehicleSocketDTO.getUid(), vehicleSocketDTO.getTime(), vehicleSocketDTO.getEmpNo());
-			sendMessage(vehicleSocketDTO.getTime(), service);
+			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getTime(), vehicleSocketDTO.getEmpNo());
+			sendMessage(vehicleSocketDTO, service);
+			sessions.remove(session);
+		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.DUAL)) {
+
+			sendMessage(vehicleSocketDTO, service);
 			sessions.remove(session);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.QUIT)) {
 			sendMessage(session, SUCCESS_DISCONNECT_VEHICLE_SOCKET, service);
 			sessions.remove(session);
 		} else {
+			if (sessions.contains(session)) {
+				sendMessage(session, FAIL_ACCESS_SOCKET_CONNECT, service);
+				sessions.remove(session);
+				return;
+			}
 			sendMessage(session, FAIL_ACCESS_SOCKET_TYPE, service);
 		}
 	}
@@ -64,12 +71,19 @@ public class VehicleRoomDTO {
 	}
 
 	public void autoDisconnect(WebSocketSession session, VehicleSocketService service) {
-		try {
-			Thread.sleep(180000);
-			sendMessage(session, TIMEOUT_CONNECT_VEHICLE_SOCKET, service);
-			sessions.remove(session);
-		} catch (InterruptedException ie) {
-			log.error(FAIL_TIMEOUT_SETTING_SOCKET, ie);
-		}
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			int i = 180;
+
+			@Override
+			public void run() {
+				i--;
+				if (i < 0) {
+					sendMessage(session, TIMEOUT_CONNECT_VEHICLE_SOCKET, service);
+					sessions.remove(session);
+					timer.cancel();
+				}
+			}
+		}, 0, 180000);
 	}
 }

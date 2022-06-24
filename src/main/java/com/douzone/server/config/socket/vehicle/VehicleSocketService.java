@@ -66,9 +66,9 @@ public class VehicleSocketService {
 	}
 
 	@Transactional
-	public void updateIsSeat(String uid, Integer[] time, String empNo) {
+	public void updateIsSeat(Long vid, String uid, Integer[] time, String empNo) {
 		Optional.ofNullable(uid)
-				.map(timeVehicleRepository::findByCalendar_Uid)
+				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vid))
 				.filter(Optional::isPresent)
 				.map(res -> {
 					for (int i = 0; i < res.get().size(); i++) {
@@ -78,5 +78,10 @@ public class VehicleSocketService {
 					return res.get();
 				})
 				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
+	}
+
+	@Transactional
+	public void updateIsSeat(Long vid, String startUid, String endUid, Integer startTime, Integer endTime, String empNo) {
+
 	}
 }
