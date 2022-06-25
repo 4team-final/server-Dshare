@@ -53,7 +53,8 @@ public interface Msg {
 	String SUCCESS_ROOM_BEST_DATE = "일주일간 많이 예약하는 시간대 회의실 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_MEET_START = "일주일간 많이 회의가 시작되는 시간대 회의실 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_FIND_MARK = "내가 즐겨찾기한 회의실 조회에 성공하였습니다.";
-	String SUCCESS_ROOM_UPDATE = "회의실 예약 정보 수정에 성공하였습니다.";
+	String SUCCESS_ROOM_UPDATE = "회의실 정보 수정에 성공하였습니다.";
+	String SUCCESS_ROOM_RESERVATION_UPDATE = "회의실 예약 정보 수정에 성공하였습니다.";
 	String SUCCESS_ROOM_RESERVATION_DELETE = "회의실 예약 삭제에 성공하였습니다.";
 	String SUCCESS_ROOM_DELETE_MARK = "회의실 즐겨찾기 삭제에 성공하였습니다.";
 	String SUCCESS_ROOM_BOOKMARK = "회의실 즐겨찾기 등록에 성공하였습니다.";
