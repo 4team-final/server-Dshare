@@ -1,7 +1,6 @@
 package com.douzone.server.dto.vehicle.impl;
 
 import com.douzone.server.dto.vehicle.jpainterface.IVehicleWeekTimeDTO;
-import com.douzone.server.entity.Vehicle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,16 +13,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleWeekTimeDTO implements IVehicleWeekTimeDTO {
-	private String substring;
-	private Long id;
+	private Integer hTime;
+	private Integer hCount;
+	private Long vId;
 	private LocalDateTime startedAt;
 	private LocalDateTime endedAt;
-	private LocalDateTime createdAt;
-	private LocalDateTime modifiedAt;
 	private String reason;
 	private String title;
-	private Vehicle vehicle;
+	private LocalDateTime cre;
+	private LocalDateTime mmd;
 	private String vehicleImg;
+	private String model;
+	private String color;
+	private String vNum;
+	private String vNam;
+	private Integer capacity;
 	private String empNo;
-	private String name;
+	private String eName;
 }

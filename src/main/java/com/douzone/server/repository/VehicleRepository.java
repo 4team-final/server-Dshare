@@ -1,6 +1,5 @@
 package com.douzone.server.repository;
 
-import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
 import com.douzone.server.dto.vehicle.jpainterface.*;
 import com.douzone.server.entity.Vehicle;
 import org.springframework.data.domain.Pageable;
@@ -85,14 +84,18 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
 	List<IVehicleWeekDTO> weekMostReservedVehicle(@Param("date") LocalDateTime date);
 
-	@Query("select substring(vr.startedAt, 12, 2) as substring, vr.id as id, " +
+	@Query(value = "select hour(vr.startedAt) as hTime, count(hour(vr.startedAt)) as hCount, vr.id as vId, " +
 			"vr.startedAt as startedAt, vr.endedAt as endedAt, vr.reason as reason, vr.title as title, " +
-			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, vr.vehicle as vehicle, vi.path as vehicleImg, " +
-			"vr.employee.empNo as empNo, vr.employee.name as name " +
-			"from VehicleReservation vr " +
-			"left join fetch VehicleImg vi on vr.vehicle.id = vi.id " +
-			"where startedAt > :date and endedAt < :end")
-	List<VehicleWeekTimeDTO> weekMostReservedTime(@Param("date") LocalDateTime date, @Param("end") LocalDateTime end);
+			"vr.createdAt as cre, vr.modifiedAt as mmd, vi.path as vehicleImg, " +
+			"v.model as model, v.color as color, v.number as vNum, v.name as vNam, v.capacity as capacity, " +
+			"e.empNo as empNo, e.name as eName " +
+			"from vehicle_reservation vr " +
+			"left join vehicle v on v.id = vr.vehicleId " +
+			"left join employee e on e.id = vr.empId " +
+			"left join vehicle_img vi on vr.vehicleId = vi.id " +
+			"where vr.startedAt > :start and vr.endedAt < :end " +
+			"group by hour(vr.startedAt) order by hCount desc ", nativeQuery = true)
+	List<IVehicleWeekTimeDTO> weekMostReservedTime(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 	@Query("select distinct vr.endedAt as endedAt, v as vehicle, vi.path as vehicleImg " +
 			"from Vehicle v " +
