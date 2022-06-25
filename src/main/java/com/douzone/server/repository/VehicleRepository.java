@@ -114,13 +114,13 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"where vr.id = :id")
 	Optional<IVehicleListResDTO> selectByVehicleReservation(@Param("id") Long id);
 
-	@Query("select vr.id as id, vr.title as title, vr.startedAt as timeTime " +
-			"from VehicleReservation vr " +
-			"where vr.employee.id = :empId and vr.startedAt > current_time")
-	List<IVehicleTimeResDTO> soonReservationMyTime(@Param("empId") Long empId, Pageable pageable);
+	@Query(value = "select vr.id as id, vr.title as title, vr.startedAt as timeTime " +
+			"from vehicle_reservation vr " +
+			"where vr.empId = :empId and vr.startedAt > current_time limit 1 ", nativeQuery = true)
+	IVehicleTimeResDTO soonReservationMyTime(@Param("empId") Long empId);
 
-	@Query("select vr.id as id, vr.title as title, vr.endedAt as timeTime " +
-			"from VehicleReservation vr " +
-			"where vr.employee.id = :empId and vr.startedAt < current_time and current_time < vr.endedAt")
-	List<IVehicleTimeResDTO> ingReservationMyTime(@Param("empId") Long empId, Pageable pageable);
+	@Query(value = "select vr.id as id, vr.title as title, vr.endedAt as timeTime " +
+			"from vehicle_reservation vr " +
+			"where vr.empId = :empId and vr.startedAt < current_time and current_time < vr.endedAt limit 1 ", nativeQuery = true)
+	IVehicleTimeResDTO ingReservationMyTime(@Param("empId") Long empId);
 }

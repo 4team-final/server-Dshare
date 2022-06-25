@@ -167,13 +167,13 @@ public class VehicleController {
 	@GetMapping(path = "/own/reservation/next")
 	public ResponseEntity<ResponseDTO> soonReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- soonReservationMyTime");
-		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(principalDetails.getEmployee().getId(), 1));
+		return ResponseEntity.ok().body(vehicleService.soonReservationMyTime(principalDetails.getEmployee().getId()));
 	}
 
 	@GetMapping(path = "/own/reservation/ongoing")
 	public ResponseEntity<ResponseDTO> ingReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- ingReservationMyTime");
-		return ResponseEntity.ok().body(vehicleService.soonAndIngReservationMyTime(principalDetails.getEmployee().getId(), 0));
+		return ResponseEntity.ok().body(vehicleService.ingReservationMyTime(principalDetails.getEmployee().getId()));
 	}
 
 	@PatchMapping("/modification/return")

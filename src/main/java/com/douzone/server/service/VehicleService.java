@@ -260,21 +260,23 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO soonAndIngReservationMyTime(Long empId, int code) {
+	public ResponseDTO soonReservationMyTime(Long empId) {
 		log.info(METHOD_NAME + "- soonReservationMyTime");
 		return Optional.of(new ResponseDTO())
-				.filter(u -> (empId > 0))
-				.map(v -> code == 0 ?
-						vehicleRepository.ingReservationMyTime(empId, PageRequest.of(0, 1)) :
-						vehicleRepository.soonReservationMyTime(empId, PageRequest.of(0, 1)))
-				.map(res -> res.get(0).getId() == null ?
-						(code == 0 ? ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + FAIL_FIND_RESULT) :
-								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + FAIL_FIND_RESULT)) :
-						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), res.get(0).getTimeTime())) :
-								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), res.get(0).getTimeTime()))))
-				.orElseGet(() -> code == 0 ?
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING) :
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
+				.filter(u -> empId > 0)
+				.map(v -> vehicleRepository.soonReservationMyTime(empId))
+				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), res.getTimeTime())))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
+	}
+
+	@Transactional
+	public ResponseDTO ingReservationMyTime(Long empId) {
+		log.info(METHOD_NAME + "- ingReservationMyTime");
+		return Optional.of(new ResponseDTO())
+				.filter(u -> empId > 0)
+				.map(v -> vehicleRepository.ingReservationMyTime(empId))
+				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), res.getTimeTime())))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING));
 	}
 
 	public LocalDateTime now() {
