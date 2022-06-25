@@ -66,9 +66,9 @@ public class VehicleSocketService {
 	}
 
 	@Transactional
-	public void updateIsSeat(String uid, Integer[] time, String empNo) {
+	public void updateIsSeat(Long vid, String uid, Integer[] time, String empNo) {
 		Optional.ofNullable(uid)
-				.map(timeVehicleRepository::findByCalendar_Uid)
+				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vid))
 				.filter(Optional::isPresent)
 				.map(res -> {
 					for (int i = 0; i < res.get().size(); i++) {
@@ -77,6 +77,35 @@ public class VehicleSocketService {
 					}
 					return res.get();
 				})
+				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
+	}
+
+	@Transactional
+	public void updateIsSeat(Long vid, String startUid, String endUid, Integer startTime, Integer endTime, String empNo) {
+		Optional.ofNullable(startUid)
+				.map(v -> timeVehicleRepository.selectByUidAndVid(startUid, vid))
+				.filter(Optional::isPresent)
+				.map(res -> {
+					for (int i = startTime; i < res.get().size(); i++)
+						res.get().get(i).updateTimeVehicle(1, empNo);
+					return res.get();
+				})
+				.map(v -> timeVehicleRepository.selectByUidAndVid(endUid, vid))
+				.filter(Optional::isPresent)
+				.map(res -> {
+					for (int i = 0; i < endTime; i++)
+						res.get().get(i).updateTimeVehicle(1, empNo);
+					return res.get();
+				})
+				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
+	}
+
+	@Transactional
+	public List<VehicleSocketResDTO> selectTime(String uid, Long vehicleId) {
+		return Optional.ofNullable(uid)
+				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vehicleId))
+				.filter(Optional::isPresent)
+				.map(res -> res.get().stream().map(time -> VehicleSocketResDTO.builder().build().of(time)).collect(Collectors.toList()))
 				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
 	}
 }

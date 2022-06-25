@@ -10,13 +10,10 @@ import com.douzone.server.dto.employee.signUp;
 import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
-import com.douzone.server.repository.querydsl.RoomQueryDSL;
 import com.douzone.server.service.AdminService;
 import com.douzone.server.service.RoomService;
-import com.douzone.server.service.method.ServiceMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,13 +33,8 @@ import java.util.List;
 @Slf4j
 public class AdminController {
 
-	private static final String METHOD_NAME = VehicleController.class.getName();
 	private final AdminService adminService;
 	private final RoomService roomService;
-	//테스트
-	private final RoomQueryDSL roomQueryDSL;
-	private final ServiceMethod serviceMethod;
-	private MessageSource msg;
 
 	/**
 	 * 사원등록 - 정재빈
@@ -87,7 +79,7 @@ public class AdminController {
 	}
 
 	/**
-	 * 차량 정보 등록
+	 * 차량 정보 등록 - 윤우형
 	 */
 	@PostMapping("/creation/vehicle")
 	public ResponseEntity<ResponseDTO> createVehicle(@Valid VehicleUpdateDTO vehicleUpdateDTO, @NotNull List<MultipartFile> files) {
@@ -95,7 +87,7 @@ public class AdminController {
 	}
 
 	/**
-	 * 차량 정보 수정
+	 * 차량 정보 수정 - 윤우형
 	 */
 	@PatchMapping("/modification/vehicle")
 	public ResponseEntity<ResponseDTO> updateVehicle(@Valid VehicleUpdateDTO vehicleUpdateDTO, @RequestParam("id") Long id, @NotNull List<MultipartFile> files) {
@@ -103,29 +95,32 @@ public class AdminController {
 	}
 
 	/**
-	 * 차량 정보 삭제
+	 * 차량 정보 삭제 - 윤우형
 	 */
 	@DeleteMapping("/elimination/vehicle")
 	public ResponseEntity<ResponseDTO> deleteVehicle(@RequestParam("id") Long id) {
 		return ResponseEntity.ok().body(adminService.deleteVehicle(id));
 	}
+
 	/**
-	 *  회의실 등록
+	 * 회의실 등록
 	 */
 
 	@PostMapping("/room")
 	public ResponseEntity<ResponseDTO> register(@NotNull List<MultipartFile> files, @Valid RoomReqDTO roomReqDTO) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM, roomService.register(files, roomReqDTO)));
 	}
+
 	/**
-	 *  회의실 삭제
+	 * 회의실 삭제
 	 */
 	@DeleteMapping("/room/{roomId}")
 	public ResponseEntity<ResponseDTO> delete(@PathVariable("roomId") long roomId) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_DELETE, roomService.delete(roomId)));
 	}
+
 	/**
-	 *  회의실 수정
+	 * 회의실 수정
 	 */
 	@PutMapping("/room/{roomId}")
 	public ResponseEntity<ResponseDTO> update(@NotNull List<MultipartFile> files, @PathVariable("roomId") long roomId, RoomReqDTO roomReqDTO) {

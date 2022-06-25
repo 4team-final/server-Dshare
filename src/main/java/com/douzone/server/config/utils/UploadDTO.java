@@ -44,5 +44,4 @@ public class UploadDTO {
 				.imgSize(uploadDTO.imgSize)
 				.build();
 	}
-
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TimeMessageReqDTO {
 
 	public enum MessageType {
@@ -21,5 +21,4 @@ public class TimeMessageReqDTO {
 	private Integer[] time = new Integer[18];
 	private String empNo;
 	private Integer roomId;
-
 }

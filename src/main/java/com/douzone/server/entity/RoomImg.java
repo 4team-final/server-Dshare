@@ -16,20 +16,19 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class RoomImg extends BaseAtTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roomId")
-    private MeetingRoom meetingRoom;
-    private String path;
-    private String type;
-    private String imgSize;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "roomId")
+	private MeetingRoom meetingRoom;
+	private String path;
+	private String type;
+	private String imgSize;
 
-    public void updateRoomImg(String path, String type, String imgSize) {
-        this.path = path;
-        this.type = type;
-        this.imgSize = imgSize;
-    }
-
+	public void updateRoomImg(String path, String type, String imgSize) {
+		this.path = path;
+		this.type = type;
+		this.imgSize = imgSize;
+	}
 }
