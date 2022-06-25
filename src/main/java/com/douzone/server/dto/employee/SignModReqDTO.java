@@ -81,7 +81,8 @@ public class SignModReqDTO {
 
 	public StringBuilder makeEmpno(Employee employee, String year) {
 		String deptId = String.format("%02d", this.getDeptId());
-		String empId = String.format("%05d", employee.getId() + 1);
+		String empNo = employee.getEmpNo().substring(4, 9);
+		String empId = String.format("%05d", Long.parseLong(empNo) + 1);
 		return new StringBuilder().append(year).append(deptId).append(empId);
 
 	}
