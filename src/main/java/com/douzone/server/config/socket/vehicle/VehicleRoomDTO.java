@@ -1,6 +1,7 @@
 package com.douzone.server.config.socket.vehicle;
 
 import com.douzone.server.config.socket.Calendar;
+import com.douzone.server.config.socket.SocketResDTO;
 import com.douzone.server.exception.WebsocketIOException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
@@ -33,32 +34,33 @@ public class VehicleRoomDTO {
 
 	public void handlerActions(WebSocketSession session, VehicleSocketDTO vehicleSocketDTO, VehicleSocketService service) {
 		if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.ENTER)) {
-			String empNo = Optional.ofNullable(session.getPrincipal())
+			Optional.ofNullable(session.getPrincipal())
 					.map(Principal::getName)
-					.orElseThrow(() -> new UsernameNotFoundException("websocket"));
-			for (WebSocketSession webSocketSession : sessions) {
-				String compareEmpNo = webSocketSession.getPrincipal().getName();
-				if (compareEmpNo.equals(empNo)) {
-					sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, service);
-					return;
-				}
-			}
+					.map(res -> sessions.stream()
+							.filter(v -> v.getPrincipal() != null)
+							.map(v -> v.getPrincipal().getName())
+							.filter(v -> v.equals(res))
+							.peek(v -> sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, service)))
+					.orElseThrow(() -> new UsernameNotFoundException("websocket session is empty"));
+			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
+			SocketResDTO socketResDTO = SocketResDTO.builder()
+					.results(list)
+					.message(vehicleSocketDTO.getEmpNo() + " 사번의 사원이 " + vehicleSocketDTO.getUid() + " 날짜의 " + vehicleSocketDTO.getVehicleId() + " 번 차량을 구경중입니다.")
+					.build();
+			sendMessage(socketResDTO, service);
 			sessions.add(session);
 			autoDisconnect(session, service);
 			sendMessage(vehicleSocketDTO.getEmpNo() + VehicleSocketDTO.MessageType.ENTER, service);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.TALK)) {
 			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getTime(), vehicleSocketDTO.getEmpNo());
-
-
-			sendMessage(vehicleSocketDTO, service);
-			sessions.remove(session);
-			close(session);
+			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
+			sendMessage(list, service);
+			remove(session);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.DUAL)) {
 			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getMessage(), vehicleSocketDTO.getTime()[0], vehicleSocketDTO.getTime()[1], vehicleSocketDTO.getEmpNo());
 			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
 			sendMessage(list, service);
-			sessions.remove(session);
-			close(session);
+			remove(session);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.QUIT)) {
 			VehicleSocketResDTO vehicleSocketResDTO = VehicleSocketResDTO.builder()
 					.uid(vehicleSocketDTO.getUid())
@@ -66,13 +68,11 @@ public class VehicleRoomDTO {
 					.build();
 			sendMessage(vehicleSocketResDTO, service);
 			sendMessage(session, SUCCESS_DISCONNECT_VEHICLE_SOCKET, service);
-			sessions.remove(session);
-			close(session);
+			remove(session);
 		} else {
 			if (sessions.contains(session)) {
 				sendMessage(session, FAIL_ACCESS_SOCKET_CONNECT, service);
-				sessions.remove(session);
-				close(session);
+				remove(session);
 				return;
 			}
 			sendMessage(session, FAIL_ACCESS_SOCKET_TYPE, service);
@@ -92,6 +92,11 @@ public class VehicleRoomDTO {
 		return VehicleRoomDTO.builder()
 				.uid(calendar.getUid())
 				.build();
+	}
+
+	public void remove(WebSocketSession session) {
+		sessions.remove(session);
+		close(session);
 	}
 
 	public void autoDisconnect(WebSocketSession session, VehicleSocketService service) {
