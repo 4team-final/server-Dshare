@@ -68,7 +68,7 @@ public class RoomService {
 	@Transactional
 	public SoonAndIngResDTO soonAndIngReservationMyTime(Long empId) {
 		SoonAndIngResDTO soonAndIngResDTO;
-		if (!roomReservationRepository.existsById(empId)) {
+		if (!roomReservationRepository.existsByEmployee_Id(empId)) {
 			soonAndIngResDTO = SoonAndIngResDTO.builder().build().of(0L, 0L);
 			return soonAndIngResDTO;
 		}
