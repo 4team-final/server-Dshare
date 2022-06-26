@@ -21,5 +21,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Modifying(clearAutomatically = true)
     int updateTP(@Param("teamId")long teamId,@Param("positionId")long positionId, @Param("id")long id);
 
+    @Query("update Employee e set e.team.id = :teamId where e.id= :id")
+    @Modifying(clearAutomatically = true)
+    int updateT(@Param("teamId")long teamId, @Param("id")long id);
+
+    @Query("update Employee e set e.name = :name where e.id= :id")
+    @Modifying(clearAutomatically = true)
+    int updateName(@Param("name")String name, @Param("id")long id);
 
 }
