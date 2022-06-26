@@ -86,6 +86,7 @@ public interface Msg {
 	// vehicle
 	String SUCCESS_VEHICLE_RESERVE = "차량 예약에 성공하였습니다.";
 	String SUCCESS_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 성공하였습니다.";
+	String SUCCESS_VEHICLE_BOOKMARK_CANCEL = "차량 즐겨찾기 취소에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_ALL = "차량 예약 현황 전체 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_NONE = "차량 미예약 현황 전체 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_TYPE = "차량 종류에 따른 예약 조회에 성공하였습니다.";
