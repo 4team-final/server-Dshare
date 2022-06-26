@@ -1,6 +1,6 @@
 package com.douzone.server.dto.vehicle.impl;
 
-import com.douzone.server.dto.vehicle.IVehicleResDTO;
+import com.douzone.server.dto.vehicle.jpainterface.IVehicleResDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

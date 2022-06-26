@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -27,6 +26,46 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
 	/**
+	 * 회의실 물건이 없을때
+	 */
+	@ExceptionHandler({RoomObjectNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> RoomObjectNotFoundException(RoomObjectNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
+	 * 회의실이 없을때
+	 */
+	@ExceptionHandler({RoomNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> RoomNotFoundException(RoomNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
+	 * 회의실 이미지 파일이 없을때
+	 */
+	@ExceptionHandler({RoomImgNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> RoomImgNotFoundException(RoomImgNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
+	 * 이미지 파일이 없을때
+	 */
+	@ExceptionHandler({ImgFileNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> ImgFileNotFoundException(ImgFileNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
+	 * 북마크가 이미 존재할때
+	 */
+	@ExceptionHandler({BookmarkAlreadyExistException.class})
+	public ResponseEntity<ErrorResponseDTO> BookmarkAlreadyExistException(EmpAlreadyExistException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
 	 * 유저가 이미 존재할때
 	 */
 	@ExceptionHandler({EmpAlreadyExistException.class})
@@ -38,7 +77,7 @@ public class GlobalExceptionHandler {
 	 * 유저가 없을 때
 	 */
 	@ExceptionHandler({EmpNotFoundException.class})
-	public ResponseEntity<ErrorResponseDTO> EmpNotExistException(EmpAlreadyExistException e) {
+	public ResponseEntity<ErrorResponseDTO> EmpNotFoundException(EmpNotFoundException e) {
 		return CustomExceptionReturn.returnException(e);
 	}
 
@@ -72,7 +111,7 @@ public class GlobalExceptionHandler {
 	 * 함수에 인자가 들어갔을 때 -> validation시 필드에 널값들어가면 발생
 	 */
 	@ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
-	public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(BindException e){
+	public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(BindException e) {
 		ErrorResponseDTO response = new ErrorResponseDTO(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
@@ -167,7 +206,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(NullPointerException.class)
 	protected ResponseDTO handleNullPointerException(NullPointerException e) {
-		log.error("SERVER ERROR - Vehicle Service" + e.getCause());
+		log.error("SERVER ERROR - NULL " + e.getCause());
 		log.info("{}", e.fillInStackTrace());
 		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "받은 정보가 비어있습니다.");
 	}

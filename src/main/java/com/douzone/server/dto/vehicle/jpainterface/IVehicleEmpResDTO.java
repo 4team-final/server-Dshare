@@ -1,12 +1,10 @@
-package com.douzone.server.dto.vehicle;
+package com.douzone.server.dto.vehicle.jpainterface;
 
 import com.douzone.server.entity.Vehicle;
 
 import java.time.LocalDateTime;
 
-public interface IVehicleWeekTimeDTO {
-	String getSubstring();
-
+public interface IVehicleEmpResDTO {
 	Long getId();
 
 	LocalDateTime getStartedAt();
@@ -24,8 +22,4 @@ public interface IVehicleWeekTimeDTO {
 	Vehicle getVehicle();
 
 	String getVehicleImg();
-
-	String getEmpNo();
-
-	String getName();
 }

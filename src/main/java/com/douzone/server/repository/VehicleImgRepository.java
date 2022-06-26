@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface VehicleImgRepository extends JpaRepository<VehicleImg, Long> {
 	Optional<VehicleImg> findByVehicleId(Long id);
 
-	Optional<VehicleImg> deleteByVehicleId(Long id);
+	void deleteByVehicleId(Long id);
 }

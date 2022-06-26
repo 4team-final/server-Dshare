@@ -19,8 +19,6 @@ import com.douzone.server.repository.querydsl.RoomReservationQueryDSL;
 import com.douzone.server.service.method.ServiceMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,9 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 
 @Slf4j
@@ -46,9 +44,6 @@ public class RoomService {
 	private final RoomObjectRepository roomObjectRepository;
 	private final RoomQueryDSL roomQueryDSL;
 	private final ServiceMethod serviceMethod;
-
-
-
 
 
 	@Transactional
@@ -122,6 +117,7 @@ public class RoomService {
 
 		return MyReservationResDTO.builder().build().of(beforeList, afterList);
 	}
+
 	//페이징
 	@Transactional
 	public List<ReservationPagingRes> myReservation(Long empId, long lastId, int limit) {
@@ -235,6 +231,7 @@ public class RoomService {
 
 	/**
 	 * 예약 전체 조회 페이징
+	 *
 	 * @return
 	 */
 	@Transactional
@@ -369,11 +366,18 @@ public class RoomService {
 
 	@Transactional
 	public Long save(RegistReservationReqDto registReservationReqDto) {
+
+		// 타임 테이블에도 반영해줘야함
+
+
 		return roomReservationRepository.save(RoomReservation.builder().build().of(registReservationReqDto)).getId();
 	}
 
 	@Transactional
 	public Long update(RegistReservationReqDto registReservationReqDto, long id) {
+
+		// 타임 테이블에 반영해야함
+
 		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
 		roomReservation.updateReservation(
 				registReservationReqDto.getRoomId(),
