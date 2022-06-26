@@ -345,9 +345,9 @@ public class RoomService {
 		// 회의실 사진 삭제 후 저장
 		List<RoomImg> roomImgList = roomImgRepository.findByMeetingRoom_Id(roomId);
 		List<String> CurrentImgPath = roomImgRepository.findPathByRoomId(roomId);
-		if (roomImgList == null) {
-			throw new RoomImgNotFoundException(ErrorCode.ROOM_OBJECT_NOT_FOUND);
-		}
+//		if (roomImgList.size()==0) {
+//			throw new RoomImgNotFoundException(ErrorCode.ROOM_OBJECT_NOT_FOUND);
+//		} -> 이미지를 찾을 수 없다하고 끝나버림
 		roomImgList.stream().map(roomImg -> {
 			roomImgRepository.deleteById(roomImg.getId());
 			return roomImg.getId();

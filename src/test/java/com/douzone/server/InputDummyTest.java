@@ -1,18 +1,28 @@
 package com.douzone.server;
 
+import com.douzone.server.dto.room.RoomObjectReqDTO;
 import com.douzone.server.dto.room.RoomReqDTO;
 import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.MeetingRoom;
 import com.douzone.server.entity.Team;
 import com.douzone.server.repository.EmployeeRepository;
 import com.douzone.server.service.EmployeeService;
 import com.douzone.server.service.RoomService;
+import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -70,16 +80,6 @@ public class InputDummyTest {
 			employeeService.bookmarkRegisterAndDelete(roomId, empList.get(i).getId());
 		}
 
-	}
-
-	/**
-	 *  미팅룸 등록 하기
-	 */
-	@Test
-	void InputMeetingRoom() {
-		List<MultipartFile> files;
-		RoomReqDTO
-		roomService.register();
 	}
 
 
