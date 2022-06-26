@@ -13,7 +13,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
 	private final ObjectMapper objectMapper;
-	private final ChatService chatService;
+	private final ResService resService;
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -21,7 +21,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		log.info("{}", payload);
 		ChatMessage chatMessage = objectMapper.readValue(payload, ChatMessage.class);
 
-		ChatRoom chatRoom = chatService.findRoomById(chatMessage.getRoomId());
-		chatRoom.handlerActions(session, chatMessage, chatService);
+		TimeRoom chatRoom = resService.findRoomById(chatMessage.getRoomId());
+		chatRoom.handlerActions(session, chatMessage, resService);
 	}
 }

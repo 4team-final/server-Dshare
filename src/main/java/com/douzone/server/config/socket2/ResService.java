@@ -14,31 +14,34 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class ChatService {
+public class ResService {
 	private final ObjectMapper objectMapper;
-	private Map<String, ChatRoom> chatRooms;
+	private Map<String, TimeRoom> timeRooms;
 
 	@PostConstruct
 	private void init() {
-		chatRooms = new LinkedHashMap<>();
+		timeRooms = new LinkedHashMap<>();
 	}
 
-	public List<ChatRoom> findAllRoom() {
-		return new ArrayList<>(chatRooms.values());
+	public List<TimeRoom> findAllRoom() {
+		return new ArrayList<>(timeRooms.values());
 	}
 
-	public ChatRoom findRoomById(String roomId) {
-		return chatRooms.get(roomId);
+	public TimeRoom findRoomById(String roomId) {
+		return timeRooms.get(roomId);
 	}
 
-	public ChatRoom createRoom(String name) {
-		String randomId = UUID.randomUUID().toString();
-		ChatRoom chatRoom = ChatRoom.builder()
-				.roomId(randomId)
-				.name(name)
+	public TimeRoom createRoom(TimeRoom timeroom) {
+		String randomId = "20220623";
+		TimeRoom timeRoom = TimeRoom.builder()
+				.uId(randomId)
+				.time(timeroom.getTime())
+				.isSeat(timeroom.getIsSeat())
+				.empNo(timeroom.getEmpNo())
+				.name(timeroom.getName())
 				.build();
-		chatRooms.put(randomId, chatRoom);
-		return chatRoom;
+		timeRooms.put(randomId, timeRoom);
+		return timeRoom;
 	}
 
 	public <T> void sendMessage(WebSocketSession session, T message) {
