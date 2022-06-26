@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -69,6 +70,12 @@ public class VehicleService {
 	@Transactional
 	public ResponseDTO registerByVehicleBookmark(Long empId, Long vId) {
 		log.info(METHOD_NAME + "- registerByVehicleBookmark");
+
+		if (vehicleBookmarkRepository.findByThisBookMarkVehicle(empId, vId).size() != 0) {
+			vehicleBookmarkRepository.deleteByEmployee_IdAndVehicle_Id(empId, vId);
+			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK_CANCEL);
+		}
+
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
 				.filter(v -> vId > 0)
@@ -80,6 +87,7 @@ public class VehicleService {
 									.build()
 					);
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK);
+//					}
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BOOKMARK));
 	}
 
