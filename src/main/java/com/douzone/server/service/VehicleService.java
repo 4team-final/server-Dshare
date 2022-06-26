@@ -5,7 +5,6 @@ import com.douzone.server.dto.vehicle.VehicleParseDTO;
 import com.douzone.server.dto.vehicle.VehicleReqDTO;
 import com.douzone.server.dto.vehicle.VehicleReservationDTO;
 import com.douzone.server.dto.vehicle.VehicleSearchDTO;
-import com.douzone.server.dto.vehicle.impl.VehicleWeekTimeDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
@@ -24,7 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.douzone.server.config.utils.Msg.*;
 
@@ -162,19 +162,12 @@ public class VehicleService {
 	@Transactional(readOnly = true)
 	public ResponseDTO weekMostReservedTime() {
 		log.info(METHOD_NAME + "- weekMostReservedTime");
-		return Optional.of(new ResponseDTO()).map(u -> {
-			Map<String, Integer> map = new HashMap<>();
-			List<VehicleWeekTimeDTO> result = vehicleRepository.weekMostReservedTime(now().minusDays(7L), now());
-			for (VehicleWeekTimeDTO vehicleWeekTimeDTO : result) {
-				String s = vehicleWeekTimeDTO.getSubstring();
-
-				if (!map.containsKey(s)) map.put(s, 1);
-				map.put(s, map.get(s) + 1);
-			}
-			List<Map.Entry<String, Integer>> entry = new LinkedList<>(map.entrySet());
-			entry.sort((o1, o2) -> o2.getValue() - o1.getValue());
-			return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, entry);
-		}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_DATE + FAIL_FIND_RESULT));
+		return Optional.of(new ResponseDTO())
+				.map(u -> vehicleRepository.weekMostReservedTime(now().minusDays(7L), now()))
+				.map(res -> res.size() > 0 ?
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, res) :
+						ResponseDTO.fail(HttpStatus.OK, FAIL_VEHICLE_BEST_DATE))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_DATE + FAIL_FIND_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -267,21 +260,23 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public ResponseDTO soonAndIngReservationMyTime(Long empId, int code) {
+	public ResponseDTO soonReservationMyTime(Long empId) {
 		log.info(METHOD_NAME + "- soonReservationMyTime");
 		return Optional.of(new ResponseDTO())
-				.filter(u -> (empId > 0))
-				.map(v -> code == 0 ?
-						vehicleRepository.ingReservationMyTime(empId, PageRequest.of(0, 1)) :
-						vehicleRepository.soonReservationMyTime(empId, PageRequest.of(0, 1)))
-				.map(res -> res.get(0).getId() == null ?
-						(code == 0 ? ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING + FAIL_FIND_RESULT) :
-								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON + FAIL_FIND_RESULT)) :
-						(code == 0 ? ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), res.get(0).getTimeTime())) :
-								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), res.get(0).getTimeTime()))))
-				.orElseGet(() -> code == 0 ?
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING) :
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
+				.filter(u -> empId > 0)
+				.map(v -> vehicleRepository.soonReservationMyTime(empId))
+				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), res.getTimeTime())))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
+	}
+
+	@Transactional
+	public ResponseDTO ingReservationMyTime(Long empId) {
+		log.info(METHOD_NAME + "- ingReservationMyTime");
+		return Optional.of(new ResponseDTO())
+				.filter(u -> empId > 0)
+				.map(v -> vehicleRepository.ingReservationMyTime(empId))
+				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), res.getTimeTime())))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING));
 	}
 
 	public LocalDateTime now() {

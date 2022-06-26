@@ -1,5 +1,6 @@
 package com.douzone.server.config.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude
 public class ResponseDTO {
 	private HttpStatus status;
 	private String message;

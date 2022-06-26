@@ -206,7 +206,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(NullPointerException.class)
 	protected ResponseDTO handleNullPointerException(NullPointerException e) {
-		log.error("SERVER ERROR - Vehicle Service" + e.getCause());
+		log.error("SERVER ERROR - NULL " + e.getCause());
 		log.info("{}", e.fillInStackTrace());
 		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "받은 정보가 비어있습니다.");
 	}
