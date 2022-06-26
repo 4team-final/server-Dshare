@@ -335,9 +335,11 @@ public class RoomService {
 		// 회의실 수정
 		// 회의실 사진들 수정
 		List<RoomObject> roomObjectList = roomObjectRepository.findByMeetingRoom_Id(roomId);
+
 		for (int i = 0; i < roomObjectList.size(); i++) {
 			roomObjectList.get(i).updateRoomObject(roomReqDTO.getRoomObjects().get(i).getName());
 		}
+		//수정할때 룸 오브젝트를 추가 하고 싶지만 못할 수 있다. 애초에 갯수를 5개로 정해둠
 
 		Optional<MeetingRoom> room = Optional.ofNullable(roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException(ErrorCode.ROOM_NOT_FOUND)));
 		room.get().updateRoom(roomReqDTO.getContent(), roomReqDTO.getCategoryName(), roomReqDTO.getRoomNo(), roomReqDTO.getCapacity());
@@ -345,22 +347,29 @@ public class RoomService {
 		// 회의실 사진 삭제 후 저장
 		List<RoomImg> roomImgList = roomImgRepository.findByMeetingRoom_Id(roomId);
 		List<String> CurrentImgPath = roomImgRepository.findPathByRoomId(roomId);
-//		if (roomImgList.size()==0) {
-//			throw new RoomImgNotFoundException(ErrorCode.ROOM_OBJECT_NOT_FOUND);
-//		} -> 이미지를 찾을 수 없다하고 끝나버림
+		if (roomImgList.size()==0) {
+			throw new RoomImgNotFoundException(ErrorCode.ROOM_OBJECT_NOT_FOUND);
+		}
+//		-> 회의실 사진이 없을경우 나머지도 수정안되고 오류던지고 끝난다.
 		roomImgList.stream().map(roomImg -> {
 			roomImgRepository.deleteById(roomImg.getId());
 			return roomImg.getId();
 		}).collect(Collectors.toList());
 		uploadUtils.delete(CurrentImgPath);
 
-		//회의실 이미지 등록
-		List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
-		uploadDTOS.stream().map(uploadDTO -> {
-			long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
-			return id;
-		}).collect(Collectors.toList());
 
+		// 회의실 이미지 등록
+		//파일 업로드시 아무 파일을 업로드하지 않아도 리스트에 뭔가가 들어있음 -> 그래서 이상한 파일이 올라감
+		long count = files.stream().filter(t->!t.isEmpty()).count();
+		//-> 리스트를 까서 file이 빈파일이 아닌것만 센다. 이렇게 하면 아무것도 안넘겼을 시 0이 나온다.
+		//-> System.out.println(files.size()); 하면 1이 나온다. 디폴트로
+		if(count != 0) {
+			List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
+			uploadDTOS.stream().map(uploadDTO -> {
+				long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
+				return id;
+			}).collect(Collectors.toList());
+		}
 		return roomId;
 	}
 
