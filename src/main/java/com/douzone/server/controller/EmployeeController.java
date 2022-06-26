@@ -23,6 +23,9 @@ public class EmployeeController {
 				Msg.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
 	}
 
+	/**
+	 * 프로필 읽어오기
+	 */
 	@GetMapping("/profile/read")
 	public ResponseEntity<ResponseDTO> readProfile(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_EMP_PROFILE, employeeService.readProfile(principalDetails.getEmployee().getId())));
@@ -36,7 +39,9 @@ public class EmployeeController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
 				Msg.SUCCESS_ROOM_FIND_MARK, employeeService.selectByMyBookmark(Integer.parseInt(principalDetails.getEmployee().getEmpNo()))));
 	}
-
+	/**
+	 *  즐겨찾기 등록 및 삭제
+	 */
 	@PostMapping("/room/bookmark/{roomId}")
 	public ResponseEntity<ResponseDTO> bookmarkRegisterAndDelete(@PathVariable("roomId") long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		Long result = employeeService.bookmarkRegisterAndDelete(roomId, principalDetails.getEmployee().getId());

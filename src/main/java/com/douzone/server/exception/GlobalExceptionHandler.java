@@ -26,6 +26,46 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
 	/**
+	 * 회의실 물건이 없을때
+	 */
+	@ExceptionHandler({RoomObjectNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> RoomObjectNotFoundException(RoomObjectNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
+	 * 회의실이 없을때
+	 */
+	@ExceptionHandler({RoomNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> RoomNotFoundException(RoomNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
+	 * 회의실 이미지 파일이 없을때
+	 */
+	@ExceptionHandler({RoomImgNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> RoomImgNotFoundException(RoomImgNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
+	 * 이미지 파일이 없을때
+	 */
+	@ExceptionHandler({ImgFileNotFoundException.class})
+	public ResponseEntity<ErrorResponseDTO> ImgFileNotFoundException(ImgFileNotFoundException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
+	 * 북마크가 이미 존재할때
+	 */
+	@ExceptionHandler({BookmarkAlreadyExistException.class})
+	public ResponseEntity<ErrorResponseDTO> BookmarkAlreadyExistException(EmpAlreadyExistException e) {
+		return CustomExceptionReturn.returnException(e);
+	}
+
+	/**
 	 * 유저가 이미 존재할때
 	 */
 	@ExceptionHandler({EmpAlreadyExistException.class})
@@ -37,7 +77,7 @@ public class GlobalExceptionHandler {
 	 * 유저가 없을 때
 	 */
 	@ExceptionHandler({EmpNotFoundException.class})
-	public ResponseEntity<ErrorResponseDTO> EmpNotExistException(EmpAlreadyExistException e) {
+	public ResponseEntity<ErrorResponseDTO> EmpNotFoundException(EmpNotFoundException e) {
 		return CustomExceptionReturn.returnException(e);
 	}
 
@@ -72,7 +112,6 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
 	public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(BindException e) {
-		log.error("MethodArgumentNotValidException : ", e.getMessage());
 		ErrorResponseDTO response = new ErrorResponseDTO(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
@@ -167,7 +206,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(NullPointerException.class)
 	protected ResponseDTO handleNullPointerException(NullPointerException e) {
-		log.error("SERVER ERROR - Vehicle Service" + e.getCause());
+		log.error("SERVER ERROR - NULL " + e.getCause());
 		log.info("{}", e.fillInStackTrace());
 		return ResponseDTO.fail(HttpStatus.INTERNAL_SERVER_ERROR, "받은 정보가 비어있습니다.");
 	}

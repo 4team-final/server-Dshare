@@ -23,9 +23,11 @@ public class PrincipalDetailService implements UserDetailsService {
 		log.info(METHOD_NAME + "- loadUserByUsername() ...");
 		Employee employee = employeeRepository.findByEmpNo(username);
 
+		EmployeeDTO employeeDTO = EmployeeDTO.builder().build().of(employee);
+
 		if (employee == null) {
 			log.error("유저가 존재하지 않습니다. " + METHOD_NAME);
 		}
-		return new PrincipalDetails(employee);
+		return new PrincipalDetails(employeeDTO);
 	}
 }

@@ -14,14 +14,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @RequiredArgsConstructor
 public class InterceptorConfig implements WebMvcConfigurer {
-    private final RoleInterceptor roleInterceptor;
+	private final RoleInterceptor roleInterceptor;
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(roleInterceptor)
-                .order(1)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/sign");
-//                .excludePathPatterns("/**/register");
-    }
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(roleInterceptor)
+				.order(1)
+				.addPathPatterns("/**")
+				.excludePathPatterns("/sign");
+	}
 }

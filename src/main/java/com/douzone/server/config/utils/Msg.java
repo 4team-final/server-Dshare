@@ -4,6 +4,10 @@ package com.douzone.server.config.utils;
  * 컨트롤러,필터 성공/실패 MSG
  */
 public interface Msg {
+
+	String SUCCESS_CREATE_ROOM = "날짜방 생성에 성공하였습니다.";
+	String SUCCESS_LIST_ROOM = "날짜방 목록 조회에 성공하였습니다.";
+	String SUCCESS_DETAIL_ROOM = "날짜방 목록 상세조회에 성공하였습니다.";
 	// spring security, interceptor
 	String SUCCESS_SIGN_IN = "로그인에 성공하였습니다.";
 	String SUCCESS_SIGN_OUT = "로그아웃에 성공하였습니다.";
@@ -16,6 +20,7 @@ public interface Msg {
 	String FAIL_TOKEN_VALIDATE = "토큰 검증에 실패하였습니다.";
 	String FAIL_USER_ROLE = "유저 역할 확인에 실패하였습니다.";
 	String FAIL_ACCESS = "서버 접근에 실패하였습니다.";
+	String FAIL_UNVERIFIED_SERVER_ADDRESS = "잘못된 주소로 접근하였습니다.";
 
 	// admin
 	String SUCCESS_ADMIN_REGISTER = "관리자가 사원 등록에 성공하였습니다.";
@@ -48,7 +53,8 @@ public interface Msg {
 	String SUCCESS_ROOM_BEST_DATE = "일주일간 많이 예약하는 시간대 회의실 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_MEET_START = "일주일간 많이 회의가 시작되는 시간대 회의실 조회에 성공하였습니다.";
 	String SUCCESS_ROOM_FIND_MARK = "내가 즐겨찾기한 회의실 조회에 성공하였습니다.";
-	String SUCCESS_ROOM_UPDATE = "회의실 예약 정보 수정에 성공하였습니다.";
+	String SUCCESS_ROOM_UPDATE = "회의실 정보 수정에 성공하였습니다.";
+	String SUCCESS_ROOM_RESERVATION_UPDATE = "회의실 예약 정보 수정에 성공하였습니다.";
 	String SUCCESS_ROOM_RESERVATION_DELETE = "회의실 예약 삭제에 성공하였습니다.";
 	String SUCCESS_ROOM_DELETE_MARK = "회의실 즐겨찾기 삭제에 성공하였습니다.";
 	String SUCCESS_ROOM_BOOKMARK = "회의실 즐겨찾기 등록에 성공하였습니다.";
@@ -102,6 +108,7 @@ public interface Msg {
 	String SUCCESS_VEHICLE_ING = "현재 예약 종료 시간 조회에 성공하였습니다.";
 	String SUCCESS_MOVE_UP_RESERVATION = "차량 조기 반납에 성공하였습니다.";
 	String SUCCESS_SELECT_VARIOUS_COLUMNS = "변수 조건 조회에 성공하였습니다.";
+	String SUCCESS_DISCONNECT_VEHICLE_SOCKET = "소켓과의 통신이 정상적으로 종료되었습니다.";
 
 	String FAIL_VEHICLE_RESERVE = "차량 예약에 실패하였습니다.";
 	String FAIL_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 실패하였습니다.";
@@ -130,6 +137,11 @@ public interface Msg {
 	String FAIL_FIND_RESULT = "결과값 조회에 실패하였습니다.";
 	String FAIL_EXIST_RESULT = "결과값이 존재하지 않습니다.";
 	String FAIL_REQUEST_PARAMETER = "잘못된 파라미터가 전달되었습니다";
+	String FAIL_ACCESS_SOCKET_TYPE = "잘못된 타입을 사용한 접근입니다.";
+	String FAIL_TIMEOUT_SETTING_SOCKET = "스레드가 비정상 종료 되었습니다.";
+	String TIMEOUT_CONNECT_VEHICLE_SOCKET = "시간 만료로 인하여 소켓과의 통신이 종료되었습니다.";
 	String SUCCESS_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록에 성공하였습니다.";
 	String FAIL_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록 실패하였습니다.";
+	String FAIL_ACCESS_SOCKET_CONNECT = "잘못된 접근으로 인하여 소켓과의 통신이 종료되었습니다.";
+	String FAIL_DOUBLE_ACCESS_SOCKET_CONNECT = "중복된 세션의 접근으로 인하여 소켓과의 통신이 종료되었습니다.";
 }

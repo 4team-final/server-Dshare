@@ -6,7 +6,6 @@ import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Position;
 import com.douzone.server.entity.Team;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,6 @@ import lombok.Setter;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
-// of() dto -> entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -83,7 +81,8 @@ public class SignModReqDTO {
 
 	public StringBuilder makeEmpno(Employee employee, String year) {
 		String deptId = String.format("%02d", this.getDeptId());
-		String empId = String.format("%05d", employee.getId() + 1);
+		String empNo = employee.getEmpNo().substring(4, 9);
+		String empId = String.format("%05d", Long.parseLong(empNo) + 1);
 		return new StringBuilder().append(year).append(deptId).append(empId);
 
 	}
