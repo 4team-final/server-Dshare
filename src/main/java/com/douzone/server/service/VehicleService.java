@@ -71,8 +71,10 @@ public class VehicleService {
 				.filter(v -> vId > 0)
 				.map(res -> vehicleBookmarkRepository.existsByVehicle_IdAndEmployee_Id(vId, empId))
 				.map(res -> {
-					if (res) return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK_FIND);
-
+					if (res) {
+						deleteByMyBookMark(vId);
+						return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK_FIND);
+					}
 					vehicleBookmarkRepository.save(
 							VehicleBookmark.builder()
 									.vehicle(Vehicle.builder().id(vId).build())
