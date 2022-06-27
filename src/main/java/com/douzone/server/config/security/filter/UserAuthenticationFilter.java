@@ -44,9 +44,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 	private JwtTokenProvider jwtTokenProvider;
 	private TokenRepository tokenRepository;
 	private String headerKeyAccess;
-	private String headerKeyRefresh;
 	private String typeAccess;
-	private String typeRefresh;
 
 	@Autowired
 	public UserAuthenticationFilter(UserAuthenticationManager userAuthenticationManager, JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository) {
@@ -94,17 +92,15 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 				CommonTokenDTO commonTokenDTO = jwtTokenProvider.generateToken(principal);
 				if (!jwtTokenProvider.updateRefresh(commonTokenDTO.getReIssuanceTokenDTO()))
 					log.warn("Token Set Update to Token Repository - Fail");
-
 				response.addHeader(headerKeyAccess, typeAccess + commonTokenDTO.getAccessToken());
-				response.addHeader(headerKeyRefresh, typeRefresh + commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken());
+				response.addCookie(jwtTokenProvider.generateCookie(commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken()));
 			} else {
 				log.info("First Login User - Token issuance");
 				CommonTokenDTO commonTokenDTO = jwtTokenProvider.generateToken(principal);
 				if (!jwtTokenProvider.saveRefresh(commonTokenDTO.getReIssuanceTokenDTO()))
 					log.warn("Token Set Save to Token Repository - Fail");
-
 				response.addHeader(headerKeyAccess, typeAccess + commonTokenDTO.getAccessToken());
-				response.addHeader(headerKeyRefresh, typeRefresh + commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken());
+				response.addCookie(jwtTokenProvider.generateCookie(commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken()));
 			}
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, SUCCESS_SIGN_IN));
@@ -122,10 +118,8 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 											  HttpServletResponse response,
 											  AuthenticationException failed) throws ServletException {
 		log.info(METHOD_NAME + "- unsuccessfulAuthentication() ...");
-
 		try {
 			String message = new UserLoginFailureHandler().onAuthenticationFailure(failed);
-
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_SIGN_IN + message));
 		} catch (IOException ie) {
@@ -139,11 +133,9 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 										   HttpServletResponse response,
 										   Exception exception) {
 		log.info(METHOD_NAME + "- unsuccessfulAuthentication() ...");
-
 		try {
 			SecurityContextHolder.clearContext();
 			String message = new UserLoginFailureHandler().onAuthenticationFailure(exception);
-
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_SIGN_IN + message));
 		} catch (IOException ie) {

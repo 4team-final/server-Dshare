@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
@@ -32,6 +33,7 @@ public class JwtTokenProvider {
 	private static final String METHOD_NAME = JwtTokenProvider.class.getName();
 	private final TokenRepository tokenRepository;
 	private final String headerKeyAccess;
+	private final String headerKeyRefresh;
 	private final String typeAccess;
 	private final String typeRefresh;
 	private final String secretKey;
@@ -41,6 +43,7 @@ public class JwtTokenProvider {
 	@Autowired
 	public JwtTokenProvider(TokenRepository tokenRepository,
 							@Value(value = "${jwt.header.access}") String headerKeyAccess,
+							@Value(value = "${jwt.header.refresh}") String headerKeyRefresh,
 							@Value(value = "${jwt.type.access}") String typeAccess,
 							@Value(value = "${jwt.type.refresh}") String typeRefresh,
 							@Value(value = "${jwt.secret.key}") String secretValue,
@@ -48,6 +51,7 @@ public class JwtTokenProvider {
 							@Value(value = "${jwt.time.refresh}") String refreshValidString) {
 		this.tokenRepository = tokenRepository;
 		this.headerKeyAccess = headerKeyAccess;
+		this.headerKeyRefresh = headerKeyRefresh;
 		this.typeAccess = typeAccess;
 		this.typeRefresh = typeRefresh;
 		this.secretKey = Base64.getEncoder().encodeToString(secretValue.getBytes());
@@ -112,7 +116,6 @@ public class JwtTokenProvider {
 
 	public TokenResDTO requestCheckToken(HttpServletRequest request) {
 		log.info(METHOD_NAME + "- requestCheckToken() ...");
-
 		try {
 			String token = request.getHeader(headerKeyAccess);
 
@@ -176,5 +179,15 @@ public class JwtTokenProvider {
 			log.error("SERVER ERROR " + METHOD_NAME, e);
 		}
 		return false;
+	}
+
+	public Cookie generateCookie(String value) {
+		log.info(METHOD_NAME + "- generateCookie() ...");
+		Cookie cookie = new Cookie(headerKeyRefresh, typeRefresh + value);
+		cookie.setMaxAge((int) refreshValidTime);
+		cookie.setSecure(true);
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		return cookie;
 	}
 }
