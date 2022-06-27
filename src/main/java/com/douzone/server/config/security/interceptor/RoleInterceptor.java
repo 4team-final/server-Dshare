@@ -61,7 +61,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 					String empNo = jwtTokenProvider.getUserPk(token);
 
 					if (decodeEncodeHandler.empNoValid(empNo)) {
-						log.info("User validate - Success");
+						log.info("Employee validate - Success");
 						String role = decodeEncodeHandler.roleValid(empNo);
 						if (request.getRequestURI().startsWith(adminURL)) {
 							log.info("ADMIN role validate ...");

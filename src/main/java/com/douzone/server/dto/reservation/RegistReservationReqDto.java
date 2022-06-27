@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @PropertySource("classpath:messages.properties")
+@Builder
 public class RegistReservationReqDto {
 
 	@NotNull(groups = registRes.class)

@@ -1,14 +1,18 @@
 package com.douzone.server.service;
 
+import com.douzone.server.config.socket.TimeService;
+import com.douzone.server.config.socket.vehicle.TimeVehicle;
+import com.douzone.server.config.socket.vehicle.TimeVehicleRepository;
+import com.douzone.server.config.socket.vehicle.VehicleSocketService;
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.dto.vehicle.VehicleParseDTO;
-import com.douzone.server.dto.vehicle.VehicleReqDTO;
-import com.douzone.server.dto.vehicle.VehicleReservationDTO;
-import com.douzone.server.dto.vehicle.VehicleSearchDTO;
+import com.douzone.server.dto.vehicle.*;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
 import com.douzone.server.entity.VehicleReservation;
+import com.douzone.server.exception.EmpNotFoundException;
+import com.douzone.server.exception.ErrorCode;
+import com.douzone.server.repository.EmployeeRepository;
 import com.douzone.server.repository.VehicleBookmarkRepository;
 import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
@@ -37,10 +41,22 @@ public class VehicleService {
 	private final VehicleReservationRepository vehicleReservationRepository;
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 	private final VehicleQueryDSL vehicleQueryDSL;
-
+	private final VehicleSocketService vehicleSocketService;
+	private final EmployeeRepository employeeRepository;
 	@Transactional
 	public ResponseDTO registerByVehicleReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
 		log.info(METHOD_NAME + "- registerByVehicleReservation");
+//
+//		타임 테이블에도 반영해줘야함
+//		Employee employee = employeeRepository.findById(empId).orElseThrow(() ->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
+//		String startTime[] = vehicleParseDTO.getStartedAt().split("T");//
+//		String endTime[] = vehicleParseDTO.getEndedAt().split("T");
+//
+//		vehicleSocketService.updateIsSeat(vehicleParseDTO.getVehicleId(), startTime[0], endTime[0], startTime[1], endTime[1], employee.getEmpNo());
+//
+//
+
+
 		VehicleReservationDTO vehicleReservationDTO = VehicleReservationDTO.builder()
 				.vehicleId(vehicleParseDTO.getVehicleId())
 				.empId(vehicleParseDTO.getEmpId())
@@ -72,7 +88,13 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
 				.filter(v -> vId > 0)
-				.map(v -> {
+				.map(res -> vehicleBookmarkRepository.existsByVehicle_IdAndEmployee_Id(vId, empId))
+				.map(res -> {
+					if (res) {
+						deleteByMyBookMark(vId);
+						return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK_FIND);
+					}
+
 					vehicleBookmarkRepository.save(
 							VehicleBookmark.builder()
 									.vehicle(Vehicle.builder().id(vId).build())
@@ -92,12 +114,12 @@ public class VehicleService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findByPaginationReservation(int pageNum) {
+	public ResponseDTO findByPaginationReservation(Long lastId) {
 		log.info(METHOD_NAME + "- findByPaginationReservation");
 		return Optional.of(new ResponseDTO())
-				.map(u -> (pageNum < 0) ?
+				.map(u -> (lastId < 0) ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_REQUEST_PARAMETER) :
-						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + pageNum, vehicleRepository.findByPaginationReservation(PageRequest.of(pageNum, 5))))
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + lastId, vehicleRepository.findByPaginationReservation(lastId)))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
 
@@ -149,6 +171,31 @@ public class VehicleService {
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_AFTER, vehicleRepository.findByMyCurrentReservation(id)) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_REQUEST_PARAMETER)
 				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_EXIST_RESULT));
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseDTO findByMyReservation(Long id) {
+		log.info(METHOD_NAME + "- findByMyReservation");
+		return Optional.of(new ResponseDTO())
+				.map(u -> (id != null) ?
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_MY_VEHICLE, MyVehicleReservationDTO.builder()
+								.beforeList(vehicleRepository.findByMyPastReservation(id))
+								.afterList(vehicleRepository.findByMyCurrentReservation(id))
+								.build()) :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_REQUEST_PARAMETER))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_EXIST_RESULT));
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseDTO findByMyReservationPaging(Long lastId, Long id) {
+		log.info(METHOD_NAME + "- findByMyReservationPaging");
+		return Optional.of(new ResponseDTO())
+				.map(u -> (id != null) ?
+						(lastId < 0) ?
+								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_REQUEST_PARAMETER) :
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_MY_VEHICLE, vehicleRepository.findByMyReservationPaging(lastId, id)) :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_REQUEST_PARAMETER))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
@@ -265,7 +312,9 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
 				.map(v -> vehicleRepository.soonReservationMyTime(empId))
-				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), res.getTimeTime())))
+				.map(res -> res.map(iVehicleTimeResDTO ->
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), iVehicleTimeResDTO.getTimeTime())))
+						.orElseGet(() -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_NOT_SOON)))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
 	}
 
@@ -275,7 +324,9 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
 				.map(v -> vehicleRepository.ingReservationMyTime(empId))
-				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), res.getTimeTime())))
+				.map(res -> res.map(iVehicleTimeResDTO ->
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), iVehicleTimeResDTO.getTimeTime())))
+						.orElseGet(() -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_NOT_ING)))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING));
 	}
 

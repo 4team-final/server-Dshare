@@ -40,14 +40,14 @@ public class GlobalFilter {
 	private String headerRefresh;
 	@Value(value = "${jwt.type.access}")
 	private String typeAccess;
-	@Value(value = "${jwt.type.refresh}")
-	private String typeRefresh;
 	@Value(value = "${user.url.logout}")
 	private String logoutURL;
 	@Value(value = "${user.permit.all}")
 	private String permitAll;
 	@Value(value = "${user.session.id}")
 	private String sessionId;
+	@Value(value = "${user.cookie.credential}")
+	private boolean cookieConfig;
 
 	private final UserAuthenticationManager userAuthenticationManager;
 	private final JwtTokenProvider jwtTokenProvider;
@@ -65,6 +65,7 @@ public class GlobalFilter {
 		config.addAllowedMethod(corsMethod);
 		config.addExposedHeader(headerAccess);
 		config.addExposedHeader(headerRefresh);
+		config.setAllowCredentials(cookieConfig);
 		source.registerCorsConfiguration(corsSource, config);
 		return new CorsFilter(source);
 	}
@@ -73,9 +74,7 @@ public class GlobalFilter {
 	public UserAuthenticationFilter authenticationFilter() {
 		UserAuthenticationFilter userAuthenticationFilter = new UserAuthenticationFilter(userAuthenticationManager, jwtTokenProvider, tokenRepository);
 		userAuthenticationFilter.setHeaderKeyAccess(headerAccess);
-		userAuthenticationFilter.setHeaderKeyRefresh(headerRefresh);
 		userAuthenticationFilter.setTypeAccess(typeAccess);
-		userAuthenticationFilter.setTypeRefresh(typeRefresh);
 
 		return userAuthenticationFilter;
 	}
