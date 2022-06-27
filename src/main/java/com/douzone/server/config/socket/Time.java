@@ -23,8 +23,8 @@ public class Time {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "uId")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "uid")
 	private Calendar calendar;
 
 	private String time;

@@ -1,19 +1,17 @@
 package com.douzone.server.service;
 
 
+import com.douzone.server.config.socket.Calendar;
+import com.douzone.server.config.socket.Time;
+import com.douzone.server.config.socket.TimeRepository;
+import com.douzone.server.config.socket.TimeService;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.reservation.*;
 import com.douzone.server.dto.room.*;
-import com.douzone.server.entity.MeetingRoom;
-import com.douzone.server.entity.RoomImg;
-import com.douzone.server.entity.RoomObject;
-import com.douzone.server.entity.RoomReservation;
+import com.douzone.server.entity.*;
 import com.douzone.server.exception.*;
-import com.douzone.server.repository.RoomImgRepository;
-import com.douzone.server.repository.RoomObjectRepository;
-import com.douzone.server.repository.RoomRepository;
-import com.douzone.server.repository.RoomReservationRepository;
+import com.douzone.server.repository.*;
 import com.douzone.server.repository.querydsl.RoomQueryDSL;
 import com.douzone.server.repository.querydsl.RoomReservationQueryDSL;
 import com.douzone.server.service.method.ServiceMethod;
@@ -25,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +43,9 @@ public class RoomService {
 	private final RoomObjectRepository roomObjectRepository;
 	private final RoomQueryDSL roomQueryDSL;
 	private final ServiceMethod serviceMethod;
+	private final TimeRepository timeRepository;
+	private final TimeService timeService;
+	private final EmployeeRepository employeeRepository;
 
 
 	@Transactional
@@ -335,9 +337,11 @@ public class RoomService {
 		// 회의실 수정
 		// 회의실 사진들 수정
 		List<RoomObject> roomObjectList = roomObjectRepository.findByMeetingRoom_Id(roomId);
+
 		for (int i = 0; i < roomObjectList.size(); i++) {
 			roomObjectList.get(i).updateRoomObject(roomReqDTO.getRoomObjects().get(i).getName());
 		}
+		//수정할때 룸 오브젝트를 추가 하고 싶지만 못할 수 있다. 애초에 갯수를 5개로 정해둠
 
 		Optional<MeetingRoom> room = Optional.ofNullable(roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException(ErrorCode.ROOM_NOT_FOUND)));
 		room.get().updateRoom(roomReqDTO.getContent(), roomReqDTO.getCategoryName(), roomReqDTO.getRoomNo(), roomReqDTO.getCapacity());
@@ -345,22 +349,29 @@ public class RoomService {
 		// 회의실 사진 삭제 후 저장
 		List<RoomImg> roomImgList = roomImgRepository.findByMeetingRoom_Id(roomId);
 		List<String> CurrentImgPath = roomImgRepository.findPathByRoomId(roomId);
-		if (roomImgList == null) {
+		if (roomImgList.size()==0) {
 			throw new RoomImgNotFoundException(ErrorCode.ROOM_OBJECT_NOT_FOUND);
 		}
+//		-> 회의실 사진이 없을경우 나머지도 수정안되고 오류던지고 끝난다.
 		roomImgList.stream().map(roomImg -> {
 			roomImgRepository.deleteById(roomImg.getId());
 			return roomImg.getId();
 		}).collect(Collectors.toList());
 		uploadUtils.delete(CurrentImgPath);
 
-		//회의실 이미지 등록
-		List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
-		uploadDTOS.stream().map(uploadDTO -> {
-			long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
-			return id;
-		}).collect(Collectors.toList());
 
+		// 회의실 이미지 등록
+		//파일 업로드시 아무 파일을 업로드하지 않아도 리스트에 뭔가가 들어있음 -> 그래서 이상한 파일이 올라감
+		long count = files.stream().filter(t->!t.isEmpty()).count();
+		//-> 리스트를 까서 file이 빈파일이 아닌것만 센다. 이렇게 하면 아무것도 안넘겼을 시 0이 나온다.
+		//-> System.out.println(files.size()); 하면 1이 나온다. 디폴트로
+		if(count != 0) {
+			List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
+			uploadDTOS.stream().map(uploadDTO -> {
+				long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
+				return id;
+			}).collect(Collectors.toList());
+		}
 		return roomId;
 	}
 
@@ -368,8 +379,32 @@ public class RoomService {
 	public Long save(RegistReservationReqDto registReservationReqDto) {
 
 		// 타임 테이블에도 반영해줘야함
+		String empNo = employeeRepository.findById(registReservationReqDto.getEmpId()).orElseThrow(()->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND)).getEmpNo();
+		String uid = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		System.out.println(uid);
+		//9:00 ~ 11:00
+		String[] timeTable =
+				{"09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30"
+				,"14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"};
+		String startTime = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
+		String endTime = registReservationReqDto.getEndedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
 
-
+		int startNum = 0;
+		int endNum = 0;
+		Integer[] time = new Integer[18];
+		for(int i = 0 ; i < time.length ; i++) {
+			time[i]=0;
+		}
+		for(int i = 0 ; i < timeTable.length ; i++) {
+			if(startTime.equals(timeTable[i])) startNum = i;
+			if(endTime.equals(timeTable[i])) endNum = i;
+		}
+		for(int i = startNum ; i <= endNum ; i ++) {
+			time[i] = 1;
+		}
+		for(int i = 0 ; i <= time.length ; i++) {
+			timeService.updateTime(uid, time, empNo, Integer.parseInt(registReservationReqDto.getRoomId()+""));
+		}
 		return roomReservationRepository.save(RoomReservation.builder().build().of(registReservationReqDto)).getId();
 	}
 
@@ -377,7 +412,6 @@ public class RoomService {
 	public Long update(RegistReservationReqDto registReservationReqDto, long id) {
 
 		// 타임 테이블에 반영해야함
-
 		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
 		roomReservation.updateReservation(
 				registReservationReqDto.getRoomId(),
@@ -391,6 +425,8 @@ public class RoomService {
 
 	@Transactional
 	public Long deleteRes(long id) {
+
+		//타임테이블 0으로 바꿔주고 empno null
 		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
 		roomReservationRepository.deleteById(id);
 		return roomReservation.getId();
