@@ -1,11 +1,18 @@
 package com.douzone.server.service;
 
+import com.douzone.server.config.socket.TimeService;
+import com.douzone.server.config.socket.vehicle.TimeVehicle;
+import com.douzone.server.config.socket.vehicle.TimeVehicleRepository;
+import com.douzone.server.config.socket.vehicle.VehicleSocketService;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.*;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
 import com.douzone.server.entity.VehicleReservation;
+import com.douzone.server.exception.EmpNotFoundException;
+import com.douzone.server.exception.ErrorCode;
+import com.douzone.server.repository.EmployeeRepository;
 import com.douzone.server.repository.VehicleBookmarkRepository;
 import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.repository.VehicleReservationRepository;
@@ -34,10 +41,22 @@ public class VehicleService {
 	private final VehicleReservationRepository vehicleReservationRepository;
 	private final VehicleBookmarkRepository vehicleBookmarkRepository;
 	private final VehicleQueryDSL vehicleQueryDSL;
-
+	private final VehicleSocketService vehicleSocketService;
+	private final EmployeeRepository employeeRepository;
 	@Transactional
 	public ResponseDTO registerByVehicleReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
 		log.info(METHOD_NAME + "- registerByVehicleReservation");
+//
+//		타임 테이블에도 반영해줘야함
+//		Employee employee = employeeRepository.findById(empId).orElseThrow(() ->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
+//		String startTime[] = vehicleParseDTO.getStartedAt().split("T");//
+//		String endTime[] = vehicleParseDTO.getEndedAt().split("T");
+//
+//		vehicleSocketService.updateIsSeat(vehicleParseDTO.getVehicleId(), startTime[0], endTime[0], startTime[1], endTime[1], employee.getEmpNo());
+//
+//
+
+
 		VehicleReservationDTO vehicleReservationDTO = VehicleReservationDTO.builder()
 				.vehicleId(vehicleParseDTO.getVehicleId())
 				.empId(vehicleParseDTO.getEmpId())
@@ -75,6 +94,7 @@ public class VehicleService {
 						deleteByMyBookMark(vId);
 						return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK_FIND);
 					}
+
 					vehicleBookmarkRepository.save(
 							VehicleBookmark.builder()
 									.vehicle(Vehicle.builder().id(vId).build())

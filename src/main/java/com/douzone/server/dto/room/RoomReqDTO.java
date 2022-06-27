@@ -29,12 +29,20 @@ public class RoomReqDTO {
 
 	private List<RoomObjectReqDTO> roomObjects;
 
+//	@Builder
+//	public RoomReqDTO(String content, String categoryName, int roomNo, int capacity) {
+//		this.content = content;
+//		this.categoryName = categoryName;
+//		this.roomNo = roomNo;
+//		this.capacity = capacity;
+//	}
 	@Builder
-	public RoomReqDTO(String content, String categoryName, int roomNo, int capacity) {
+	public RoomReqDTO(String content, String categoryName, int roomNo, int capacity, List<RoomObjectReqDTO> roomObjects) {
 		this.content = content;
 		this.categoryName = categoryName;
 		this.roomNo = roomNo;
 		this.capacity = capacity;
+		this.roomObjects = roomObjects;
 	}
 
 	public MeetingRoom of() {

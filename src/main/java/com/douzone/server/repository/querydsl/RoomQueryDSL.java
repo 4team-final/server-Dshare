@@ -65,7 +65,6 @@ public class RoomQueryDSL{
 				.orderBy(roomReservation.id.desc())//플젝 시작하면 앞에 createdAt정렬을 먼저 해줘야함
 				.limit(limit)
 				.fetch();
-
 		return roomList;
 	}
 	//만약 아무것도 조회 안한 첫 시작이면 null처리돼서 마지막부터 limit개 보여주기
