@@ -1,10 +1,7 @@
 package com.douzone.server.service;
 
 import com.douzone.server.config.utils.ResponseDTO;
-import com.douzone.server.dto.vehicle.VehicleParseDTO;
-import com.douzone.server.dto.vehicle.VehicleReqDTO;
-import com.douzone.server.dto.vehicle.VehicleReservationDTO;
-import com.douzone.server.dto.vehicle.VehicleSearchDTO;
+import com.douzone.server.dto.vehicle.*;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
@@ -95,12 +92,12 @@ public class VehicleService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO findByPaginationReservation(int pageNum) {
+	public ResponseDTO findByPaginationReservation(Long lastId) {
 		log.info(METHOD_NAME + "- findByPaginationReservation");
 		return Optional.of(new ResponseDTO())
-				.map(u -> (pageNum < 0) ?
+				.map(u -> (lastId < 0) ?
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_REQUEST_PARAMETER) :
-						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + pageNum, vehicleRepository.findByPaginationReservation(PageRequest.of(pageNum, 5))))
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + lastId, vehicleRepository.findByPaginationReservation(lastId)))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
 
@@ -152,6 +149,31 @@ public class VehicleService {
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_AFTER, vehicleRepository.findByMyCurrentReservation(id)) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_REQUEST_PARAMETER)
 				).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_AFTER + FAIL_EXIST_RESULT));
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseDTO findByMyReservation(Long id) {
+		log.info(METHOD_NAME + "- findByMyReservation");
+		return Optional.of(new ResponseDTO())
+				.map(u -> (id != null) ?
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_MY_VEHICLE, MyVehicleReservationDTO.builder()
+								.beforeList(vehicleRepository.findByMyPastReservation(id))
+								.afterList(vehicleRepository.findByMyCurrentReservation(id))
+								.build()) :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_REQUEST_PARAMETER))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_EXIST_RESULT));
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseDTO findByMyReservationPaging(Long lastId, Long id) {
+		log.info(METHOD_NAME + "- findByMyReservationPaging");
+		return Optional.of(new ResponseDTO())
+				.map(u -> (id != null) ?
+						(lastId < 0) ?
+								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_REQUEST_PARAMETER) :
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_MY_VEHICLE, vehicleRepository.findByMyReservationPaging(lastId, id)) :
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_REQUEST_PARAMETER))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)

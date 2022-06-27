@@ -2,7 +2,6 @@ package com.douzone.server.repository;
 
 import com.douzone.server.dto.vehicle.jpainterface.*;
 import com.douzone.server.entity.Vehicle;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,15 +22,17 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"order by id desc")
 	List<IVehicleListResDTO> findByAllReservation();
 
-	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
-			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
+	@Query(value = "select vr.id as reservationId, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as reservationCreatedAt, vr.modifiedAt as reservationModifiedAt, " +
 			"vr.reason as reason, vr.title as title, " +
-			"vr.vehicle as vehicle, vi.path as vehicleImg, vr.employee.empNo as empNo, vr.employee.name as name " +
-			"from VehicleReservation vr " +
-			"left join fetch VehicleImg vi on vi.vehicle.id = vr.vehicle.id " +
-			"where startedAt > current_time " +
-			"order by id desc")
-	List<IVehicleListResDTO> findByPaginationReservation(Pageable pageable);
+			"v.name as vName, v.number as vNumber, v.color as color, v.model as model, v.capacity as capacity , vi.path as vehicleImg, e.empNo as empNo, e.name as eName " +
+			"from vehicle_reservation vr " +
+			"left join vehicle_img vi on vi.vehicleId = vr.vehicleId " +
+			"left join vehicle v on v.id = vr.vehicleId " +
+			"left join employee e on e.id = vr.empId " +
+			"where case when :id > 0 then vr.id <= :id end " +
+			"order by vr.id desc limit 15 ", nativeQuery = true)
+	List<IVehiclePagingResDTO> findByPaginationReservation(@Param("id") Long id);
 
 	@Query("select distinct v.id as id, v.name as name, v.number as number, " +
 			"v.model as model, v.color as color, v.capacity as capacity, vi.path as vehicleImg from Vehicle v " +
@@ -84,10 +85,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
 	List<IVehicleWeekDTO> weekMostReservedVehicle(@Param("date") LocalDateTime date);
 
-	@Query(value = "select hour(vr.startedAt) as hTime, count(hour(vr.startedAt)) as hCount, vr.id as vId, " +
+	@Query(value = "select hour(vr.startedAt) as hTime, count(hour(vr.startedAt)) as hCount, vr.id as reservationId, " +
 			"vr.startedAt as startedAt, vr.endedAt as endedAt, vr.reason as reason, vr.title as title, " +
-			"vr.createdAt as cre, vr.modifiedAt as mmd, vi.path as vehicleImg, " +
-			"v.model as model, v.color as color, v.number as vNum, v.name as vNam, v.capacity as capacity, " +
+			"vr.createdAt as reservationCreatedAt, vr.modifiedAt as reservationModifiedAt, vi.path as vehicleImg, " +
+			"v.model as model, v.color as color, v.number as vNumber, v.name as vName, v.capacity as capacity, " +
 			"e.empNo as empNo, e.name as eName " +
 			"from vehicle_reservation vr " +
 			"left join vehicle v on v.id = vr.vehicleId " +
@@ -123,4 +124,18 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from vehicle_reservation vr " +
 			"where vr.empId = :empId and vr.startedAt < current_time and current_time < vr.endedAt limit 1 ", nativeQuery = true)
 	Optional<IVehicleTimeResDTO> ingReservationMyTime(@Param("empId") Long empId);
+
+	@Query(value = "select vr.id as reservationId, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+			"vr.createdAt as reservationCreatedAt, vr.modifiedAt as reservationModifiedAt, " +
+			"vr.reason as reason, vr.title as title, " +
+			"v.name as vName, v.number as vNumber, v.color as color, v.model as model, v.capacity as capacity , vi.path as vehicleImg, " +
+			"e.empNo as empNo, e.name as eName " +
+			"from vehicle_reservation vr " +
+			"left join vehicle_img vi on vi.vehicleId = vr.vehicleId " +
+			"left join employee e on e.id = vr.empId " +
+			"left join vehicle v on v.id = vr.vehicleId " +
+			"where e.id = :id and " +
+			"case when :lastId > 0 then vr.id <= :lastId end " +
+			"order by vr.id desc limit 15 ", nativeQuery = true)
+	List<IVehiclePagingResDTO> findByMyReservationPaging(@Param("lastId") Long lastId, @Param("id") Long id);
 }
