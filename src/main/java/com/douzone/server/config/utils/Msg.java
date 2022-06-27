@@ -86,7 +86,7 @@ public interface Msg {
 	// vehicle
 	String SUCCESS_VEHICLE_RESERVE = "차량 예약에 성공하였습니다.";
 	String SUCCESS_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 성공하였습니다.";
-	String SUCCESS_VEHICLE_BOOKMARK_CANCEL = "차량 즐겨찾기 취소에 성공하였습니다.";
+	String SUCCESS_VEHICLE_BOOKMARK_FIND = "이미 즐겨찾기에 등록되어있는 차량입니다.";
 	String SUCCESS_VEHICLE_FIND_ALL = "차량 예약 현황 전체 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_NONE = "차량 미예약 현황 전체 조회에 성공하였습니다.";
 	String SUCCESS_VEHICLE_FIND_TYPE = "차량 종류에 따른 예약 조회에 성공하였습니다.";
@@ -110,6 +110,9 @@ public interface Msg {
 	String SUCCESS_MOVE_UP_RESERVATION = "차량 조기 반납에 성공하였습니다.";
 	String SUCCESS_SELECT_VARIOUS_COLUMNS = "변수 조건 조회에 성공하였습니다.";
 	String SUCCESS_DISCONNECT_VEHICLE_SOCKET = "소켓과의 통신이 정상적으로 종료되었습니다.";
+	String SUCCESS_VEHICLE_NOT_SOON = "다음 예약이 없어 시작 시간 조회에 실패하였습니다.";
+	String SUCCESS_VEHICLE_NOT_ING = "현재 진행중인 예약이 없어 종료 시간 조회에 실패하였습니다.";
+	String SUCCESS_SELECT_MY_VEHICLE = "나의 모든 차량 예약 조회에 성공하였습니다.";
 
 	String FAIL_VEHICLE_RESERVE = "차량 예약에 실패하였습니다.";
 	String FAIL_VEHICLE_BOOKMARK = "차량 즐겨찾기 등록에 실패하였습니다.";
@@ -135,6 +138,7 @@ public interface Msg {
 	String FAIL_VEHICLE_ING = "현재 예약 종료 시간 조회에 실패하였습니다.";
 	String FAIL_MOVE_UP_RESERVATION = "차량 조기 반납에 실패하였습니다.";
 	String FAIL_SELECT_VARIOUS_COLUMNS = "변수 조건 조회에 실패하였습니다.";
+	String FAIL_SELECT_MY_VEHICLE = "나의 모든 차량 예약 조회에 실패하였습니다.";
 	String FAIL_FIND_RESULT = "결과값 조회에 실패하였습니다.";
 	String FAIL_EXIST_RESULT = "결과값이 존재하지 않습니다.";
 	String FAIL_REQUEST_PARAMETER = "잘못된 파라미터가 전달되었습니다";
