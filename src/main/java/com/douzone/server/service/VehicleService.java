@@ -268,7 +268,9 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
 				.map(v -> vehicleRepository.soonReservationMyTime(empId))
-				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), res.getTimeTime())))
+				.map(res -> res.map(iVehicleTimeResDTO ->
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_SOON, ChronoUnit.SECONDS.between(now(), iVehicleTimeResDTO.getTimeTime())))
+						.orElseGet(() -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_NOT_SOON)))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_SOON));
 	}
 
@@ -278,7 +280,9 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
 				.map(v -> vehicleRepository.ingReservationMyTime(empId))
-				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), res.getTimeTime())))
+				.map(res -> res.map(iVehicleTimeResDTO ->
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_ING, ChronoUnit.SECONDS.between(now(), iVehicleTimeResDTO.getTimeTime())))
+						.orElseGet(() -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_NOT_ING)))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_ING));
 	}
 
