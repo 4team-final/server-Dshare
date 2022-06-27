@@ -33,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -101,7 +100,6 @@ public class AdminService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> !files.isEmpty())
 				.map(res -> {
-					VehicleImgDTO vehicleImgDTO = updateVehicleImg(files);
 					Long vId = vehicleRepository.save(Vehicle.builder()
 							.name(vehicleUpdateDTO.getName())
 							.number(vehicleUpdateDTO.getNumber())
@@ -109,12 +107,11 @@ public class AdminService {
 							.color(vehicleUpdateDTO.getColor())
 							.capacity(vehicleUpdateDTO.getCapacity())
 							.build()).getId();
-					vehicleImgRepository.save(VehicleImg.builder()
-							.vehicle(Vehicle.builder().id(vId).build())
-							.path(vehicleImgDTO.getPath())
-							.type(vehicleImgDTO.getType())
-							.imgSize(vehicleImgDTO.getImgSize())
-							.build());
+
+					List<VehicleImgDTO> vehicleImgDTOList = updateVehicleImg(files);
+					for (VehicleImgDTO vehicleImgDTO : vehicleImgDTOList) {
+						vehicleImgRepository.save(vehicleImgDTO.of(vId));
+					}
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESISTER);
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RESISTER));
 	}
@@ -126,17 +123,13 @@ public class AdminService {
 				.filter(u -> id > 0L)
 				.map(v -> vehicleRepository.findById(id))
 				.filter(Optional::isPresent)
-				.map(res -> res.get().updateVehicle(vehicleUpdateDTO))
-				.map(vehicleImgRepository::findByVehicleId)
-				.filter(Optional::isPresent)
-				.map(data -> {
-					String[] path = data.get().getPath().split(" ");
-					ArrayList<String> list = new ArrayList<>();
-					Collections.addAll(list, path);
-					uploadUtils.delete(list);
-					VehicleImgDTO vehicleImgDTO = updateVehicleImg(files);
-					vehicleImgDTO.setVehicleId(id);
-					data.get().updateVehicleImg(vehicleImgDTO);
+				.map(res -> {
+					res.get().updateVehicle(vehicleUpdateDTO);
+					deleteVehicleImg(id);
+					List<VehicleImgDTO> vehicleImgDTOList = updateVehicleImg(files);
+					for (VehicleImgDTO vehicleImgDTO : vehicleImgDTOList) {
+						vehicleImgRepository.save(vehicleImgDTO.of(id));
+					}
 					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_UPDATE);
 				})
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_UPDATE));
@@ -149,59 +142,29 @@ public class AdminService {
 				.filter(u -> id >= 0L)
 				.map(v -> vehicleRepository.findById(id))
 				.filter(Optional::isPresent)
-				.map(v -> vehicleImgRepository.findByVehicleId(id))
-				.filter(Optional::isPresent)
 				.map(res -> {
-					String[] path = res.get().getPath().split(" ");
-					ArrayList<String> list = new ArrayList<>();
-					Collections.addAll(list, path);
-					uploadUtils.delete(list);
-					vehicleImgRepository.deleteByVehicleId(id);
+					deleteVehicleImg(id);
 					vehicleRepository.deleteById(id);
 					return (vehicleRepository.findById(id).isPresent()
-							|| vehicleImgRepository.findById(id).isPresent()) ?
+							|| vehicleImgRepository.findByVehicle_Id(id).size() > 0) ?
 							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_DELETE) :
 							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_DELETE);
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_DELETE));
 	}
 
-	public VehicleImgDTO updateVehicleImg(List<MultipartFile> files) {
-		String[] uploadUrl = new String[files.size()];
-		ArrayList<String> fileName = new ArrayList<>(), fileType = new ArrayList<>();
-		ArrayList<Long> fileLength = new ArrayList<>();
-		StringBuilder fileSet = new StringBuilder();
-		List<MultipartFile> data = Optional.of(files).filter(v -> !v.isEmpty())
-				.map(res -> {
-					res.forEach(v -> {
-						fileName.add(LocalDateTime.now() + "_" + v.getOriginalFilename());
-						fileType.add(v.getContentType());
-						fileLength.add(v.getSize());
-					});
-					return res;
-				}).orElseThrow(() -> new ImgFileNotFoundException(ErrorCode.IMG_NOT_FOUND));
+	public List<VehicleImgDTO> updateVehicleImg(List<MultipartFile> files) {
+		ArrayList<String> filePath = new ArrayList<>();
+		List<VehicleImgDTO> vehicleImgDTOS = new ArrayList<>();
 		try {
-			for (int i = 0; i < files.size(); i++)
-				uploadUrl[i] = uploadUtils.getAwsS3().upload(data.get(i), "vehicle/" + fileName.get(i), fileType.get(i), fileLength.get(i));
+			for (MultipartFile file : files) {
+				String fileName = LocalDateTime.now() + "_" + file.getOriginalFilename();
+				filePath.add(uploadUtils.getAwsS3().upload(file, "vehicle/" + fileName, file.getContentType(), file.getSize()));
+				vehicleImgDTOS.add(VehicleImgDTO.builder().path(uploadUtils.getAwsPath() + filePath).type(file.getContentType()).imgSize(String.valueOf(file.getSize())).build());
+			}
 		} catch (AmazonS3Exception | IOException ae) {
 			log.error("차량 이미지 URL 업로드 에러" + METHOD_NAME, ae);
 		}
-		for (String s : uploadUrl)
-			fileSet.append(uploadUtils.getAwsPath()).append(s).append(" ");
-		uploadUrl = new String[3];
-		uploadUrl[0] = String.valueOf(fileSet);
-		fileSet.setLength(0);
-
-		fileType.forEach(res -> fileSet.append(res).append(" "));
-		uploadUrl[1] = String.valueOf(fileSet);
-		fileSet.setLength(0);
-
-		fileLength.forEach(res -> fileSet.append(res).append(" "));
-		uploadUrl[2] = String.valueOf(fileSet);
-
-		return VehicleImgDTO.builder()
-				.path(String.valueOf(uploadUrl[0]))
-				.type(String.valueOf(uploadUrl[1]))
-				.imgSize(String.valueOf(uploadUrl[2])).build();
+		return vehicleImgDTOS;
 	}
 
 	/**
@@ -255,5 +218,17 @@ public class AdminService {
 		}).collect(Collectors.toList());
 
 		return list;
+	}
+
+	@Transactional
+	public void deleteVehicleImg(Long id) {
+		if (vehicleImgRepository.findByVehicle_Id(id).size() > 0) {
+			List<VehicleImg> vehicleImgList = vehicleImgRepository.findByVehicle_Id(id);
+			List<String> paths = vehicleImgRepository.findPathByVehicleId(id);
+			for (VehicleImg vehicleImg : vehicleImgList) {
+				vehicleImgRepository.deleteById(vehicleImg.getId());
+			}
+			uploadUtils.delete(paths);
+		}
 	}
 }

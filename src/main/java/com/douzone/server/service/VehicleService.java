@@ -46,15 +46,15 @@ public class VehicleService {
 	@Transactional
 	public ResponseDTO registerByVehicleReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
 		log.info(METHOD_NAME + "- registerByVehicleReservation");
-
-		// 타임 테이블에도 반영해줘야함
-		Employee employee = employeeRepository.findById(empId).orElseThrow(() ->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
-		String startTime[] = vehicleParseDTO.getStartedAt().split("T");//
-		String endTime[] = vehicleParseDTO.getEndedAt().split("T");
-
-		vehicleSocketService.updateIsSeat(vehicleParseDTO.getVehicleId(), startTime[0], endTime[0], startTime[1], endTime[1], employee.getEmpNo());
-
-
+//
+//		타임 테이블에도 반영해줘야함
+//		Employee employee = employeeRepository.findById(empId).orElseThrow(() ->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND));
+//		String startTime[] = vehicleParseDTO.getStartedAt().split("T");//
+//		String endTime[] = vehicleParseDTO.getEndedAt().split("T");
+//
+//		vehicleSocketService.updateIsSeat(vehicleParseDTO.getVehicleId(), startTime[0], endTime[0], startTime[1], endTime[1], employee.getEmpNo());
+//
+//
 
 
 		VehicleReservationDTO vehicleReservationDTO = VehicleReservationDTO.builder()
@@ -91,7 +91,7 @@ public class VehicleService {
 				.map(res -> vehicleBookmarkRepository.existsByVehicle_IdAndEmployee_Id(vId, empId))
 				.map(res -> {
 					if (res) {
-						this.deleteByMyBookMark(vId);
+						deleteByMyBookMark(vId);
 						return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK_FIND);
 					}
 
