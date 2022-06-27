@@ -388,8 +388,7 @@ public class RoomService {
 				,"14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"};
 		String startTime = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
 		String endTime = registReservationReqDto.getEndedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
-		System.out.println(startTime);
-		System.out.println(endTime);
+
 		int startNum = 0;
 		int endNum = 0;
 		Integer[] time = new Integer[18];
@@ -426,6 +425,8 @@ public class RoomService {
 
 	@Transactional
 	public Long deleteRes(long id) {
+
+		//타임테이블 0으로 바꿔주고 empno null
 		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
 		roomReservationRepository.deleteById(id);
 		return roomReservation.getId();
