@@ -5,12 +5,14 @@ import com.douzone.server.config.socket.Calendar;
 import com.douzone.server.config.socket.Time;
 import com.douzone.server.config.socket.TimeRepository;
 import com.douzone.server.dto.reservation.RegistReservationReqDto;
+import com.douzone.server.dto.vehicle.VehicleParseDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.repository.EmployeeRepository;
 import com.douzone.server.repository.VehicleRepository;
 import com.douzone.server.service.EmployeeService;
 import com.douzone.server.service.RoomService;
+import com.douzone.server.service.VehicleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +37,8 @@ public class InputDummyTest {
 	TimeRepository timeRepository;
 	@Autowired
 	VehicleRepository vehicleRepository;
+	@Autowired
+	VehicleService vehicleService;
 
 	/**
 	 * 이름 바꾸기
@@ -85,14 +89,14 @@ public class InputDummyTest {
 		}
 	}
 	/**
-	 * 전사원 랜덤으로 차량 북마크 넣어주기 3번돌림
+	 * 전사원 랜덤으로 차량 북마크 넣어주기 1번만됨
 	 */
 	@Test
 	void InputVehicleBookmark() {
-		List<Vehicle> empList = vehicleRepository.findAll();
+		List<Employee> empList = employeeRepository.findAll();
 		for (int i = 0; i < empList.size(); i++) {
-			long roomId = (long) (Math.random() * 10) + 1L;
-			vehicleRepository.(roomId, empList.get(i).getId());
+			long vehicleId = (long) (Math.random() * 10) + 1L;
+			vehicleService.registerByVehicleBookmark(empList.get(i).getId(),vehicleId);
 		}
 	}
 
@@ -151,9 +155,95 @@ public class InputDummyTest {
 
 	}
 
+	/**
+	 * 차량 예약 넣기
+	 */
 	@Test
 	void InputVehicleReservation() {
+		//10대의차
+		//22일동안
+		//300명의 사원
+		//1박2일 2박 3일 당일치기로 구분
+		String[][] times = {
+				{"09:00:00", "11:00:00", "13:00:00", "15:00:00", "16:30:00", "17:00:00", "18:00:00", "19:00:00", "20:30:00", "21:00:00", "22:00:00"},
+				{"1","2","3","4","5"}
+		};
+		String[] vehicles = {
+				"전북 출장 : 더존비즈온 전북 지사 출장",
+				"경기 출장 : 더존비즈온 경기 지사 출장",
+				"부산 출장 : 더존비즈온 부산 지사 출장",
+				"광주 출장 : 더존비즈온 광주 지사 출장",
+				"강원 출장 : 더존비즈온 강원 지사 출장",
+				"충청 출장 : 더존비즈온 충청 지사 출장",
+				"제주 출장 : 더존비즈온 제주 지사 출장",
+				"서울 출장 : 더존비즈온 서울 지사 출장",
 
+		};
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		List<Employee> empList = employeeRepository.findAll();
+
+
+		for(int i = 1 ; i <= 10 ; i ++) {
+			String uid = "20220623";
+			int day = 22;
+			for(int k = 1 ; k <=day ; k ++) { //7/15
+				String startDay = "";
+				String endDay = "";
+				if ((uid.charAt(6) + "" + uid.charAt(7)).equals("30")) {
+					uid = "20220700";
+				}
+				uid = Integer.parseInt(uid) + 1 + "";//0624
+				for(int j = 0; j < times.length ; j++){
+					//시작시간 끝시간 며칠빌릴지 정해줍니다.
+					String start = times[0][(int) (Math.random() * times[0].length)];
+					String end = times[0][(int) (Math.random() * times[0].length)];
+					int days = Integer.parseInt(times[1][(int) (Math.random() * times[1].length)]);
+					System.out.println(days);
+					if(Integer.parseInt((uid.charAt(6) + "" + uid.charAt(7)))+days <= 30) {
+						startDay =( Integer.parseInt(uid)+1)+"";
+
+						endDay = (Integer.parseInt(uid) + days)+"";
+						if(endDay.equals(startDay)){
+							endDay = (Integer.parseInt(endDay)+1)+"";
+						}
+						uid = endDay;
+						day -= days;
+
+						String yyyy = startDay.substring(0,4);
+						String mm = startDay.substring(4,6);
+						String dd = startDay.substring(6);
+
+
+						String yyyy2 = endDay.substring(0,4);
+						String mm2 = endDay.substring(4,6);
+						String dd2 = endDay.substring(6);
+
+						String formatUid = yyyy+"-"+ mm + "-" +dd;
+						String formatUid2 = yyyy2+"-"+ mm2 + "-" +dd2;
+						System.out.println(formatUid2);
+						String startTime = formatUid+" "+ start;
+						String endTime = formatUid2+" " + end;
+
+
+
+						String[] vehicle = vehicles[1].split(" : ");
+						long empId = empList.get((int)(Math.random()*300)+15).getId();
+
+						VehicleParseDTO vehicleParseDTO = VehicleParseDTO.builder()
+								.vehicleId(Long.valueOf(i))
+								.empId((int)empId)
+								.startedAt(startTime)
+								.endedAt(endTime)
+								.title(vehicle[0])
+								.reason(vehicle[1])
+								.build();
+
+						vehicleService.registerByVehicleReservation(vehicleParseDTO, empId);
+					}
+
+				}
+			}
+		}
 	}
 
 	//타임테이블에 시간넣기
