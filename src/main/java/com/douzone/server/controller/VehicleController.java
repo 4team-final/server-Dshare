@@ -73,9 +73,9 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/list/reservation/paging")
-	public ResponseEntity<ResponseDTO> findByPaginationReservation(@RequestBody Map<String, Integer> pageNum) {
+	public ResponseEntity<ResponseDTO> findByPaginationReservation(@RequestBody Map<String, Long> lasId) {
 		log.info(METHOD_NAME + "- findByPaginationReservation");
-		return ResponseEntity.ok().body(vehicleService.findByPaginationReservation(pageNum.get("page")));
+		return ResponseEntity.ok().body(vehicleService.findByPaginationReservation(lasId.get("id")));
 	}
 
 	@GetMapping(path = "/list/stock")
@@ -106,6 +106,18 @@ public class VehicleController {
 	public ResponseEntity<ResponseDTO> findByMyCurrentReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findByMyCurrentReservation");
 		return ResponseEntity.ok().body(vehicleService.findByMyCurrentReservation(principalDetails.getEmployee().getId()));
+	}
+
+	@GetMapping(path = "/list/own/all")
+	public ResponseEntity<ResponseDTO> findByMyReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- findByMyReservation");
+		return ResponseEntity.ok().body(vehicleService.findByMyReservation(principalDetails.getEmployee().getId()));
+	}
+
+	@GetMapping(path = "/list/own/paging")
+	public ResponseEntity<ResponseDTO> findByMyReservationPaging(@RequestBody Map<String, Long> id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		log.info(METHOD_NAME + "- findByMyReservationPaging");
+		return ResponseEntity.ok().body(vehicleService.findByMyReservationPaging(id.get("id"), principalDetails.getEmployee().getId()));
 	}
 
 	@GetMapping(path = "/best/vehicle")
