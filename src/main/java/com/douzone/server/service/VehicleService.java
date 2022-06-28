@@ -1,8 +1,5 @@
 package com.douzone.server.service;
 
-import com.douzone.server.config.socket.TimeService;
-import com.douzone.server.config.socket.vehicle.TimeVehicle;
-import com.douzone.server.config.socket.vehicle.TimeVehicleRepository;
 import com.douzone.server.config.socket.vehicle.VehicleSocketService;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.*;
@@ -10,8 +7,6 @@ import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
 import com.douzone.server.entity.VehicleReservation;
-import com.douzone.server.exception.EmpNotFoundException;
-import com.douzone.server.exception.ErrorCode;
 import com.douzone.server.repository.EmployeeRepository;
 import com.douzone.server.repository.VehicleBookmarkRepository;
 import com.douzone.server.repository.VehicleRepository;
@@ -43,6 +38,7 @@ public class VehicleService {
 	private final VehicleQueryDSL vehicleQueryDSL;
 	private final VehicleSocketService vehicleSocketService;
 	private final EmployeeRepository employeeRepository;
+
 	@Transactional
 	public ResponseDTO registerByVehicleReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
 		log.info(METHOD_NAME + "- registerByVehicleReservation");
@@ -364,7 +360,7 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.map(v -> vehicleQueryDSL.selectByVariousColumns(vehicleSearchDTO))
 				.map(v -> v.isEmpty() ?
-						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_EXIST_RESULT) :
+						ResponseDTO.fail(HttpStatus.OK, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_EXIST_RESULT) :
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_VARIOUS_COLUMNS, v))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_FIND_RESULT));
 	}

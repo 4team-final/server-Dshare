@@ -63,7 +63,7 @@ public class AdminController {
 	/**
 	 * 직급별/팀별/부서별/사원번호별/사원이름별 유저의 회의실 예약 조회 - 관리자
 	 */
-	@GetMapping("/reservation/read/various")
+	@PostMapping("/reservation/read/various")
 	public ResponseEntity<ResponseDTO> VariousSearch(@RequestBody RoomReservationSearchDTO search) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_USER, adminService.searchVarious(search)));
 	}

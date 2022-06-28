@@ -12,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 /**
  * 차량 예약 등록, 조회, 수정, 삭제
@@ -73,9 +72,9 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/list/reservation/paging")
-	public ResponseEntity<ResponseDTO> findByPaginationReservation(@RequestBody Map<String, Long> lasId) {
+	public ResponseEntity<ResponseDTO> findByPaginationReservation(@RequestParam("id") Long id) {
 		log.info(METHOD_NAME + "- findByPaginationReservation");
-		return ResponseEntity.ok().body(vehicleService.findByPaginationReservation(lasId.get("id")));
+		return ResponseEntity.ok().body(vehicleService.findByPaginationReservation(id));
 	}
 
 	@GetMapping(path = "/list/stock")
@@ -85,15 +84,16 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/list/type")
-	public ResponseEntity<ResponseDTO> findByModelReservation(@RequestBody Map<String, String> model) {
+	public ResponseEntity<ResponseDTO> findByModelReservation(@RequestParam("model") String model) {
 		log.info(METHOD_NAME + "- findByModelReservation");
-		return ResponseEntity.ok().body(vehicleService.findByModelReservation(model.get("model")));
+		return ResponseEntity.ok().body(vehicleService.findByModelReservation(model));
 	}
 
-	@GetMapping(path = "/list/time")
-	public ResponseEntity<ResponseDTO> findByDateTimeReservation(@RequestBody Map<String, String> model) {
+	@GetMapping(path = "/list/time/{start}/{end}")
+	public ResponseEntity<ResponseDTO> findByDateTimeReservation(@PathVariable("start") String start,
+																 @PathVariable("end") String end) {
 		log.info(METHOD_NAME + "- findByDateTimeReservation");
-		return ResponseEntity.ok().body(vehicleService.findByDateTimeReservation(model.get("start"), model.get("end")));
+		return ResponseEntity.ok().body(vehicleService.findByDateTimeReservation(start, end));
 	}
 
 	@GetMapping(path = "/list/own/past")
@@ -115,9 +115,9 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/list/own/paging")
-	public ResponseEntity<ResponseDTO> findByMyReservationPaging(@RequestBody Map<String, Long> id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> findByMyReservationPaging(@RequestParam("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findByMyReservationPaging");
-		return ResponseEntity.ok().body(vehicleService.findByMyReservationPaging(id.get("id"), principalDetails.getEmployee().getId()));
+		return ResponseEntity.ok().body(vehicleService.findByMyReservationPaging(id, principalDetails.getEmployee().getId()));
 	}
 
 	@GetMapping(path = "/best/vehicle")
@@ -195,7 +195,7 @@ public class VehicleController {
 		return ResponseEntity.ok().body(vehicleService.earlyReturnOfVehicle(id, principalDetails.getEmployee().getId()));
 	}
 
-	@GetMapping("/list/reservation/various")
+	@PostMapping("/list/reservation/various")
 	public ResponseEntity<ResponseDTO> selectByVariousColumns(@RequestBody VehicleSearchDTO vehicleSearchDTO) {
 		log.info(METHOD_NAME + "- selectByVariousColumns");
 		return ResponseEntity.ok().body(vehicleService.selectByVariousColumns(vehicleSearchDTO));
