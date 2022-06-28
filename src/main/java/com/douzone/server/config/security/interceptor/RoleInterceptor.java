@@ -56,7 +56,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 			String token = tokenResDTO.getToken();
 			Outer:
 			{
-				if (jwtTokenProvider.validateToken(token)) {
+				if (jwtTokenProvider.validateToken(token) == 0) {
 					log.info("Token validate - success");
 					String empNo = jwtTokenProvider.getUserPk(token);
 

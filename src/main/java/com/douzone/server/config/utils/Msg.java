@@ -149,4 +149,5 @@ public interface Msg {
 	String FAIL_ADMIN_PROFILEIMG = "관리자가 사원 프로필 이미지 등록 실패하였습니다.";
 	String FAIL_ACCESS_SOCKET_CONNECT = "잘못된 접근으로 인하여 소켓과의 통신이 종료되었습니다.";
 	String FAIL_DOUBLE_ACCESS_SOCKET_CONNECT = "중복된 세션의 접근으로 인하여 소켓과의 통신이 종료되었습니다.";
+	String EXPIRED_TOKEN = "expired_token ";
 }

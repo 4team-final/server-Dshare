@@ -21,8 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.douzone.server.config.utils.Msg.FAIL_ACCESS;
-import static com.douzone.server.config.utils.Msg.FAIL_TOKEN_VALIDATE;
+import static com.douzone.server.config.utils.Msg.*;
 
 /**
  * 제외 지정한 URL 이 아닌 모든 URL 이 인가된 Token 을 보유하고 있는지 검증하는 클래스
@@ -57,9 +56,9 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 			String token = tokenResDTO.getToken();
 			switch (tokenResDTO.getCode()) {
 				case 0:
-					if (jwtTokenProvider.validateToken(token)) {
+					Integer valid = jwtTokenProvider.validateToken(token);
+					if (valid == 0) {
 						log.info("Access Token Validation - Success");
-
 						String userPk = jwtTokenProvider.getUserPk(token);
 
 						UserDetails userDetails = principalDetailService.loadUserByUsername(userPk);
@@ -70,6 +69,11 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
 						filterChain.doFilter(request, response);
+					} else if (valid == 2) {
+						log.info("Access Token Validation - Expired");
+
+						response.setContentType("text/html; charset=UTF-8");
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.FORBIDDEN, EXPIRED_TOKEN + FAIL_ACCESS + FAIL_TOKEN_VALIDATE));
 					} else {
 						log.info("Access Token Validation - Fail");
 
