@@ -115,9 +115,9 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/list/own/paging")
-	public ResponseEntity<ResponseDTO> findByMyReservationPaging(@RequestBody Map<String, Long> id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> findByMyReservationPaging(@RequestParam("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findByMyReservationPaging");
-		return ResponseEntity.ok().body(vehicleService.findByMyReservationPaging(id.get("id"), principalDetails.getEmployee().getId()));
+		return ResponseEntity.ok().body(vehicleService.findByMyReservationPaging(id, principalDetails.getEmployee().getId()));
 	}
 
 	@GetMapping(path = "/best/vehicle")

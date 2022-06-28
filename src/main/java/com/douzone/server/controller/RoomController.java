@@ -103,7 +103,7 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation(lastId, limit)));
 	}
 
-	@GetMapping("/reservation/roomNo-capacity-time")
+	@PostMapping("/reservation/roomNo-capacity-time")
 	public ResponseEntity<ResponseDTO> selectByRoomNoElseCapacityElseReservation(@RequestBody RoomReservationSearchDTO search) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_NO, roomService.selectByRoomNoElseCapacityElseReservation(search)));
 	}
