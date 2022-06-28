@@ -251,6 +251,7 @@ public class RoomService {
 
 	@Transactional
 	public List<ReservationResDTO> selectByRoomNoElseCapacityElseReservation(RoomReservationSearchDTO search) {
+
 		return roomQueryDSL.selectByRoomNoElseCapacityElseReservation(search).stream().map(roomReservation -> {
 			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
