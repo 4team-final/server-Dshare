@@ -379,33 +379,33 @@ public class RoomService {
 	@Transactional
 	public Long save(RegistReservationReqDto registReservationReqDto) {
 
-		// 타임 테이블에도 반영해줘야함
-		String empNo = employeeRepository.findById(registReservationReqDto.getEmpId()).orElseThrow(()->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND)).getEmpNo();
-		String uid = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-		System.out.println(uid);
-		//9:00 ~ 11:00
-		String[] timeTable =
-				{"09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30"
-				,"14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"};
-		String startTime = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
-		String endTime = registReservationReqDto.getEndedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
-
-		int startNum = 0;
-		int endNum = 0;
-		Integer[] time = new Integer[18];
-		for(int i = 0 ; i < time.length ; i++) {
-			time[i]=0;
-		}
-		for(int i = 0 ; i < timeTable.length ; i++) {
-			if(startTime.equals(timeTable[i])) startNum = i;
-			if(endTime.equals(timeTable[i])) endNum = i;
-		}
-		for(int i = startNum ; i <= endNum ; i ++) {
-			time[i] = 1;
-		}
-		for(int i = 0 ; i <= time.length ; i++) {
-			timeService.updateTime(uid, time, empNo, Integer.parseInt(registReservationReqDto.getRoomId()+""));
-		}
+//		// 타임 테이블에도 반영해줘야함
+//		String empNo = employeeRepository.findById(registReservationReqDto.getEmpId()).orElseThrow(()->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND)).getEmpNo();
+//		String uid = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//		System.out.println(uid);
+//		//9:00 ~ 11:00
+//		String[] timeTable =
+//				{"09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30"
+//				,"14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"};
+//		String startTime = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
+//		String endTime = registReservationReqDto.getEndedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
+//
+//		int startNum = 0;
+//		int endNum = 0;
+//		Integer[] time = new Integer[18];
+//		for(int i = 0 ; i < time.length ; i++) {
+//			time[i]=0;
+//		}
+//		for(int i = 0 ; i < timeTable.length ; i++) {
+//			if(startTime.equals(timeTable[i])) startNum = i;
+//			if(endTime.equals(timeTable[i])) endNum = i;
+//		}
+//		for(int i = startNum ; i <= endNum ; i ++) {
+//			time[i] = 1;
+//		}
+//		for(int i = 0 ; i <= time.length ; i++) {
+//			timeService.updateTime(uid, time, empNo, Integer.parseInt(registReservationReqDto.getRoomId()+""));
+//		}
 		return roomReservationRepository.save(RoomReservation.builder().build().of(registReservationReqDto)).getId();
 	}
 
