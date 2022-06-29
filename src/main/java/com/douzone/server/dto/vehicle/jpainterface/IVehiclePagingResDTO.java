@@ -27,9 +27,10 @@ public interface IVehiclePagingResDTO {
 
 	Integer getCapacity();
 
-	String getVehicleImg();
-
 	String getEmpNo();
 
 	String getEName();
+
+	Long getVId();
+
 }

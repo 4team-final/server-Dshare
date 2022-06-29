@@ -4,6 +4,7 @@ import com.douzone.server.dto.token.CommonTokenDTO;
 import com.douzone.server.dto.token.ReIssuanceTokenDTO;
 import com.douzone.server.dto.token.TokenResDTO;
 import com.douzone.server.entity.Token;
+import com.douzone.server.exception.TokenSetNotFoundException;
 import com.douzone.server.repository.TokenRepository;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
+
+import static com.douzone.server.exception.ErrorCode.TOKEN_SET_NOT_FOUND_ERROR;
 
 /**
  * generateToken() : 사번 값을 입력하여 accessToken, refreshToken 을 CommonTokenSet 으로 리턴
@@ -181,12 +182,15 @@ public class JwtTokenProvider {
 		return false;
 	}
 
-	public Cookie generateCookie(String value) {
-		log.info(METHOD_NAME + "- generateCookie() ...");
-		Cookie cookie = new Cookie(headerKeyRefresh, typeRefresh + value);
-		cookie.setMaxAge((int) refreshValidTime);
-		cookie.setSecure(true);
-		cookie.setPath("/");
-		return cookie;
+	public List<String> putRefresh(String value) {
+		log.info(METHOD_NAME + "- putRefresh() ...");
+		return Optional.of(new ArrayList<String>())
+				.filter(v -> (value != null))
+				.map(res -> {
+					res.add(headerKeyRefresh);
+					res.add(typeRefresh + value);
+					return res;
+				})
+				.orElseThrow(() -> new TokenSetNotFoundException(TOKEN_SET_NOT_FOUND_ERROR));
 	}
 }
