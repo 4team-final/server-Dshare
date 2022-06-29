@@ -62,7 +62,7 @@ public class RoomQueryDSL{
 				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
 				.join(roomReservation.employee, employee).fetchJoin()
 				.where(employee.id.eq(Id), roomReservationIdLt(lastId))
-				.orderBy(roomReservation.id.desc())//플젝 시작하면 앞에 createdAt정렬을 먼저 해줘야함
+				.orderBy(roomReservation.startedAt.asc(),roomReservation.id.desc())
 				.limit(limit)
 				.fetch();
 		return roomList;
