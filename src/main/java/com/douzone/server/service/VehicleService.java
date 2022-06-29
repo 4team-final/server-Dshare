@@ -3,14 +3,13 @@ package com.douzone.server.service;
 import com.douzone.server.config.socket.vehicle.VehicleSocketService;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.dto.vehicle.*;
+import com.douzone.server.dto.vehicle.impl.VehiclePagingResDTO;
+import com.douzone.server.dto.vehicle.jpainterface.IVehiclePagingResDTO;
 import com.douzone.server.entity.Employee;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleBookmark;
 import com.douzone.server.entity.VehicleReservation;
-import com.douzone.server.repository.EmployeeRepository;
-import com.douzone.server.repository.VehicleBookmarkRepository;
-import com.douzone.server.repository.VehicleRepository;
-import com.douzone.server.repository.VehicleReservationRepository;
+import com.douzone.server.repository.*;
 import com.douzone.server.repository.querydsl.VehicleQueryDSL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -38,6 +39,7 @@ public class VehicleService {
 	private final VehicleQueryDSL vehicleQueryDSL;
 	private final VehicleSocketService vehicleSocketService;
 	private final EmployeeRepository employeeRepository;
+	private final VehicleImgRepository vehicleImgRepository;
 
 	@Transactional
 	public ResponseDTO registerByVehicleReservation(VehicleParseDTO vehicleParseDTO, Long empId) {
@@ -185,11 +187,34 @@ public class VehicleService {
 	@Transactional(readOnly = true)
 	public ResponseDTO findByMyReservationPaging(Long lastId, Long id) {
 		log.info(METHOD_NAME + "- findByMyReservationPaging");
+		List<IVehiclePagingResDTO> vehiclePagingResDTOList = vehicleRepository.findByMyReservationPaging(lastId, id);
+		List<VehiclePagingResDTO> vehiclePagingResDTO = new ArrayList<>();
+		for (int i = 0; i < vehiclePagingResDTOList.size(); i++) {
+			List<String> vehicleImgList = vehicleImgRepository.findPathByVehicleId(vehiclePagingResDTOList.get(i).getVId());
+			vehiclePagingResDTO.add(VehiclePagingResDTO.builder()
+					.reservationId(vehiclePagingResDTOList.get(i).getReservationId())
+					.startedAt(vehiclePagingResDTOList.get(i).getStartedAt())
+					.endedAt(vehiclePagingResDTOList.get(i).getEndedAt())
+					.reservationCreatedAt(vehiclePagingResDTOList.get(i).getReservationCreatedAt())
+					.reservationModifiedAt(vehiclePagingResDTOList.get(i).getReservationModifiedAt())
+					.reason(vehiclePagingResDTOList.get(i).getReason())
+					.title(vehiclePagingResDTOList.get(i).getTitle())
+					.vName(vehiclePagingResDTOList.get(i).getVName())
+					.vNumber(vehiclePagingResDTOList.get(i).getVNumber())
+					.color(vehiclePagingResDTOList.get(i).getColor())
+					.model(vehiclePagingResDTOList.get(i).getModel())
+					.capacity(vehiclePagingResDTOList.get(i).getCapacity())
+					.empNo(vehiclePagingResDTOList.get(i).getEmpNo())
+					.eName(vehiclePagingResDTOList.get(i).getEName())
+					.vId(vehiclePagingResDTOList.get(i).getVId())
+					.imgList(vehicleImgList)
+					.build());
+		}
 		return Optional.of(new ResponseDTO())
 				.map(u -> (id != null) ?
 						(lastId < 0) ?
 								ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_REQUEST_PARAMETER) :
-								ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_MY_VEHICLE, vehicleRepository.findByMyReservationPaging(lastId, id)) :
+								ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_MY_VEHICLE, vehiclePagingResDTO) :
 						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_REQUEST_PARAMETER))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_MY_VEHICLE + FAIL_EXIST_RESULT));
 	}

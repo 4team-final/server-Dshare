@@ -107,12 +107,9 @@ public class AdminService {
 							.color(vehicleUpdateDTO.getColor())
 							.capacity(vehicleUpdateDTO.getCapacity())
 							.build()).getId();
-
-					List<VehicleImgDTO> vehicleImgDTOList = updateVehicleImg(files);
-					for (VehicleImgDTO vehicleImgDTO : vehicleImgDTOList) {
-						vehicleImgRepository.save(vehicleImgDTO.of(vId));
-					}
-					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESISTER);
+					return (updateVehicleImg(vId, files) == 0) ?
+							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RESISTER) :
+							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RESISTER);
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RESISTER));
 	}
 
@@ -126,11 +123,10 @@ public class AdminService {
 				.map(res -> {
 					res.get().updateVehicle(vehicleUpdateDTO);
 					deleteVehicleImg(id);
-					List<VehicleImgDTO> vehicleImgDTOList = updateVehicleImg(files);
-					for (VehicleImgDTO vehicleImgDTO : vehicleImgDTOList) {
-						vehicleImgRepository.save(vehicleImgDTO.of(id));
-					}
-					return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_UPDATE);
+
+					return (updateVehicleImg(id, files) == 0) ?
+							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_INFO_UPDATE) :
+							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_UPDATE);
 				})
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_UPDATE));
 	}
@@ -152,19 +148,36 @@ public class AdminService {
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_INFO_DELETE));
 	}
 
-	public List<VehicleImgDTO> updateVehicleImg(List<MultipartFile> files) {
+	public Integer updateVehicleImg(Long id, List<MultipartFile> files) {
 		ArrayList<String> filePath = new ArrayList<>();
 		List<VehicleImgDTO> vehicleImgDTOS = new ArrayList<>();
 		try {
 			for (MultipartFile file : files) {
 				String fileName = LocalDateTime.now() + "_" + file.getOriginalFilename();
 				filePath.add(uploadUtils.getAwsS3().upload(file, "vehicle/" + fileName, file.getContentType(), file.getSize()));
-				vehicleImgDTOS.add(VehicleImgDTO.builder().path(uploadUtils.getAwsPath() + filePath).type(file.getContentType()).imgSize(String.valueOf(file.getSize())).build());
+				vehicleImgDTOS.add(VehicleImgDTO.builder()
+						.path(uploadUtils.getAwsPath() + filePath)
+						.type(file.getContentType())
+						.imgSize(String.valueOf(file.getSize()))
+						.build());
+			}
+			Optional<Vehicle> vehicle = vehicleRepository.findById(id);
+			if (vehicle.isPresent()) {
+				for (VehicleImgDTO vehicleImgDTO : vehicleImgDTOS) {
+					VehicleImg vehicleImg = VehicleImg.builder()
+							.vehicle(vehicle.get())
+							.path(vehicleImgDTO.getPath())
+							.type(vehicleImgDTO.getType())
+							.imgSize(vehicleImgDTO.getImgSize())
+							.build();
+					vehicleImgRepository.save(vehicleImg);
+				}
+				return 0;
 			}
 		} catch (AmazonS3Exception | IOException ae) {
 			log.error("차량 이미지 URL 업로드 에러" + METHOD_NAME, ae);
 		}
-		return vehicleImgDTOS;
+		return 1;
 	}
 
 	/**

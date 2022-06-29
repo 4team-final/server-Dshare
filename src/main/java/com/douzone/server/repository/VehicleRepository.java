@@ -127,11 +127,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
 	@Query(value = "select vr.id as reservationId, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
 			"vr.createdAt as reservationCreatedAt, vr.modifiedAt as reservationModifiedAt, " +
-			"vr.reason as reason, vr.title as title, " +
-			"v.name as vName, v.number as vNumber, v.color as color, v.model as model, v.capacity as capacity , vi.path as vehicleImg, " +
+			"vr.reason as reason, vr.title as title, v.id as vId, " +
+			"v.name as vName, v.number as vNumber, v.color as color, v.model as model, v.capacity as capacity, " +
 			"e.empNo as empNo, e.name as eName " +
 			"from vehicle_reservation vr " +
-			"left join vehicle_img vi on vi.vehicleId = vr.vehicleId " +
 			"left join employee e on e.id = vr.empId " +
 			"left join vehicle v on v.id = vr.vehicleId " +
 			"where e.id = :id and " +
