@@ -22,6 +22,4 @@ public interface IVehicleWeekDTO {
 	Vehicle getVehicle();
 
 	int getVcount();
-
-	String getVehicleImg();
 }

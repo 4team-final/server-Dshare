@@ -19,7 +19,7 @@ import com.douzone.server.exception.*;
 import com.douzone.server.repository.*;
 import com.douzone.server.repository.querydsl.AdminQueryDSL;
 import com.douzone.server.repository.querydsl.RoomQueryDSL;
-import com.douzone.server.service.method.ServiceMethod;
+import com.douzone.server.service.method.RoomServiceMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +56,7 @@ public class AdminService {
 	private final AdminQueryDSL adminQueryDSL;
 	private final RoomQueryDSL roomQueryDSL;
 	private final RoomService roomService;
-	private final ServiceMethod serviceMethod;
+	private final RoomServiceMethod roomServiceMethod;
 
 	@Value(value = "${year.current}")
 	private String year;
@@ -225,7 +225,7 @@ public class AdminService {
 	public List<ReservationResDTO> searchVarious(RoomReservationSearchDTO search) {
 		log.info("search : {} , {}, {}, {}", search.getTeamId(), search.getDeptId(), search.getEmpNo(), search.getEmpName());
 		List<ReservationResDTO> list = roomQueryDSL.selectByVariousColumns(search).stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return reservationResDTO;
 		}).collect(Collectors.toList());
