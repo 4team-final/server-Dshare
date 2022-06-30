@@ -20,6 +20,4 @@ public interface IVehicleEmpResDTO {
 	String getTitle();
 
 	Vehicle getVehicle();
-
-	String getVehicleImg();
 }

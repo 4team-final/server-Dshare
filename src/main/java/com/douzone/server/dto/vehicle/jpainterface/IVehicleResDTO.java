@@ -15,5 +15,4 @@ public interface IVehicleResDTO {
 
 	int getCapacity();
 
-	String getVehicleImg();
 }

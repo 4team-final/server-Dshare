@@ -7,7 +7,7 @@ public interface IVehicleWeekTimeDTO {
 
 	Integer getHCount();
 
-	Long getVId();
+	Long getReservationId();
 
 	LocalDateTime getStartedAt();
 
@@ -21,7 +21,7 @@ public interface IVehicleWeekTimeDTO {
 
 	String getTitle();
 
-	String getVehicleImg();
+	Long getVId();
 
 	String getModel();
 

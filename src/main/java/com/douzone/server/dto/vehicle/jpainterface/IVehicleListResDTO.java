@@ -21,8 +21,6 @@ public interface IVehicleListResDTO {
 
 	Vehicle getVehicle();
 
-	String getVehicleImg();
-
 	String getEmpNo();
 
 	String getName();

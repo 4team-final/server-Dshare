@@ -2,15 +2,14 @@ package com.douzone.server.dto.vehicle.impl;
 
 import com.douzone.server.dto.vehicle.jpainterface.IVehicleWeekDTO;
 import com.douzone.server.entity.Vehicle;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleWeekDTO implements IVehicleWeekDTO {
@@ -23,5 +22,20 @@ public class VehicleWeekDTO implements IVehicleWeekDTO {
 	private String title;
 	private Vehicle vehicle;
 	private int vcount;
-	private String vehicleImg;
+	private List<String> imgList;
+
+	public VehicleWeekDTO of(IVehicleWeekDTO i, List<String> list) {
+		return VehicleWeekDTO.builder()
+				.id(i.getId())
+				.startedAt(i.getStartedAt())
+				.endedAt(i.getEndedAt())
+				.createdAt(i.getCreatedAt())
+				.modifiedAt(i.getModifiedAt())
+				.reason(i.getReason())
+				.title(i.getTitle())
+				.vehicle(i.getVehicle())
+				.vcount(i.getVcount())
+				.imgList(list)
+				.build();
+	}
 }
