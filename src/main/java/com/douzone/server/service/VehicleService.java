@@ -276,11 +276,18 @@ public class VehicleService {
 				.filter(u -> (id != null))
 				.map(u -> vehicleReservationRepository.findById(id))
 				.filter(Optional::isPresent)
-				.map(res -> res.get().getEmployee().getId())
-				.filter(v -> v.equals(empId))
+				.filter(res -> res.get().getEmployee().getId().equals(empId))
+				.map(res -> {
+					vehicleServiceMethod.convertToTimeAndResetIsSeat(
+							res.get().getStartedAt(),
+							res.get().getEndedAt(),
+							res.get().getVehicle().getId(),
+							res.get().getEmployee().getEmpNo());
+					return res.get().getId();
+				})
 				.map(v -> {
-					vehicleReservationRepository.deleteById(id);
-					return (vehicleReservationRepository.findById(id).isPresent()) ?
+					vehicleReservationRepository.deleteById(v);
+					return (vehicleReservationRepository.findById(v).isPresent()) ?
 							ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + FAIL_FIND_RESULT) :
 							ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_DELETE);
 				}).orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_DELETE + FAIL_EXIST_RESULT));

@@ -1,5 +1,6 @@
 package com.douzone.server.service.method;
 
+import com.douzone.server.config.socket.vehicle.VehicleSocketService;
 import com.douzone.server.dto.vehicle.impl.*;
 import com.douzone.server.dto.vehicle.jpainterface.*;
 import com.douzone.server.entity.Vehicle;
@@ -17,6 +18,7 @@ import java.util.List;
 public class VehicleServiceMethod {
 
 	private final VehicleImgRepository vehicleImgRepository;
+	private final VehicleSocketService vehicleSocketService;
 
 
 	public LocalDateTime now() {
@@ -95,12 +97,15 @@ public class VehicleServiceMethod {
 		return vList;
 	}
 
-//	public void convertToTime(LocalDateTime s, LocalDateTime e) {
-//		String start = s.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-//		String end = e.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-//
-//		if (start.equals(end)) {
-//
-//		}
-//	}
+	public void convertToTimeAndResetIsSeat(LocalDateTime s, LocalDateTime e, Long vId, String empNo) {
+		String start = s.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		String end = e.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+		if (start.equals(end)) {
+			vehicleSocketService.resetIsSeat(vId, start, empNo);
+		} else {
+			vehicleSocketService.resetIsSeat(vId, start, empNo);
+			vehicleSocketService.resetIsSeat(vId, end, empNo);
+		}
+	}
 }
