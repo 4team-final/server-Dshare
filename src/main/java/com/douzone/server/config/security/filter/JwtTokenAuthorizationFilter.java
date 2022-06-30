@@ -89,7 +89,12 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 						response.addHeader(headerKeyAccess, typeAccess + accessToken);
 
 						response.setContentType("text/html; charset=UTF-8");
-						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.BAD_REQUEST, FAIL_ACCESS + FAIL_TOKEN_VALIDATE));
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, FAIL_ACCESS + " Retry"));
+					} else {
+						log.info("Refresh Token Validation - Fail");
+
+						response.setContentType("text/html; charset=UTF-8");
+						response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.CONFLICT, RE_LOGIN_REQUEST + EXPIRED_TOKEN + FAIL_ACCESS));
 					}
 					return;
 				case 2:
