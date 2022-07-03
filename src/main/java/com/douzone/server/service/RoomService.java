@@ -142,6 +142,7 @@ public class RoomService {
 	public List<WeekCountHourResDTO> weekAndMonthReservationCount(int datetime) {
 
 		LocalDateTime now = this.now();
+
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);

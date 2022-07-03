@@ -124,7 +124,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join employee e on e.id = vr.empId " +
 			"left join vehicle v on v.id = vr.vehicleId " +
 			"where e.id = :id and " +
-			"IF(:lastId > 0, vr.id <= :lastId, 1=1) " +
-			"order by vr.id desc limit 15 ", nativeQuery = true)
+			"IF(:lastId > 0, vr.id < :lastId, 1=1)  " +
+			"order by vr.createdAt desc, vr.id asc limit 5 ", nativeQuery = true)
 	List<IVehiclePagingResDTO> findByMyReservationPaging(@Param("lastId") Long lastId, @Param("id") Long id);
 }
