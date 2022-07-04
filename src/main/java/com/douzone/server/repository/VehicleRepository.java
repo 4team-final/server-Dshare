@@ -75,8 +75,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, vr.reason as reason, vr.title as title, " +
 			"vr.vehicle as vehicle, count(vr.vehicle.id) as vcount " +
 			"from VehicleReservation vr " +
-			"where vr.startedAt > :date  group by vr.vehicle.id order by vcount desc")
-	List<IVehicleWeekDTO> weekMostReservedVehicle(@Param("date") LocalDateTime date);
+			"where vr.modifiedAt > :date and vr.modifiedAt < :now group by vr.vehicle.id order by vcount desc")
+	List<IVehicleWeekDTO> weekMostReservedVehicle(@Param("now")LocalDateTime now ,@Param("date") LocalDateTime date);
 
 	@Query(value = "select hour(vr.startedAt) as hTime, count(hour(vr.startedAt)) as hCount, vr.id as reservationId, " +
 			"vr.startedAt as startedAt, vr.endedAt as endedAt, vr.reason as reason, vr.title as title, " +
@@ -86,9 +86,22 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from vehicle_reservation vr " +
 			"left join vehicle v on v.id = vr.vehicleId " +
 			"left join employee e on e.id = vr.empId " +
-			"where vr.startedAt > :start and vr.endedAt < :end " +
+			"where vr.modifiedAt > :start and vr.modifiedAt < :end " +
 			"group by hour(vr.startedAt) order by hCount desc ", nativeQuery = true)
 	List<IVehicleWeekTimeDTO> weekMostReservedTime(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+		@Query(value = "select hour(vr.startedAt) as hTime, count(hour(vr.startedAt)) as hCount, vr.id as reservationId, " +
+			"vr.startedAt as startedAt, vr.endedAt as endedAt, vr.reason as reason, vr.title as title, " +
+			"vr.createdAt as reservationCreatedAt, vr.modifiedAt as reservationModifiedAt, v.id as vId, " +
+			"v.model as model, v.color as color, v.number as vNumber, v.name as vName, v.capacity as capacity, " +
+			"e.empNo as empNo, e.name as eName " +
+			"from vehicle_reservation vr " +
+			"left join vehicle v on v.id = vr.vehicleId " +
+			"left join employee e on e.id = vr.empId " +
+			"where vr.startedAt > :start and vr.modifiedAt < :end " +
+			"group by hour(vr.startedAt) order by hCount desc ", nativeQuery = true)
+	List<IVehicleWeekTimeDTO> weekstartMostReservedTime(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
 
 	@Query("select vr.endedAt as endedAt, v as vehicle " +
 			"from Vehicle v " +

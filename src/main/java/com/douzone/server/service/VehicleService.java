@@ -200,19 +200,34 @@ public class VehicleService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO weekMostReservedVehicle() {
+	public ResponseDTO weekMostReservedVehicle(Long datetime) {
 		log.info(METHOD_NAME + "- weekMostReservedVehicle");
+		LocalDateTime now = LocalDateTime.now();
 		return Optional.of(new ResponseDTO())
-				.map(v -> vehicleServiceMethod.convertToWeek(vehicleRepository.weekMostReservedVehicle(vehicleServiceMethod.now().minusDays(7L))))
+				.map(v ->
+						vehicleServiceMethod.convertToWeek(vehicleRepository.weekMostReservedVehicle(now, now.minusDays(datetime))))
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_WEEK, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + FAIL_EXIST_RESULT));
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseDTO weekMostReservedTime() {
+	public ResponseDTO weekMostReservedTime(Long datetime) {
 		log.info(METHOD_NAME + "- weekMostReservedTime");
+		LocalDateTime now = LocalDateTime.now();
 		return Optional.of(new ResponseDTO())
-				.map(v -> vehicleServiceMethod.convertToWeekTime(vehicleRepository.weekMostReservedTime(vehicleServiceMethod.now().minusDays(7L), vehicleServiceMethod.now())))
+				.map(v -> vehicleServiceMethod.convertToWeekTime(vehicleRepository.weekMostReservedTime(now.minusDays(datetime), now)))
+				.map(u -> u.size() > 0 ?
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, u) :
+						ResponseDTO.fail(HttpStatus.OK, FAIL_VEHICLE_BEST_DATE))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_DATE + FAIL_FIND_RESULT));
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseDTO weekstartMostReservedTime(Long datetime) {
+		log.info(METHOD_NAME + "- weekstartMostReservedTime");
+		LocalDateTime now = LocalDateTime.now();
+		return Optional.of(new ResponseDTO())
+				.map(v -> vehicleServiceMethod.convertToWeekTime(vehicleRepository.weekstartMostReservedTime(now.minusDays(datetime), now)))
 				.map(u -> u.size() > 0 ?
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_DATE, u) :
 						ResponseDTO.fail(HttpStatus.OK, FAIL_VEHICLE_BEST_DATE))
