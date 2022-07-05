@@ -11,10 +11,9 @@ import java.util.List;
 
 public interface VehicleBookmarkRepository extends JpaRepository<VehicleBookmark, Long> {
 
-	@Query("select v from VehicleBookmark vb " +
-			"join fetch Vehicle v on vb.vehicle.id = v.id " +
+	@Query("select vb from VehicleBookmark vb " +
 			"where vb.employee.empNo = :empNo")
-	List<Vehicle> findByMyBookMarkVehicle(@Param("empNo") String empNo);
+	List<VehicleBookmark> findByMyBookMarkVehicle(@Param("empNo") String empNo);
 
 	@Query("select v, count(vb) as vcount " +
 			"from VehicleBookmark vb " +

@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -247,7 +249,23 @@ public class VehicleService {
 	public ResponseDTO findByMyBookMarkVehicle(String empNo) {
 		log.info(METHOD_NAME + "- findMarkVehicle");
 		return Optional.of(new ResponseDTO())
-				.map(v -> vehicleServiceMethod.convertToVehicleOne(vehicleBookmarkRepository.findByMyBookMarkVehicle(empNo)))
+				.map(v -> {
+					List<VehicleBookMarkDTO> vList = new ArrayList<>();
+					List<VehicleBookmark> list = vehicleBookmarkRepository.findByMyBookMarkVehicle(empNo);
+					for (VehicleBookmark vehicleBookmark : list) {
+						List<String> imgList = vehicleServiceMethod.setPathToList(vehicleBookmark.getVehicle().getId());
+						vList.add(new VehicleBookMarkDTO().of(Vehicle.builder()
+										.id(vehicleBookmark.getVehicle().getId())
+										.name(vehicleBookmark.getVehicle().getName())
+										.color(vehicleBookmark.getVehicle().getColor())
+										.capacity(vehicleBookmark.getVehicle().getCapacity())
+										.model(vehicleBookmark.getVehicle().getModel())
+										.build(),
+								imgList,
+								vehicleBookmark.getId()));
+					}
+					return vList;
+				})
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_MARK, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_MARK + FAIL_EXIST_RESULT));
 	}
