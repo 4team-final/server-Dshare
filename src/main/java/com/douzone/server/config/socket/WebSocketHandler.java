@@ -24,6 +24,5 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		CalendarRoomDTO calendarRoomDTO = calendarService.findRoomById(timeMessageReqDTO.getUid());
 		calendarRoomDTO.handlerActions(session, timeMessageReqDTO, calendarService, timeService);
 	}
-
-
 }
+

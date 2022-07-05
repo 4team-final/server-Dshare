@@ -2,7 +2,9 @@ package com.douzone.server.config.s3;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -26,8 +28,10 @@ public class AwsS3 {
 	//Amazon-s3-sdk
 	private AmazonS3 s3Client;
 	private Regions clientRegion = Regions.AP_NORTHEAST_2;
+
 	@Value(value = "${aws-client.bucket}")
 	private String bucketName;
+
 
 	private AwsS3() {
 		this.createS3Client();
@@ -46,7 +50,10 @@ public class AwsS3 {
 
 	//aws S3 client 생성
 	private void createS3Client() {
-		this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider()).withRegion(clientRegion).build();
+
+		AWSCredentials credentials = new BasicAWSCredentials("AKIATFOPMF7F33OULPAI", "ScQ3JhYiV6LvTEfC9TbeBw/fECnibKLhN+U7tHNK");
+//		this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider()).withRegion(clientRegion).build();
+		this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(clientRegion).build();
 	}
 
 

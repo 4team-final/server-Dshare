@@ -145,23 +145,24 @@ public class RoomService {
 	public List<WeekCountHourResDTO> weekAndMonthReservationCount(int datetime) {
 
 		LocalDateTime now = this.now();
+
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
-		weekCountResDTOList.stream().map(WeekCountHourResDTO -> {
-
-			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(WeekCountHourResDTO.getRoomId(), now, nowMinusWeek);
-
-			reservationResDTOList.stream().map(reservationResDTO -> {
-				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
-				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
-				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
-				return reservationResDTO;
-			}).collect(Collectors.toList());
-
-			WeekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
-			return WeekCountHourResDTO;
-		}).collect(Collectors.toList());
+//		weekCountResDTOList.stream().map(WeekCountHourResDTO -> {
+//
+//			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(WeekCountHourResDTO.getRoomId(), now, nowMinusWeek);
+//
+//			reservationResDTOList.stream().map(reservationResDTO -> {
+//				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
+//				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
+//				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
+//				return reservationResDTO;
+//			}).collect(Collectors.toList());
+//
+//			WeekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+//			return WeekCountHourResDTO;
+//		}).collect(Collectors.toList());
 		return weekCountResDTOList;
 	}
 
@@ -182,19 +183,19 @@ public class RoomService {
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountHourResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCountHour(now, nowMinusWeek);
-		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
-
-			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
-			reservationResDTOList.stream().map(reservationResDTO -> {
-				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
-				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
-				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
-				return reservationResDTO;
-			}).collect(Collectors.toList());
-
-			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
-			return weekCountHourResDTO;
-		}).collect(Collectors.toList());
+//		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
+//
+//			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
+//			reservationResDTOList.stream().map(reservationResDTO -> {
+//				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
+//				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
+//				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
+//				return reservationResDTO;
+//			}).collect(Collectors.toList());
+//
+//			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+//			return weekCountHourResDTO;
+//		}).collect(Collectors.toList());
 		return weekCountHourResDTOList;
 	}
 
@@ -205,20 +206,20 @@ public class RoomService {
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountHourResDTOList = reservationQueryDSL.findByWeekAndMonthMeetingCountHour(now, nowMinusWeek);
-		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
-
-			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
-
-			reservationResDTOList.stream().map(reservationResDTO -> {
-				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
-				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
-				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
-				return reservationResDTO;
-			}).collect(Collectors.toList());
-
-			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
-			return weekCountHourResDTO;
-		}).collect(Collectors.toList());
+//		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
+//
+//			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
+//
+//			reservationResDTOList.stream().map(reservationResDTO -> {
+//				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
+//				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
+//				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
+//				return reservationResDTO;
+//			}).collect(Collectors.toList());
+//
+//			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+//			return weekCountHourResDTO;
+//		}).collect(Collectors.toList());
 		return weekCountHourResDTOList;
 	}
 
