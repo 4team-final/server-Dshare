@@ -3,6 +3,7 @@ package com.douzone.server.service;
 
 import com.douzone.server.config.socket.TimeRepository;
 import com.douzone.server.config.socket.TimeService;
+import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
@@ -449,7 +450,7 @@ public class RoomService {
 					}
 					return rList;
 				})
-				.map(res -> ResponseDTO.of(HttpStatus.OK, "", res))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+				.map(res -> ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_SELECT_ROOM_ALL, res))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, Msg.FAIL_SELECT_ROOM_ALL));
 	}
 }

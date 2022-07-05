@@ -151,4 +151,9 @@ public interface Msg {
 	String FAIL_DOUBLE_ACCESS_SOCKET_CONNECT = "중복된 세션의 접근으로 인하여 소켓과의 통신이 종료되었습니다.";
 	String EXPIRED_TOKEN = "expired_token ";
 	String RE_LOGIN_REQUEST = "refresh_expired ";
+	String SUCCESS_SELECT_ROOM_ALL = "전체 회의실 조회에 성공하였습니다.";
+	String SUCCESS_SELECT_VEHICLE_ALL = "전체 차량 조회에 성공하였습니다.";
+	String SUCCESS_SELECT_EMP_NO = "현재 로그인 중인 사원의 사번 조회에 성공하였습니다.";
+	String FAIL_SELECT_ROOM_ALL = "전체 회의실 조회에 성공하였습니다.";
+	String FAIL_SELECT_VEHICLE_ALL = "전체 차량 조회에 실패하였습니다.";
 }

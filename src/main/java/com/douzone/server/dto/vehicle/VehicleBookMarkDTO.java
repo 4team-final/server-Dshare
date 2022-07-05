@@ -23,10 +23,12 @@ public class VehicleBookMarkDTO {
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 	private List<String> imgList;
+	private Long vehicleId;
 
-	public VehicleBookMarkDTO of(Vehicle vehicle, List<String> list) {
+	public VehicleBookMarkDTO of(Vehicle vehicle, List<String> list, Long id) {
 		return VehicleBookMarkDTO.builder()
-				.id(vehicle.getId())
+				.id(id)
+				.vehicleId(vehicle.getId())
 				.name(vehicle.getName())
 				.model(vehicle.getModel())
 				.color(vehicle.getColor())
