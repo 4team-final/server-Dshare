@@ -25,6 +25,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static com.douzone.server.config.utils.Msg.FAIL_SIGN_IN;
 import static com.douzone.server.config.utils.Msg.SUCCESS_SIGN_IN;
@@ -92,15 +93,17 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 				CommonTokenDTO commonTokenDTO = jwtTokenProvider.generateToken(principal);
 				if (!jwtTokenProvider.updateRefresh(commonTokenDTO.getReIssuanceTokenDTO()))
 					log.warn("Token Set Update to Token Repository - Fail");
+				List<String> list = jwtTokenProvider.putRefresh(commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken());
+				response.addHeader(list.get(0), list.get(1));
 				response.addHeader(headerKeyAccess, typeAccess + commonTokenDTO.getAccessToken());
-				response.addCookie(jwtTokenProvider.generateCookie(commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken()));
 			} else {
 				log.info("First Login User - Token issuance");
 				CommonTokenDTO commonTokenDTO = jwtTokenProvider.generateToken(principal);
 				if (!jwtTokenProvider.saveRefresh(commonTokenDTO.getReIssuanceTokenDTO()))
 					log.warn("Token Set Save to Token Repository - Fail");
+				List<String> list = jwtTokenProvider.putRefresh(commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken());
+				response.addHeader(list.get(0), list.get(1));
 				response.addHeader(headerKeyAccess, typeAccess + commonTokenDTO.getAccessToken());
-				response.addCookie(jwtTokenProvider.generateCookie(commonTokenDTO.getReIssuanceTokenDTO().getRefreshToken()));
 			}
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write(new ResponseHandler().convertResult(HttpStatus.OK, SUCCESS_SIGN_IN));

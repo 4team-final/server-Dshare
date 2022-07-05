@@ -8,6 +8,4 @@ public interface IVehicleDateResDTO {
 	LocalDateTime getEndedAt();
 
 	Vehicle getVehicle();
-
-	String getVehicleImg();
 }

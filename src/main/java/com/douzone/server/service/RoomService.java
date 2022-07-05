@@ -1,20 +1,21 @@
 package com.douzone.server.service;
 
 
-import com.douzone.server.config.socket.Calendar;
-import com.douzone.server.config.socket.Time;
 import com.douzone.server.config.socket.TimeRepository;
 import com.douzone.server.config.socket.TimeService;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.reservation.*;
 import com.douzone.server.dto.room.*;
-import com.douzone.server.entity.*;
+import com.douzone.server.entity.MeetingRoom;
+import com.douzone.server.entity.RoomImg;
+import com.douzone.server.entity.RoomObject;
+import com.douzone.server.entity.RoomReservation;
 import com.douzone.server.exception.*;
 import com.douzone.server.repository.*;
 import com.douzone.server.repository.querydsl.RoomQueryDSL;
 import com.douzone.server.repository.querydsl.RoomReservationQueryDSL;
-import com.douzone.server.service.method.ServiceMethod;
+import com.douzone.server.service.method.RoomServiceMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +42,7 @@ public class RoomService {
 	private final RoomImgRepository roomImgRepository;
 	private final RoomObjectRepository roomObjectRepository;
 	private final RoomQueryDSL roomQueryDSL;
-	private final ServiceMethod serviceMethod;
+	private final RoomServiceMethod roomServiceMethod;
 	private final TimeRepository timeRepository;
 	private final TimeService timeService;
 	private final EmployeeRepository employeeRepository;
@@ -52,7 +52,7 @@ public class RoomService {
 	public List<ReservationResDTO> recentReservation(int limit) {
 		List<RoomReservation> roomReservationList = reservationQueryDSL.findRecentReservation(limit);
 		List<ReservationResDTO> reservationResDTOList = roomReservationList.stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
 					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
@@ -106,13 +106,13 @@ public class RoomService {
 		List<RoomReservation> afterReservationList = reservationQueryDSL.findByAfterReservation(empId);
 
 		List<ReservationResDTO> beforeList = beforeReservationList.stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return reservationResDTO;
 		}).collect(Collectors.toList());
 
 		List<ReservationResDTO> afterList = afterReservationList.stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return reservationResDTO;
 		}).collect(Collectors.toList());
@@ -126,7 +126,7 @@ public class RoomService {
 		List<RoomReservation> ReservationList = roomQueryDSL.selectAllReservationPage(lastId, limit, empId);
 		long total = roomQueryDSL.countReservation(empId);
 		List<ReservationPagingRes> MyList = ReservationList.stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return new ReservationPagingRes().of(reservationResDTO, total, limit, lastId);
 		}).collect(Collectors.toList());
@@ -142,23 +142,24 @@ public class RoomService {
 	public List<WeekCountHourResDTO> weekAndMonthReservationCount(int datetime) {
 
 		LocalDateTime now = this.now();
+
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCount(now, nowMinusWeek);
-		weekCountResDTOList.stream().map(WeekCountHourResDTO -> {
-
-			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(WeekCountHourResDTO.getRoomId(), now, nowMinusWeek);
-
-			reservationResDTOList.stream().map(reservationResDTO -> {
-				List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
-				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
-				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
-				return reservationResDTO;
-			}).collect(Collectors.toList());
-
-			WeekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
-			return WeekCountHourResDTO;
-		}).collect(Collectors.toList());
+//		weekCountResDTOList.stream().map(WeekCountHourResDTO -> {
+//
+//			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(WeekCountHourResDTO.getRoomId(), now, nowMinusWeek);
+//
+//			reservationResDTOList.stream().map(reservationResDTO -> {
+//				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
+//				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
+//				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
+//				return reservationResDTO;
+//			}).collect(Collectors.toList());
+//
+//			WeekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+//			return WeekCountHourResDTO;
+//		}).collect(Collectors.toList());
 		return weekCountResDTOList;
 	}
 
@@ -179,19 +180,19 @@ public class RoomService {
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountHourResDTOList = reservationQueryDSL.findByWeekAndMonthReservationCountHour(now, nowMinusWeek);
-		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
-
-			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
-			reservationResDTOList.stream().map(reservationResDTO -> {
-				List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
-				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
-				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
-				return reservationResDTO;
-			}).collect(Collectors.toList());
-
-			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
-			return weekCountHourResDTO;
-		}).collect(Collectors.toList());
+//		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
+//
+//			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
+//			reservationResDTOList.stream().map(reservationResDTO -> {
+//				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
+//				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
+//				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
+//				return reservationResDTO;
+//			}).collect(Collectors.toList());
+//
+//			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+//			return weekCountHourResDTO;
+//		}).collect(Collectors.toList());
 		return weekCountHourResDTOList;
 	}
 
@@ -202,27 +203,27 @@ public class RoomService {
 		LocalDateTime nowMinusWeek = now.minusDays(datetime);
 
 		List<WeekCountHourResDTO> weekCountHourResDTOList = reservationQueryDSL.findByWeekAndMonthMeetingCountHour(now, nowMinusWeek);
-		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
-
-			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
-
-			reservationResDTOList.stream().map(reservationResDTO -> {
-				List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
-				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
-				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
-				return reservationResDTO;
-			}).collect(Collectors.toList());
-
-			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
-			return weekCountHourResDTO;
-		}).collect(Collectors.toList());
+//		weekCountHourResDTOList.stream().map(weekCountHourResDTO -> {
+//
+//			List<ReservationResDTO> reservationResDTOList = this.findByMeetingRoom_Id(weekCountHourResDTO.getRoomId(), now, nowMinusWeek);
+//
+//			reservationResDTOList.stream().map(reservationResDTO -> {
+//				List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(reservationResDTO);
+//				reservationResDTO.getRoom().setRoomObjectResDTOList((List<RoomObjectResDTO>) twoList.get(0));
+//				reservationResDTO.getRoom().setRoomImgResDTOList((List<RoomImgResDTO>) twoList.get(1));
+//				return reservationResDTO;
+//			}).collect(Collectors.toList());
+//
+//			weekCountHourResDTO.setReservationResDTOList(reservationResDTOList);
+//			return weekCountHourResDTO;
+//		}).collect(Collectors.toList());
 		return weekCountHourResDTOList;
 	}
 
 	@Transactional
 	public List<ReservationResDTO> selectAllReservation() {
 		List<ReservationResDTO> reservationResDTOList = roomQueryDSL.selectAllReservation().stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
 					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return reservationResDTO;
@@ -240,7 +241,7 @@ public class RoomService {
 	public List<ReservationPagingRes> selectAllReservation(long lastId, int limit) {
 		long total = roomQueryDSL.countReservation();
 		List<ReservationPagingRes> reservationPagingResList = roomQueryDSL.selectAllReservationPage(lastId, limit).stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
 					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return new ReservationPagingRes().of(reservationResDTO, total, limit, lastId);
@@ -251,8 +252,9 @@ public class RoomService {
 
 	@Transactional
 	public List<ReservationResDTO> selectByRoomNoElseCapacityElseReservation(RoomReservationSearchDTO search) {
+
 		return roomQueryDSL.selectByRoomNoElseCapacityElseReservation(search).stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
 					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return reservationResDTO;
@@ -262,7 +264,7 @@ public class RoomService {
 	@Transactional
 	public List<ReservationResDTO> selectByDateRoomReservation(String startTime, String endTime) {
 		return roomQueryDSL.selectDateTimeReservation(startTime, endTime).stream().map(roomReservation -> {
-			List<List<?>> twoList = serviceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
 					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return reservationResDTO;
@@ -272,7 +274,7 @@ public class RoomService {
 	@Transactional
 	public List<RoomResDTO> selectByLimitBookmark(int limit) {
 		List<RoomBookmarkResDTO> roomBookmarkResDTOList = roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
-		return serviceMethod.RoomImgListAndRoomObjectList(roomBookmarkResDTOList);
+		return roomServiceMethod.RoomImgListAndRoomObjectList(roomBookmarkResDTOList);
 	}
 
 	@Transactional
@@ -349,7 +351,7 @@ public class RoomService {
 		// 회의실 사진 삭제 후 저장
 		List<RoomImg> roomImgList = roomImgRepository.findByMeetingRoom_Id(roomId);
 		List<String> CurrentImgPath = roomImgRepository.findPathByRoomId(roomId);
-		if (roomImgList.size()==0) {
+		if (roomImgList.size() == 0) {
 			throw new RoomImgNotFoundException(ErrorCode.ROOM_OBJECT_NOT_FOUND);
 		}
 //		-> 회의실 사진이 없을경우 나머지도 수정안되고 오류던지고 끝난다.
@@ -362,10 +364,10 @@ public class RoomService {
 
 		// 회의실 이미지 등록
 		//파일 업로드시 아무 파일을 업로드하지 않아도 리스트에 뭔가가 들어있음 -> 그래서 이상한 파일이 올라감
-		long count = files.stream().filter(t->!t.isEmpty()).count();
+		long count = files.stream().filter(t -> !t.isEmpty()).count();
 		//-> 리스트를 까서 file이 빈파일이 아닌것만 센다. 이렇게 하면 아무것도 안넘겼을 시 0이 나온다.
 		//-> System.out.println(files.size()); 하면 1이 나온다. 디폴트로
-		if(count != 0) {
+		if (count != 0) {
 			List<UploadDTO> uploadDTOS = uploadUtils.upload(files, basePath);
 			uploadDTOS.stream().map(uploadDTO -> {
 				long id = roomImgRepository.save(UploadDTO.builder().build().room_of(roomId, uploadDTO)).getId();
@@ -378,33 +380,33 @@ public class RoomService {
 	@Transactional
 	public Long save(RegistReservationReqDto registReservationReqDto) {
 
-		// 타임 테이블에도 반영해줘야함
-		String empNo = employeeRepository.findById(registReservationReqDto.getEmpId()).orElseThrow(()->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND)).getEmpNo();
-		String uid = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-		System.out.println(uid);
-		//9:00 ~ 11:00
-		String[] timeTable =
-				{"09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30"
-				,"14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"};
-		String startTime = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
-		String endTime = registReservationReqDto.getEndedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
-
-		int startNum = 0;
-		int endNum = 0;
-		Integer[] time = new Integer[18];
-		for(int i = 0 ; i < time.length ; i++) {
-			time[i]=0;
-		}
-		for(int i = 0 ; i < timeTable.length ; i++) {
-			if(startTime.equals(timeTable[i])) startNum = i;
-			if(endTime.equals(timeTable[i])) endNum = i;
-		}
-		for(int i = startNum ; i <= endNum ; i ++) {
-			time[i] = 1;
-		}
-		for(int i = 0 ; i <= time.length ; i++) {
-			timeService.updateTime(uid, time, empNo, Integer.parseInt(registReservationReqDto.getRoomId()+""));
-		}
+//		// 타임 테이블에도 반영해줘야함
+//		String empNo = employeeRepository.findById(registReservationReqDto.getEmpId()).orElseThrow(()->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND)).getEmpNo();
+//		String uid = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//		System.out.println(uid);
+//		//9:00 ~ 11:00
+//		String[] timeTable =
+//				{"09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30"
+//				,"14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"};
+//		String startTime = registReservationReqDto.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
+//		String endTime = registReservationReqDto.getEndedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")).split("일 ")[1];
+//
+//		int startNum = 0;
+//		int endNum = 0;
+//		Integer[] time = new Integer[18];
+//		for(int i = 0 ; i < time.length ; i++) {
+//			time[i]=0;
+//		}
+//		for(int i = 0 ; i < timeTable.length ; i++) {
+//			if(startTime.equals(timeTable[i])) startNum = i;
+//			if(endTime.equals(timeTable[i])) endNum = i;
+//		}
+//		for(int i = startNum ; i <= endNum ; i ++) {
+//			time[i] = 1;
+//		}
+//		for(int i = 0 ; i <= time.length ; i++) {
+//			timeService.updateTime(uid, time, empNo, Integer.parseInt(registReservationReqDto.getRoomId()+""));
+//		}
 		return roomReservationRepository.save(RoomReservation.builder().build().of(registReservationReqDto)).getId();
 	}
 

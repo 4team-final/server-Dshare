@@ -4,6 +4,7 @@ import com.douzone.server.dto.token.CommonTokenDTO;
 import com.douzone.server.dto.token.ReIssuanceTokenDTO;
 import com.douzone.server.dto.token.TokenResDTO;
 import com.douzone.server.entity.Token;
+import com.douzone.server.exception.TokenSetNotFoundException;
 import com.douzone.server.repository.TokenRepository;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
+
+import static com.douzone.server.exception.ErrorCode.TOKEN_SET_NOT_FOUND_ERROR;
 
 /**
  * generateToken() : 사번 값을 입력하여 accessToken, refreshToken 을 CommonTokenSet 으로 리턴
@@ -93,17 +94,18 @@ public class JwtTokenProvider {
 		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
 	}
 
-	public boolean validateToken(String token) {
+	public Integer validateToken(String token) {
 		log.info(METHOD_NAME + "- validateToken() ...");
 		try {
 			Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-			return true;
+			return 0;
 		} catch (SignatureException se) {
 			log.error("잘못된 서명 " + METHOD_NAME, se);
 		} catch (MalformedJwtException me) {
 			log.error("잘못된 토큰 " + METHOD_NAME, me);
 		} catch (ExpiredJwtException ee) {
 			log.error("만료된 토큰 " + METHOD_NAME, ee);
+			return 2;
 		} catch (UnsupportedJwtException ue) {
 			log.error("지원되지 않는 토큰 " + METHOD_NAME, ue);
 		} catch (IllegalArgumentException ie) {
@@ -111,24 +113,23 @@ public class JwtTokenProvider {
 		} catch (NullPointerException ne) {
 			log.error("존재하지 않는 토큰 " + METHOD_NAME, ne);
 		}
-		return false;
+		return 1;
 	}
 
 	public TokenResDTO requestCheckToken(HttpServletRequest request) {
 		log.info(METHOD_NAME + "- requestCheckToken() ...");
 		try {
-			String token = request.getHeader(headerKeyAccess);
-
-			if (token.startsWith(typeAccess)) {
+			if (request.getHeader(headerKeyAccess).startsWith(typeAccess) && !request.getHeader(headerKeyAccess).endsWith("undefined")) {
 				return TokenResDTO.builder()
 						.code(0)
-						.token(token.replace(typeAccess, ""))
+						.token(request.getHeader(headerKeyAccess).replace(typeAccess, ""))
 						.build();
 			}
-			if (token.startsWith(typeRefresh)) {
+			if (request.getHeader(headerKeyRefresh).startsWith(typeRefresh)) {
 				return TokenResDTO.builder()
 						.code(1)
-						.token(token.replace(typeRefresh, "")).build();
+						.token(request.getHeader(headerKeyRefresh).replace(typeRefresh, ""))
+						.build();
 			}
 		} catch (NullPointerException ne) {
 			log.error("요청 값이 비어 있습니다. " + METHOD_NAME);
@@ -157,7 +158,7 @@ public class JwtTokenProvider {
 	public boolean validateRefreshToken(String token) {
 		log.info(METHOD_NAME + "- validateExistingToken() ...");
 		try {
-			if (this.validateToken(token)) {
+			if (this.validateToken(token) == 0) {
 				String userPk = this.getUserPk(token);
 				String existingToken = tokenRepository.findByEmpNo(userPk).getRefreshToken();
 				if (existingToken.equals(token)) return true;
@@ -181,13 +182,15 @@ public class JwtTokenProvider {
 		return false;
 	}
 
-	public Cookie generateCookie(String value) {
-		log.info(METHOD_NAME + "- generateCookie() ...");
-		Cookie cookie = new Cookie(headerKeyRefresh, typeRefresh + value);
-		cookie.setMaxAge((int) refreshValidTime);
-		cookie.setSecure(true);
-		cookie.setHttpOnly(true);
-		cookie.setPath("/");
-		return cookie;
+	public List<String> putRefresh(String value) {
+		log.info(METHOD_NAME + "- putRefresh() ...");
+		return Optional.of(new ArrayList<String>())
+				.filter(v -> (value != null))
+				.map(res -> {
+					res.add(headerKeyRefresh);
+					res.add(typeRefresh + value);
+					return res;
+				})
+				.orElseThrow(() -> new TokenSetNotFoundException(TOKEN_SET_NOT_FOUND_ERROR));
 	}
 }

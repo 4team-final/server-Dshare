@@ -9,7 +9,7 @@ import com.douzone.server.entity.MeetingRoom;
 import com.douzone.server.entity.RoomBookmark;
 import com.douzone.server.repository.*;
 import com.douzone.server.repository.querydsl.EmployeeQueryDSL;
-import com.douzone.server.service.method.ServiceMethod;
+import com.douzone.server.service.method.RoomServiceMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ public class EmployeeService {
 	private final RoomRepository roomRepository;
 	private final RoomImgRepository roomImgRepository;
 	private final RoomObjectRepository roomObjectRepository;
-	private final ServiceMethod serviceMethod;
+	private final RoomServiceMethod roomServiceMethod;
 
 	@Transactional
 	public List<EmpTestDTO> queryDSLTest(long positionId) {
@@ -54,7 +54,7 @@ public class EmployeeService {
 	@Transactional
 	public List<RoomResDTO> selectByMyBookmark(int empNo) {
 		List<RoomBookmarkResDTO> roomBookmarkResDTOList = employeeQueryDSL.selectByMyBookmark(empNo);
-		return serviceMethod.RoomImgListAndRoomObjectList(roomBookmarkResDTOList);
+		return roomServiceMethod.RoomImgListAndRoomObjectList(roomBookmarkResDTOList);
 	}
 
 

@@ -68,7 +68,7 @@ public class RoomController {
 
 	//페이징
 	@GetMapping("/reservation/my/{lastId}/{limit}")
-	public ResponseEntity<ResponseDTO> myReservation(@PathVariable("lastId") long lastId, @PathVariable("limit") int limit, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> myReservation(@PathVariable("lastId") long lastId, @PathVariable("limit") int limit,@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE_MY, roomService.myReservation(principalDetails.getEmployee().getId(), lastId, limit)));
 	}
 
@@ -103,7 +103,7 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation(lastId, limit)));
 	}
 
-	@GetMapping("/reservation/roomNo-capacity-time")
+	@PostMapping("/reservation/roomNo-capacity-time")
 	public ResponseEntity<ResponseDTO> selectByRoomNoElseCapacityElseReservation(@RequestBody RoomReservationSearchDTO search) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_NO, roomService.selectByRoomNoElseCapacityElseReservation(search)));
 	}

@@ -108,4 +108,18 @@ public class VehicleSocketService {
 				.map(res -> res.get().stream().map(time -> VehicleSocketResDTO.builder().build().of(time)).collect(Collectors.toList()))
 				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
 	}
+
+	@Transactional
+	public void resetIsSeat(Long vid, String uid, String empNo) {
+		Optional.ofNullable(uid)
+				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vid))
+				.filter(Optional::isPresent)
+				.map(res -> {
+					for (int i = 0; i < res.get().size(); i++) {
+						res.get().get(i).updateTimeVehicle(0, empNo);
+					}
+					return res.get();
+				})
+				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
+	}
 }

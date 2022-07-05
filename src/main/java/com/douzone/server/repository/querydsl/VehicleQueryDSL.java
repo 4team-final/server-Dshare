@@ -14,7 +14,6 @@ import java.util.List;
 
 import static com.douzone.server.entity.QEmployee.employee;
 import static com.douzone.server.entity.QVehicle.vehicle;
-import static com.douzone.server.entity.QVehicleImg.vehicleImg;
 import static com.douzone.server.entity.QVehicleReservation.vehicleReservation;
 
 @Repository
@@ -60,13 +59,13 @@ public class VehicleQueryDSL {
 		return jpaQueryFactory
 				.select(new QVehicleVariousDTO(
 						vehicleReservation.id,
+						vehicle.id.as("vId"),
 						vehicleReservation.reason,
 						vehicleReservation.title,
 						vehicle.name.as("vName"),
 						vehicle.number.as("vNumber"),
 						vehicle.model,
 						vehicle.color,
-						vehicleImg.path.as("vehicleImg"),
 						employee.empNo,
 						employee.name.as("eName"),
 						employee.email,
@@ -84,7 +83,6 @@ public class VehicleQueryDSL {
 				.from(vehicleReservation)
 				.leftJoin(vehicleReservation.vehicle, vehicle)
 				.leftJoin(vehicleReservation.employee, employee)
-				.leftJoin(vehicleImg).on(vehicleReservation.vehicle.id.eq(vehicleImg.vehicle.id))
 				.where(
 						vehicleIdEq(search.getVehicleId()),
 						capacityEq(search.getCapacity()),
