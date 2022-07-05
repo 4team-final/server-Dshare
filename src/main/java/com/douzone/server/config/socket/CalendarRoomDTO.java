@@ -34,16 +34,6 @@ public class CalendarRoomDTO {
 	public void handlerActions(WebSocketSession session, TimeMessageReqDTO timeMessageReqDTO, CalendarService calendarService, TimeService timeService) {
 
 		if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.ENTER)) {
-//			String empNo = session.getPrincipal().getName();
-//			Iterator<WebSocketSession> res = sessions.iterator();
-//			while (res.hasNext()) {
-//				String compareEmpNo = res.next().getPrincipal().getName();
-//				if (compareEmpNo.equals(empNo)) {
-//					sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, calendarService);
-//					return;
-//				}
-//			}
-
 			sessions.add(session);
 			List<TimeMessageResDTO> resDTOList = timeService.selectTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getRoomId(), TimeMessageReqDTO.MessageType.ENTER);
 
@@ -53,43 +43,46 @@ public class CalendarRoomDTO {
 					.build();
 
 			sendMessage(socketResDTO, calendarService);
-
-			autoDisconnect(session, calendarService); // 시간
-
-
+			autoDisconnect(session, calendarService);
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.TALK)) {
 
 			timeService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo(), timeMessageReqDTO.getRoomId());
 			List<TimeMessageResDTO> resDTOList = timeService.selectTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getRoomId(), TimeMessageReqDTO.MessageType.ENTER);
 			SocketResDTO socketResDTO = SocketResDTO.builder()
 					.results(resDTOList)
-					.message(timeMessageReqDTO.getEmpNo() + " 사번의 사원이 " + timeMessageReqDTO.getUid() + " 날짜의 " + timeMessageReqDTO.getRoomId() + " 번 회의실을 구경중입니다.")
+					.message(timeMessageReqDTO.getEmpNo() + " 사번의 사원이 " + timeMessageReqDTO.getUid() + " 날짜의 " + timeMessageReqDTO.getRoomId() + " 번 회의실을 선점하였습니다.")
 					.build();
 			sendMessage(socketResDTO, calendarService);
-			sessions.remove(session);
-			this.close(session);
-
+//			sessions.remove(session);
+//			this.close(session);
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.QUIT)) {
 
 			//여기는 isSeat 변환점이 있는지 확인하고 , 다시 타임테이블 되돌리는 로직이 필요함
 
 			// 시간 - 날짜  : 버튼 (다시 날짜를 선택하게)
-			TimeMessageResDTO timeMessageResDTO = TimeMessageResDTO.builder()
-					.uid(timeMessageReqDTO.getUid())
-					.empNo(timeMessageReqDTO.getEmpNo())
-					.build();
 
-			sendMessage(timeMessageResDTO, calendarService);
+			SocketResDTO socketResDTO = SocketResDTO.builder()
+					.message(timeMessageReqDTO.getEmpNo() + " 사번의 사원이 " + timeMessageReqDTO.getUid() + "방에서 접속을 종료하였습니다.")
+					.build();
+			sendMessage(socketResDTO, calendarService);
 			sessions.remove(session);
 			this.close(session);
 		} else {
 			if (sessions.contains(session)) {
-				sendMessage(session, FAIL_ACCESS_SOCKET_CONNECT, calendarService);
+				sendMessage(session,
+						SocketResDTO.builder()
+								.message(FAIL_ACCESS_SOCKET_CONNECT)
+								.build(),
+						calendarService);
 				sessions.remove(session);
 				this.close(session);
 				return;
 			}
-			sendMessage(session, FAIL_ACCESS_SOCKET_TYPE, calendarService);
+			sendMessage(session,
+					SocketResDTO.builder()
+							.message(FAIL_ACCESS_SOCKET_TYPE)
+							.build(),
+					calendarService);
 			this.close(session);
 		}
 	}
@@ -97,7 +90,6 @@ public class CalendarRoomDTO {
 	@Synchronized
 	private void close(WebSocketSession session) {
 		try {
-			if (sessions.size() < 2) return;
 			if (session.isOpen()) {
 				session.close();
 			}

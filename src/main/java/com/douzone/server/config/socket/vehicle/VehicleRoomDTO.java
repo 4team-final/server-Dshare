@@ -33,22 +33,6 @@ public class VehicleRoomDTO {
 	@Synchronized
 	public void handlerActions(WebSocketSession session, VehicleSocketDTO vehicleSocketDTO, VehicleSocketService service) {
 		if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.ENTER)) {
-//			Optional.ofNullable(session.getPrincipal())
-//					.map(Principal::getName)
-//					.map(res -> sessions.stream()
-//							.filter(v -> v.getPrincipal() != null)
-//							.map(v -> v.getPrincipal().getName())
-//							.filter(v -> v.equals(res))
-//							.peek(v -> sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, service)))
-//					.orElseThrow(() -> new UsernameNotFoundException("websocket session is empty"));
-//			String empNo = Objects.requireNonNull(session.getPrincipal()).getName();
-//			for (WebSocketSession webSocketSession : sessions) {
-//				String compareEmpNo = Objects.requireNonNull(webSocketSession.getPrincipal()).getName();
-//				if (compareEmpNo.equals(empNo)) {
-//					sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, service);
-//					return;
-//				}
-//			}
 			sessions.add(session);
 			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
 			SocketResDTO socketResDTO = SocketResDTO.builder()
@@ -57,35 +41,51 @@ public class VehicleRoomDTO {
 					.build();
 
 			sendMessage(socketResDTO, service);
-
 			autoDisconnect(session, service);
-			sendMessage(vehicleSocketDTO.getEmpNo() + VehicleSocketDTO.MessageType.ENTER, service);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.TALK)) {
 			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getTime(), vehicleSocketDTO.getEmpNo());
 			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
-			SocketResDTO socketResDTO = SocketResDTO.builder().results(list).message(vehicleSocketDTO.getEmpNo() + " 사번의 사원이 " + vehicleSocketDTO.getUid() + " 날짜의 " + vehicleSocketDTO.getVehicleId() + " 번 차량을 선점하였습니다.").build();
+			SocketResDTO socketResDTO = SocketResDTO.builder()
+					.results(list)
+					.message(vehicleSocketDTO.getEmpNo() + " 사번의 사원이 " + vehicleSocketDTO.getUid() + " 날짜의 " + vehicleSocketDTO.getVehicleId() + " 번 차량을 선점하였습니다.")
+					.build();
 			sendMessage(socketResDTO, service);
 //			remove(session);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.DUAL)) {
 			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getMessage(), vehicleSocketDTO.getTime()[0], vehicleSocketDTO.getTime()[1], vehicleSocketDTO.getEmpNo());
 			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
-			sendMessage(list, service);
+			SocketResDTO socketResDTO = SocketResDTO.builder()
+					.results(list)
+					.message(vehicleSocketDTO.getEmpNo() + " 사번의 사원이 " + vehicleSocketDTO.getUid() + " 날짜의 " + vehicleSocketDTO.getVehicleId() + " 번 차량을 선점하였습니다.")
+					.build();
+			sendMessage(socketResDTO, service);
 			remove(session);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.QUIT)) {
-			VehicleSocketResDTO vehicleSocketResDTO = VehicleSocketResDTO.builder()
-					.uid(vehicleSocketDTO.getUid())
-					.empNo(vehicleSocketDTO.getEmpNo())
+			SocketResDTO socketResDTO = SocketResDTO.builder()
+					.message(vehicleSocketDTO.getEmpNo() + " 사번의 사원이 " + vehicleSocketDTO.getUid() + "방에서 접속을 종료하였습니다.")
 					.build();
-			sendMessage(vehicleSocketResDTO, service);
-			sendMessage(session, SUCCESS_DISCONNECT_VEHICLE_SOCKET, service);
+			sendMessage(socketResDTO, service);
+			sendMessage(session,
+					SocketResDTO.builder()
+							.message(SUCCESS_DISCONNECT_VEHICLE_SOCKET)
+							.build(),
+					service);
 			remove(session);
 		} else {
 			if (sessions.contains(session)) {
-				sendMessage(session, FAIL_ACCESS_SOCKET_CONNECT, service);
+				sendMessage(session,
+						SocketResDTO.builder()
+								.message(FAIL_ACCESS_SOCKET_CONNECT)
+								.build(),
+						service);
 				remove(session);
 				return;
 			}
-			sendMessage(session, FAIL_ACCESS_SOCKET_TYPE, service);
+			sendMessage(session,
+					SocketResDTO.builder()
+							.message(FAIL_ACCESS_SOCKET_TYPE)
+							.build(),
+					service);
 		}
 	}
 
@@ -134,7 +134,6 @@ public class VehicleRoomDTO {
 	@Synchronized
 	private void close(WebSocketSession session) {
 		try {
-			if (sessions.size() < 2) return;
 			if (session.isOpen()) {
 				session.close();
 			}
