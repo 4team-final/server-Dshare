@@ -35,15 +35,15 @@ public class CalendarRoomDTO {
 
 		if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.ENTER)) {
 
-			String empNo = session.getPrincipal().getName();
-			Iterator<WebSocketSession> res = sessions.iterator();
-			while (res.hasNext()) {
-				String compareEmpNo = res.next().getPrincipal().getName();
-				if (compareEmpNo.equals(empNo)) {
-					sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, calendarService);
-					return;
-				}
-			}
+//			String empNo = session.getPrincipal().getName();
+//			Iterator<WebSocketSession> res = sessions.iterator();
+//			while (res.hasNext()) {
+//				String compareEmpNo = res.next().getPrincipal().getName();
+//				if (compareEmpNo.equals(empNo)) {
+//					sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, calendarService);
+//					return;
+//				}
+//			}
 
 			sessions.add(session);
 			List<TimeMessageResDTO> resDTOList = timeService.selectTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getRoomId(), TimeMessageReqDTO.MessageType.ENTER);
@@ -61,7 +61,11 @@ public class CalendarRoomDTO {
 
 			timeService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo(), timeMessageReqDTO.getRoomId());
 			List<TimeMessageResDTO> resDTOList = timeService.selectTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getRoomId(), TimeMessageReqDTO.MessageType.ENTER);
-			sendMessage(resDTOList, calendarService);
+			SocketResDTO socketResDTO = SocketResDTO.builder()
+					.results(resDTOList)
+					.message(timeMessageReqDTO.getEmpNo() + " 사번의 사원이 " + timeMessageReqDTO.getUid() + " 날짜의 " + timeMessageReqDTO.getRoomId() + " 번 회의실을 구경중입니다.")
+					.build();
+			sendMessage(socketResDTO, calendarService);
 			sessions.remove(session);
 			this.close(session);
 
@@ -90,7 +94,10 @@ public class CalendarRoomDTO {
 	@Synchronized
 	private void close(WebSocketSession session) {
 		try {
-			session.close();
+			if (sessions.size() < 2) return;
+			if (session.isOpen()) {
+				session.close();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -98,7 +105,11 @@ public class CalendarRoomDTO {
 
 	private <T> void sendMessage(T message, CalendarService calendarService) {
 		sessions.parallelStream()
-				.forEach(session -> calendarService.sendMessage(session, message));
+				.forEach(session -> {
+					if (session.isOpen()) {
+						calendarService.sendMessage(session, message);
+					}
+				});
 	}
 
 	private <T> void sendMessage(WebSocketSession s, T message, CalendarService calendarService) {

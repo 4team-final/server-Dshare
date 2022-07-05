@@ -6,11 +6,9 @@ import com.douzone.server.exception.WebsocketIOException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.*;
 
 import static com.douzone.server.config.utils.Msg.*;
@@ -32,30 +30,42 @@ public class VehicleRoomDTO {
 		this.uid = uid;
 	}
 
+	@Synchronized
 	public void handlerActions(WebSocketSession session, VehicleSocketDTO vehicleSocketDTO, VehicleSocketService service) {
 		if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.ENTER)) {
-			Optional.ofNullable(session.getPrincipal())
-					.map(Principal::getName)
-					.map(res -> sessions.stream()
-							.filter(v -> v.getPrincipal() != null)
-							.map(v -> v.getPrincipal().getName())
-							.filter(v -> v.equals(res))
-							.peek(v -> sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, service)))
-					.orElseThrow(() -> new UsernameNotFoundException("websocket session is empty"));
+//			Optional.ofNullable(session.getPrincipal())
+//					.map(Principal::getName)
+//					.map(res -> sessions.stream()
+//							.filter(v -> v.getPrincipal() != null)
+//							.map(v -> v.getPrincipal().getName())
+//							.filter(v -> v.equals(res))
+//							.peek(v -> sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, service)))
+//					.orElseThrow(() -> new UsernameNotFoundException("websocket session is empty"));
+//			String empNo = Objects.requireNonNull(session.getPrincipal()).getName();
+//			for (WebSocketSession webSocketSession : sessions) {
+//				String compareEmpNo = Objects.requireNonNull(webSocketSession.getPrincipal()).getName();
+//				if (compareEmpNo.equals(empNo)) {
+//					sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, service);
+//					return;
+//				}
+//			}
+			sessions.add(session);
 			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
 			SocketResDTO socketResDTO = SocketResDTO.builder()
 					.results(list)
 					.message(vehicleSocketDTO.getEmpNo() + " 사번의 사원이 " + vehicleSocketDTO.getUid() + " 날짜의 " + vehicleSocketDTO.getVehicleId() + " 번 차량을 구경중입니다.")
 					.build();
+
 			sendMessage(socketResDTO, service);
-			sessions.add(session);
+
 			autoDisconnect(session, service);
 			sendMessage(vehicleSocketDTO.getEmpNo() + VehicleSocketDTO.MessageType.ENTER, service);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.TALK)) {
 			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getTime(), vehicleSocketDTO.getEmpNo());
 			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
-			sendMessage(list, service);
-			remove(session);
+			SocketResDTO socketResDTO = SocketResDTO.builder().results(list).message(vehicleSocketDTO.getEmpNo() + " 사번의 사원이 " + vehicleSocketDTO.getUid() + " 날짜의 " + vehicleSocketDTO.getVehicleId() + " 번 차량을 선점하였습니다.").build();
+			sendMessage(socketResDTO, service);
+//			remove(session);
 		} else if (vehicleSocketDTO.getType().equals(VehicleSocketDTO.MessageType.DUAL)) {
 			service.updateIsSeat(vehicleSocketDTO.getVehicleId(), vehicleSocketDTO.getUid(), vehicleSocketDTO.getMessage(), vehicleSocketDTO.getTime()[0], vehicleSocketDTO.getTime()[1], vehicleSocketDTO.getEmpNo());
 			List<VehicleSocketResDTO> list = service.selectTime(vehicleSocketDTO.getUid(), vehicleSocketDTO.getVehicleId());
@@ -81,7 +91,11 @@ public class VehicleRoomDTO {
 
 	private <T> void sendMessage(T message, VehicleSocketService service) {
 		sessions.parallelStream()
-				.forEach(session -> service.sendMessage(session, message));
+				.forEach(session -> {
+					if (session.isOpen()) {
+						service.sendMessage(session, message);
+					}
+				});
 	}
 
 	private <T> void sendMessage(WebSocketSession s, T message, VehicleSocketService service) {
@@ -120,10 +134,12 @@ public class VehicleRoomDTO {
 	@Synchronized
 	private void close(WebSocketSession session) {
 		try {
-			session.close();
+			if (sessions.size() < 2) return;
+			if (session.isOpen()) {
+				session.close();
+			}
 		} catch (IOException e) {
 			throw new WebsocketIOException(SOCKET_NOT_CLOSE_ERROR);
 		}
 	}
-
 }

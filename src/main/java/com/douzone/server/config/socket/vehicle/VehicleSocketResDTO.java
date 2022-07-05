@@ -1,15 +1,13 @@
 package com.douzone.server.config.socket.vehicle;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude
+@ToString
 public class VehicleSocketResDTO {
 	public enum MessageType {
 		ENTER, TALK, DUAL, QUIT
