@@ -41,6 +41,11 @@ public class CalendarRoomDTO {
 				String compareEmpNo = res.next().getPrincipal().getName();
 				if (compareEmpNo.equals(empNo)) {
 					sendMessage(session, FAIL_DOUBLE_ACCESS_SOCKET_CONNECT, calendarService);
+					try {
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					return;
 				}
 			}
@@ -57,6 +62,7 @@ public class CalendarRoomDTO {
 
 			autoDisconnect(session, calendarService); // 시간
 
+
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.TALK)) {
 
 			timeService.updateTime(timeMessageReqDTO.getUid(), timeMessageReqDTO.getTime(), timeMessageReqDTO.getEmpNo(), timeMessageReqDTO.getRoomId());
@@ -66,6 +72,9 @@ public class CalendarRoomDTO {
 			this.close(session);
 
 		} else if (timeMessageReqDTO.getType().equals(TimeMessageReqDTO.MessageType.QUIT)) {
+
+			//여기는 isSeat 변환점이 있는지 확인하고 , 다시 타임테이블 되돌리는 로직이 필요함
+
 			// 시간 - 날짜  : 버튼 (다시 날짜를 선택하게)
 			TimeMessageResDTO timeMessageResDTO = TimeMessageResDTO.builder()
 					.uid(timeMessageReqDTO.getUid())

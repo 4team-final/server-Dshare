@@ -48,7 +48,7 @@ public class RoomQueryDSL{
 				.from(roomReservation)
 				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
 				.where(roomReservationIdLt(lastId))
-				.orderBy(roomReservation.id.desc())//플젝 시작하면 앞에 createdAt정렬을 먼저 해줘야함
+				.orderBy(roomReservation.createdAt.desc(),roomReservation.id.desc())//플젝 시작하면 앞에 createdAt정렬을 먼저 해줘야함
 				.limit(limit)
 				.fetch();
 
@@ -62,7 +62,7 @@ public class RoomQueryDSL{
 				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
 				.join(roomReservation.employee, employee).fetchJoin()
 				.where(employee.id.eq(Id), roomReservationIdLt(lastId))
-				.orderBy(roomReservation.startedAt.asc(),roomReservation.id.desc())
+				.orderBy(roomReservation.createdAt.desc(),roomReservation.id.asc())
 				.limit(limit)
 				.fetch();
 		return roomList;
@@ -70,6 +70,12 @@ public class RoomQueryDSL{
 	//만약 아무것도 조회 안한 첫 시작이면 null처리돼서 마지막부터 limit개 보여주기
 	private BooleanExpression roomReservationIdLt(long lastId) {
 		return lastId != 0 ? roomReservation.id.lt(lastId): null;
+	}
+	private BooleanExpression roomReservationStartedAtGt(String startedAt) {
+		return startedAt != "" ? roomReservation.startedAt.gt(LocalDateTime.parse(startedAt)): null;
+	}
+	private BooleanExpression roomReservationCreatedAtLt(String createdAt) {
+		return createdAt != "" ? roomReservation.createdAt.lt(LocalDateTime.parse(createdAt)): null;
 	}
 
 	public long countReservation() {

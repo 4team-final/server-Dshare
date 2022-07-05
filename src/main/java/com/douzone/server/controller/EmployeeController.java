@@ -3,12 +3,17 @@ package com.douzone.server.controller;
 import com.douzone.server.config.security.auth.PrincipalDetails;
 import com.douzone.server.config.utils.Msg;
 import com.douzone.server.config.utils.ResponseDTO;
+import com.douzone.server.service.AdminService;
 import com.douzone.server.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/emp")
@@ -16,11 +21,20 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 
 	private final EmployeeService employeeService;
+	private final AdminService adminService;
 
 	@GetMapping("/test")
 	public ResponseEntity<ResponseDTO> queryDSLTest(@RequestParam(value = "positionId") long positionId) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
 				Msg.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
+	}
+
+	/**
+	 * 사원 이미지 수정, 사원 + 관리자 모두 가능
+	 * */
+	@PostMapping("/image/upload")
+	public ResponseEntity<ResponseDTO> uploadProfileImg(@NotNull List<MultipartFile> files, long TargetEmpId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
 	}
 
 	/**
