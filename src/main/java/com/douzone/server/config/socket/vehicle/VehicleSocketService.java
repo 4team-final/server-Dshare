@@ -5,12 +5,14 @@ import com.douzone.server.exception.VehicleSocketServerException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.LockModeType;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,6 +68,7 @@ public class VehicleSocketService {
 	}
 
 	@Transactional
+	@Lock(LockModeType.PESSIMISTIC_READ)
 	public void updateIsSeat(Long vid, String uid, Integer[] time, String empNo) {
 		Optional.ofNullable(uid)
 				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vid))
@@ -100,7 +103,7 @@ public class VehicleSocketService {
 				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<VehicleSocketResDTO> selectTime(String uid, Long vehicleId) {
 		return Optional.ofNullable(uid)
 				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vehicleId))

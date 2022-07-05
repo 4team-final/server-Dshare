@@ -3,6 +3,7 @@ package com.douzone.server.service;
 
 import com.douzone.server.config.socket.TimeRepository;
 import com.douzone.server.config.socket.TimeService;
+import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.reservation.*;
@@ -18,6 +19,7 @@ import com.douzone.server.repository.querydsl.RoomReservationQueryDSL;
 import com.douzone.server.service.method.RoomServiceMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -432,5 +435,21 @@ public class RoomService {
 		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
 		roomReservationRepository.deleteById(id);
 		return roomReservation.getId();
+	}
+
+	@Transactional
+	public ResponseDTO selectByAllMeetingRoom() {
+		return Optional.of(new ResponseDTO())
+				.map(u -> {
+					List<RoomListResDTO> rList = new ArrayList<>();
+					List<MeetingRoom> list = roomRepository.findAll();
+					for (MeetingRoom meetingRoom : list) {
+						List<String> imgList = roomImgRepository.findPathByRoomId(meetingRoom.getId());
+						rList.add(new RoomListResDTO().of(meetingRoom, imgList));
+					}
+					return rList;
+				})
+				.map(res -> ResponseDTO.of(HttpStatus.OK, "", res))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
 	}
 }

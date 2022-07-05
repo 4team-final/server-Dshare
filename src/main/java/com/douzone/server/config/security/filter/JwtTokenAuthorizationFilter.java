@@ -52,6 +52,9 @@ public class JwtTokenAuthorizationFilter extends BasicAuthenticationFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		log.info(METHOD_NAME + "- doFilterInternal() ...");
 		try {
+			if (request.getRequestURI().equals("/emp/vehicle/chat") || request.getRequestURI().equals("/ws/room")) {
+				filterChain.doFilter(request, response);
+			}
 			TokenResDTO tokenResDTO = jwtTokenProvider.requestCheckToken(request);
 			String token = tokenResDTO.getToken();
 			switch (tokenResDTO.getCode()) {

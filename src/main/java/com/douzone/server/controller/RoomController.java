@@ -147,4 +147,9 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> deleteReservation(@PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVATION_DELETE, roomService.deleteRes(id)));
 	}
+
+	@GetMapping("/list/meeting/room/all")
+	public ResponseEntity<ResponseDTO> selectByAllMeetingRoom() {
+		return ResponseEntity.ok().body(roomService.selectByAllMeetingRoom());
+	}
 }

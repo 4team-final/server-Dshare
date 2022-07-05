@@ -53,8 +53,9 @@ public class EmployeeController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
 				Msg.SUCCESS_ROOM_FIND_MARK, employeeService.selectByMyBookmark(Integer.parseInt(principalDetails.getEmployee().getEmpNo()))));
 	}
+
 	/**
-	 *  즐겨찾기 등록 및 삭제
+	 * 즐겨찾기 등록 및 삭제
 	 */
 	@PostMapping("/room/bookmark/{roomId}")
 	public ResponseEntity<ResponseDTO> bookmarkRegisterAndDelete(@PathVariable("roomId") long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -66,5 +67,10 @@ public class EmployeeController {
 			return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_DELETE_MARK));
 
 		}
+	}
+
+	@GetMapping("/ws/validation")
+	public ResponseEntity<ResponseDTO> selectByMyEmployeeNumber(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, "", principalDetails.getEmployee().getEmpNo()));
 	}
 }

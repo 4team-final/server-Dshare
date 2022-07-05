@@ -52,6 +52,9 @@ public class RoleInterceptor implements HandlerInterceptor {
 		log.info(METHOD_NAME + "- preHandle() ...");
 		boolean result = false;
 		try {
+			if (request.getRequestURI().equals("/emp/vehicle/chat") || request.getRequestURI().equals("/ws/room")) {
+				return true;
+			}
 			TokenResDTO tokenResDTO = jwtTokenProvider.requestCheckToken(request);
 			String token = tokenResDTO.getToken();
 			Outer:

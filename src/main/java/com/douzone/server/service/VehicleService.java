@@ -394,4 +394,14 @@ public class VehicleService {
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_VARIOUS_COLUMNS, v))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_FIND_RESULT));
 	}
+
+	@Transactional(readOnly = true)
+	public ResponseDTO selectByAllVehicle() {
+		log.info(METHOD_NAME, "- selectByAllVehicle");
+		return Optional.of(new ResponseDTO())
+				.map(v -> vehicleServiceMethod.convertToVehicle(vehicleRepository.selectByAllVehicle()))
+				.filter(res -> res.size() > 0)
+				.map(res -> ResponseDTO.of(HttpStatus.OK, "", res))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+	}
 }

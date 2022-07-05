@@ -206,4 +206,10 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- selectByVariousColumns");
 		return ResponseEntity.ok().body(vehicleService.selectByVariousColumns(vehicleSearchDTO));
 	}
+
+	@GetMapping("/list/vehicle/all")
+	public ResponseEntity<ResponseDTO> selectByAllVehicle() {
+		log.info(METHOD_NAME + "- selectByAllVehicle");
+		return ResponseEntity.ok().body(vehicleService.selectByAllVehicle());
+	}
 }

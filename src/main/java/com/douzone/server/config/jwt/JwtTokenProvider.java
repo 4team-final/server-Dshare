@@ -119,18 +119,19 @@ public class JwtTokenProvider {
 	public TokenResDTO requestCheckToken(HttpServletRequest request) {
 		log.info(METHOD_NAME + "- requestCheckToken() ...");
 		try {
+			if (request.getHeader(headerKeyRefresh).startsWith(typeRefresh) && !request.getHeader(headerKeyRefresh).equals("")) {
+				return TokenResDTO.builder()
+						.code(1)
+						.token(request.getHeader(headerKeyRefresh).replace(typeRefresh, ""))
+						.build();
+			}
 			if (request.getHeader(headerKeyAccess).startsWith(typeAccess) && !request.getHeader(headerKeyAccess).endsWith("undefined")) {
 				return TokenResDTO.builder()
 						.code(0)
 						.token(request.getHeader(headerKeyAccess).replace(typeAccess, ""))
 						.build();
 			}
-			if (request.getHeader(headerKeyRefresh).startsWith(typeRefresh)) {
-				return TokenResDTO.builder()
-						.code(1)
-						.token(request.getHeader(headerKeyRefresh).replace(typeRefresh, ""))
-						.build();
-			}
+
 		} catch (NullPointerException ne) {
 			log.error("요청 값이 비어 있습니다. " + METHOD_NAME);
 		} catch (Exception e) {
