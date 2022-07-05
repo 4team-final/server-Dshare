@@ -31,7 +31,7 @@ public class EmployeeController {
 
 	/**
 	 * 사원 이미지 수정, 사원 + 관리자 모두 가능
-	 * */
+	 */
 	@PostMapping("/image/upload")
 	public ResponseEntity<ResponseDTO> uploadProfileImg(@NotNull List<MultipartFile> files, long TargetEmpId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ADMIN_PROFILEIMG, adminService.uploadProfileImg(files, TargetEmpId)));
@@ -71,6 +71,6 @@ public class EmployeeController {
 
 	@GetMapping("/ws/validation")
 	public ResponseEntity<ResponseDTO> selectByMyEmployeeNumber(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, "", principalDetails.getEmployee().getEmpNo()));
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_SELECT_EMP_NO, principalDetails.getEmployee().getEmpNo()));
 	}
 }

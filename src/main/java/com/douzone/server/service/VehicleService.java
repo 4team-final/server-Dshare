@@ -401,7 +401,7 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.map(v -> vehicleServiceMethod.convertToVehicle(vehicleRepository.selectByAllVehicle()))
 				.filter(res -> res.size() > 0)
-				.map(res -> ResponseDTO.of(HttpStatus.OK, "", res))
-				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, ""));
+				.map(res -> ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_VEHICLE_ALL, res))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VEHICLE_ALL));
 	}
 }
