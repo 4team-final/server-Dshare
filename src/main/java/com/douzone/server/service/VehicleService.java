@@ -207,7 +207,7 @@ public class VehicleService {
 		LocalDateTime now = LocalDateTime.now();
 		return Optional.of(new ResponseDTO())
 				.map(v ->
-						vehicleServiceMethod.convertToWeek(vehicleRepository.weekMostReservedVehicle(now, now.minusDays(datetime))))
+						vehicleServiceMethod.convertToWeek(vehicleRepository.weekMostReservedVehicle( now.minusDays(datetime),now)))
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_WEEK, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + FAIL_EXIST_RESULT));
 	}
