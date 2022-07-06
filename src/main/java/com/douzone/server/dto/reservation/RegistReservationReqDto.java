@@ -21,8 +21,6 @@ import java.time.LocalDateTime;
 @Builder
 public class RegistReservationReqDto {
 
-	@NotNull(groups = registRes.class)
-	private Long empId;
 	@NotNull(groups = {registRes.class, updateRes.class})
 	private Long roomId;
 

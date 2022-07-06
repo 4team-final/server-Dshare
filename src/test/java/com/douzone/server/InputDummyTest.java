@@ -25,7 +25,6 @@
 //
 //@SpringBootTest
 //@Transactional
-//@Rollback(false)
 //public class InputDummyTest {
 //	@Autowired
 //	EmployeeRepository employeeRepository;
