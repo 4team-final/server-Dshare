@@ -87,7 +87,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"left join vehicle v on v.id = vr.vehicleId " +
 			"left join employee e on e.id = vr.empId " +
 			"where vr.modifiedAt > :start and vr.modifiedAt < :end " +
-			"group by hour(vr.startedAt) order by hCount desc ", nativeQuery = true)
+			"group by hour(vr.modifiedAt),vr.id order by hour(vr.startedAt) asc  ", nativeQuery = true)
 	List<IVehicleWeekTimeDTO> weekMostReservedTime(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 		@Query(value = "select hour(vr.startedAt) as hTime, count(hour(vr.startedAt)) as hCount, vr.id as reservationId, " +
@@ -98,8 +98,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"from vehicle_reservation vr " +
 			"left join vehicle v on v.id = vr.vehicleId " +
 			"left join employee e on e.id = vr.empId " +
-			"where vr.startedAt > :start and vr.modifiedAt < :end " +
-			"group by hour(vr.startedAt) order by hCount desc ", nativeQuery = true)
+			"where vr.modifiedAt > :start and vr.modifiedAt < :end " +
+			"group by hour(vr.startedAt),vr.id order by hour(vr.startedAt) asc ", nativeQuery = true)
 	List<IVehicleWeekTimeDTO> weekstartMostReservedTime(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 

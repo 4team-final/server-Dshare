@@ -88,7 +88,7 @@ public class RoomReservationQueryDSL {
 						))
 				.from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom)
 				.where(roomReservation.modifiedAt.lt(now).and(roomReservation.modifiedAt.gt(nowMinusWeek)))
-				.groupBy(roomReservation.startedAt.hour())
+				.groupBy(roomReservation.modifiedAt.hour(),meetingRoom.id)
 				.orderBy(roomReservation.startedAt.hour().asc()).fetch();
 	}
 
@@ -106,7 +106,7 @@ public class RoomReservationQueryDSL {
 						))
 				.from(roomReservation).innerJoin(roomReservation.meetingRoom, meetingRoom)
 				.where(roomReservation.startedAt.lt(now).and(roomReservation.startedAt.gt(nowMinusWeek)))
-				.groupBy(roomReservation.startedAt.hour())
+				.groupBy(roomReservation.startedAt.hour(),meetingRoom.id)
 				.orderBy(roomReservation.startedAt.hour().asc()).fetch();
 	}
 }
