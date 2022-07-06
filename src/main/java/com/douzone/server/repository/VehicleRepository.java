@@ -75,7 +75,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, vr.reason as reason, vr.title as title, " +
 			"vr.vehicle as vehicle, count(vr.vehicle.id) as vcount " +
 			"from VehicleReservation vr " +
-			"where vr.modifiedAt > :date and vr.modifiedAt < :now group by vr.vehicle.id order by vcount desc")
+			"where vr.modifiedAt > :now and vr.modifiedAt < :date group by vr.vehicle.id order by vcount desc")
 	List<IVehicleWeekDTO> weekMostReservedVehicle(@Param("now")LocalDateTime now ,@Param("date") LocalDateTime date);
 
 	@Query(value = "select hour(vr.startedAt) as hTime, count(hour(vr.startedAt)) as hCount, vr.id as reservationId, " +
