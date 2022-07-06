@@ -63,6 +63,7 @@ public class ProfileRes {
 				.teamId(employee.getTeam().getId())
 				.deptId(employee.getTeam().getDepartment().getId())
 				.positionId(employee.getPosition().getId())
+				.role(employee.getRole())
 				.build();
 	}
 
