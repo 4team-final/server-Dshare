@@ -50,6 +50,14 @@ public class EmployeeService {
 		}).collect(Collectors.toList()).get(0);
 		return MyInfo;
 	}
+	@Transactional
+	public List<ProfileRes> readProfile() {
+		List<Employee> MyInfoList = employeeQueryDSL.findProfile();
+		List<ProfileRes> Info = MyInfoList.stream().map(employee -> {
+			return ProfileRes.builder().build().of(employee);
+		}).collect(Collectors.toList());
+		return Info;
+	}
 
 	@Transactional
 	public List<RoomResDTO> selectByMyBookmark(int empNo) {
