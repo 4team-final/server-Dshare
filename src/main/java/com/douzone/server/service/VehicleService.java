@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.douzone.server.config.utils.Msg.*;
 
@@ -240,7 +241,7 @@ public class VehicleService {
 	public ResponseDTO findByRecentReservedVehicle() {
 		log.info(METHOD_NAME + "- findByRecentReservedVehicle");
 		return Optional.of(new ResponseDTO())
-				.map(v -> vehicleServiceMethod.convertToDate(vehicleRepository.findByRecentReservedVehicle()))
+				.map(v -> vehicleServiceMethod.convertToDate(vehicleRepository.findByRecentReservedVehicle().stream().limit(5).collect(Collectors.toList())))
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RECENT, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RECENT + FAIL_EXIST_RESULT));
 	}
