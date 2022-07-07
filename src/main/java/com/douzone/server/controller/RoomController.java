@@ -119,7 +119,7 @@ public class RoomController {
 	/**
 	 * selectByLimitBookmark() - 즐겨찾기 상위 top(limit) 회의실 조회
 	 **/
-	@GetMapping("/reservation/my/bookmark/top/{limit}")
+	@GetMapping("/reservation/bookmark/top/{limit}")
 	public ResponseEntity<ResponseDTO> selectByLimitBookmark(@PathVariable("limit") int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_MARK, roomService.selectByLimitBookmark(limit)));
 	}
