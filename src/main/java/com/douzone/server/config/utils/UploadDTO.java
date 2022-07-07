@@ -13,7 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UploadDTO {
+public class
+UploadDTO {
 
 	private String path;
 	private String type;

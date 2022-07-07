@@ -66,5 +66,23 @@ public class ProfileRes {
 				.role(employee.getRole())
 				.build();
 	}
+	public ProfileRes of(Employee employee) {
+		return ProfileRes.builder()
+				.id(employee.getId())
+				.empNo(employee.getEmpNo())
+				.name(employee.getName())
+				.email(employee.getEmail())
+				.tel(employee.getTel())
+				.birthday(employee.getBirthday())
+				.profileImg(employee.getProfileImg())
+				.position(employee.getPosition().getName())
+				.team(employee.getTeam().getName())
+				.dept(employee.getTeam().getDepartment().getName())
+				.teamId(employee.getTeam().getId())
+				.deptId(employee.getTeam().getDepartment().getId())
+				.positionId(employee.getPosition().getId())
+				.role(employee.getRole())
+				.build();
+	}
 
 }
