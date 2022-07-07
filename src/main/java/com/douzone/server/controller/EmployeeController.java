@@ -44,7 +44,10 @@ public class EmployeeController {
 	public ResponseEntity<ResponseDTO> readProfile(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_EMP_PROFILE, employeeService.readProfile(principalDetails.getEmployee().getId())));
 	}
-
+	@GetMapping("/profile/read/{id}")
+	public ResponseEntity<ResponseDTO> readProfile(@PathVariable Long id) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_EMP_PROFILE, employeeService.readProfile(id)));
+	}
 	/**
 	 * 전체 조회
 	 */
