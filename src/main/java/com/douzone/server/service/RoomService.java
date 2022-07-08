@@ -382,7 +382,7 @@ public class RoomService {
 	}
 
 	@Transactional
-	public Long save(RegistReservationReqDto registReservationReqDto) {
+	public Long save(RegistReservationReqDto registReservationReqDto, Long id) {
 
 //		// 타임 테이블에도 반영해줘야함
 //		String empNo = employeeRepository.findById(registReservationReqDto.getEmpId()).orElseThrow(()->new EmpNotFoundException(ErrorCode.EMP_NOT_FOUND)).getEmpNo();
@@ -411,7 +411,7 @@ public class RoomService {
 //		for(int i = 0 ; i <= time.length ; i++) {
 //			timeService.updateTime(uid, time, empNo, Integer.parseInt(registReservationReqDto.getRoomId()+""));
 //		}
-		return roomReservationRepository.save(RoomReservation.builder().build().of(registReservationReqDto)).getId();
+		return roomReservationRepository.save(RoomReservation.builder().build().of(registReservationReqDto, id)).getId();
 	}
 
 	@Transactional

@@ -35,6 +35,16 @@ public class EmployeeQueryDSL {
 				.fetch();
 	}
 
+	public List<Employee> findProfile() {
+		return jpaQueryFactory
+				.select(employee).from(employee)
+				.join(employee.position, position).fetchJoin()
+				.join(employee.team, team).fetchJoin()
+				.orderBy(employee.id.desc())
+				.fetch();
+	}
+
+
 	public List<RoomBookmarkResDTO> selectByMyBookmark(int empNo) {
 		return jpaQueryFactory
 				.select(new QRoomBookmarkResDTO(

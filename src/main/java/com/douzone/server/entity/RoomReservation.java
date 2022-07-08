@@ -45,10 +45,10 @@ public class RoomReservation extends BaseAtTime {
 		this.endedAt = endedAt;
 	}
 
-	public RoomReservation of(RegistReservationReqDto registReservationReqDto) {
+	public RoomReservation of(RegistReservationReqDto registReservationReqDto, Long empId) {
 		return RoomReservation.builder()
 				.meetingRoom(MeetingRoom.builder().id(registReservationReqDto.getRoomId()).build())
-				.employee(Employee.builder().id(registReservationReqDto.getEmpId()).build())
+				.employee(Employee.builder().id(empId).build())
 				.reason(registReservationReqDto.getReason())
 				.title(registReservationReqDto.getTitle())
 				.startedAt(registReservationReqDto.getStartedAt())

@@ -128,8 +128,8 @@ public class RoomController {
 	 * 6/18 14:17 회의실 예약 오윤성
 	 */
 	@PostMapping("/regist")
-	public ResponseEntity<ResponseDTO> saveReservation(@Validated(registRes.class) @RequestBody RegistReservationReqDto registReservationReqDto) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE, roomService.save(registReservationReqDto)));
+	public ResponseEntity<ResponseDTO> saveReservation(@Validated(registRes.class) @RequestBody RegistReservationReqDto registReservationReqDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVE, roomService.save(registReservationReqDto, principalDetails.getEmployee().getId())));
 	}
 
 	/**

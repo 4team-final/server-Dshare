@@ -42,13 +42,21 @@ public class EmployeeService {
 
 
 	@Transactional
-	public ProfileRes readProfile(long id) {
+	public ProfileRes readProfile(Long id) {
 
 		List<Employee> MyInfoList = employeeQueryDSL.findMyProfile(id);
 		ProfileRes MyInfo = MyInfoList.stream().map(employee -> {
-			return ProfileRes.builder().build().of(employee);
+			return ProfileRes.builder().build().of(employee, id);
 		}).collect(Collectors.toList()).get(0);
 		return MyInfo;
+	}
+	@Transactional
+	public List<ProfileRes> readProfile() {
+		List<Employee> MyInfoList = employeeQueryDSL.findProfile();
+		List<ProfileRes> Info = MyInfoList.stream().map(employee -> {
+			return ProfileRes.builder().build().of(employee);
+		}).collect(Collectors.toList());
+		return Info;
 	}
 
 	@Transactional
