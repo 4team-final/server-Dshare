@@ -57,12 +57,12 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 			"order by id desc ")
 	List<IVehicleListResDTO> findByDateTimeReservation(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "select vr.id as id,v.name,month(vr.modifiedAt)as month,day(vr.modifiedAt) as day,count(v.name)as count, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
+	@Query(value = "select vr.id as id,v.name,month(vr.startedAt)as month,day(vr.startedAt) as day,count(v.name)as count, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
 			"vr.createdAt as createdAt, vr.modifiedAt as modifiedAt, " +
 			"vr.reason as reason, vr.title as title " +
 			"from vehicle_reservation vr join vehicle v on vr.vehicleId = v.id " +
-			"where startedAt between :startDate and :endDate group by v.name,day(vr.modifiedAt)" +
-			"order by vr.modifiedAt desc ", nativeQuery = true)
+			"where startedAt between :startDate and :endDate group by v.name,day(vr.startedAt)" +
+			"order by vr.startedAt asc ", nativeQuery = true)
 	List<IVehicleListResDTO> findByDateTimeReservation2(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 

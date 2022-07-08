@@ -142,8 +142,8 @@ public class RoomQueryDSL {
 		return jpaQueryFactory
 				.select(new QRoomCountResDTO(roomReservation.id,
 						roomReservation.meetingRoom.roomNo,
-						roomReservation.modifiedAt.month().as("month"),
-						roomReservation.modifiedAt.dayOfMonth().as("day"),
+						roomReservation.startedAt.month().as("month"),
+						roomReservation.startedAt.dayOfMonth().as("day"),
 						roomReservation.meetingRoom.roomNo.count().as("count"),
 						roomReservation.reason,
 						roomReservation.title,
@@ -154,8 +154,8 @@ public class RoomQueryDSL {
 				.join(roomReservation.meetingRoom, meetingRoom)
 				.where(roomReservation.startedAt.goe(LocalDateTime.parse(startTime))
 						.and(roomReservation.endedAt.loe(LocalDateTime.parse(endTime))))
-				.groupBy(meetingRoom.roomNo,roomReservation.modifiedAt.dayOfMonth())
-				.orderBy(roomReservation.modifiedAt.desc())
+				.groupBy(meetingRoom.roomNo,roomReservation.startedAt.dayOfMonth())
+				.orderBy(roomReservation.startedAt.asc())
 				.fetch();
 	}
 
