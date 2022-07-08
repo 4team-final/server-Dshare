@@ -97,6 +97,13 @@ public class VehicleController {
 		return ResponseEntity.ok().body(vehicleService.findByDateTimeReservation(start, end));
 	}
 
+	@GetMapping(path = "/list/time2/{start}/{end}")
+	public ResponseEntity<ResponseDTO> findByDateTimeReservation2(@PathVariable("start") String start,
+																  @PathVariable("end") String end) {
+		log.info(METHOD_NAME + "- findByDateTimeReservation");
+		return ResponseEntity.ok().body(vehicleService.findByDateTimeReservation2(start, end));
+	}
+
 	@GetMapping(path = "/list/own/past")
 	public ResponseEntity<ResponseDTO> findByMyPastReservation(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findByMyPastReservation");
@@ -116,28 +123,29 @@ public class VehicleController {
 	}
 
 	@GetMapping(path = "/list/own/paging")
-	public ResponseEntity<ResponseDTO> findByMyReservationPaging(@RequestParam("id") Long id ,@AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<ResponseDTO> findByMyReservationPaging(@RequestParam("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		log.info(METHOD_NAME + "- findByMyReservationPaging");
 		return ResponseEntity.ok().body(vehicleService.findByMyReservationPaging(id, principalDetails.getEmployee().getId()));
 	}
 
 	@GetMapping(path = "/best/vehicle/{datetime}")
-	public ResponseEntity<ResponseDTO> weekMostReservedVehicle(@PathVariable("datetime")Long datetime) {
+	public ResponseEntity<ResponseDTO> weekMostReservedVehicle(@PathVariable("datetime") Long datetime) {
 		log.info(METHOD_NAME + "- weekMostReservedVehicle");
 		return ResponseEntity.ok().body(vehicleService.weekMostReservedVehicle(datetime));
 	}
 
 	@GetMapping(path = "/best/time/{datetime}")
-	public ResponseEntity<ResponseDTO> weekMostReservedTime(@PathVariable("datetime")Long datetime) {
+	public ResponseEntity<ResponseDTO> weekMostReservedTime(@PathVariable("datetime") Long datetime) {
 		log.info(METHOD_NAME + "- weekMostReservedTime");
 		return ResponseEntity.ok().body(vehicleService.weekMostReservedTime(datetime));
 	}
 
 	@GetMapping(path = "/start/best/time/{datetime}")
-	public ResponseEntity<ResponseDTO> weekstartMostReservedTime(@PathVariable("datetime")Long datetime) {
+	public ResponseEntity<ResponseDTO> weekstartMostReservedTime(@PathVariable("datetime") Long datetime) {
 		log.info(METHOD_NAME + "- weekMostReservedTime");
 		return ResponseEntity.ok().body(vehicleService.weekstartMostReservedTime(datetime));
 	}
+
 	@GetMapping(path = "/list/recent")
 	public ResponseEntity<ResponseDTO> findByRecentReservedVehicle() {
 		log.info(METHOD_NAME + "- findByRecentReservedVehicle");

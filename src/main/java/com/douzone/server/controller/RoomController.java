@@ -115,7 +115,13 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> selectByDateRoomReservation(@PathVariable("startTime") String startTime, @PathVariable("endTime") String endTime) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_DATE, roomService.selectByDateRoomReservation(startTime, endTime)));
 	}
-
+/**
+	 * selectByDateRoomReservation() - 특정시간대별 회의실 조회
+	 */
+	@GetMapping("/reservation/time2/{startTime}/{endTime}")
+	public ResponseEntity<ResponseDTO> selectByDateRoomReservation_2(@PathVariable("startTime") String startTime, @PathVariable("endTime") String endTime) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_DATE, roomService.selectByDateRoomReservation_2(startTime, endTime)));
+	}
 	/**
 	 * selectByLimitBookmark() - 즐겨찾기 상위 top(limit) 회의실 조회
 	 **/

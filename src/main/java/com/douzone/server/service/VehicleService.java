@@ -142,7 +142,22 @@ public class VehicleService {
 					}
 					return v;
 				})
-				.map(v -> vehicleServiceMethod.convertToList(vehicleRepository.findByDateTimeReservation(vehicleServiceMethod.parsing(start), vehicleServiceMethod.parsing(end))))
+				.map(v -> vehicleServiceMethod.convertToList(vehicleRepository.findByDateTimeReservation(LocalDateTime.parse(start), LocalDateTime.parse(end))))
+				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_DATE, u))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_EXIST_RESULT));
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseDTO findByDateTimeReservation2(String start, String end) {
+		log.info(METHOD_NAME + "- findByDateTimeReservation");
+		return Optional.of(new ResponseDTO())
+				.map(v -> {
+					if (start == null || start.equals("") || end == null || end.equals("")) {
+						return ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_REQUEST_PARAMETER);
+					}
+					return v;
+				})
+				.map(v -> vehicleRepository.findByDateTimeReservation2(LocalDateTime.parse(start), LocalDateTime.parse(end)))
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_DATE, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_DATE + FAIL_EXIST_RESULT));
 	}
@@ -208,7 +223,7 @@ public class VehicleService {
 		LocalDateTime now = LocalDateTime.now();
 		return Optional.of(new ResponseDTO())
 				.map(v ->
-						vehicleServiceMethod.convertToWeek(vehicleRepository.weekMostReservedVehicle( now.minusDays(datetime),now)))
+						vehicleServiceMethod.convertToWeek(vehicleRepository.weekMostReservedVehicle(now.minusDays(datetime), now)))
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BEST_WEEK, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_BEST_WEEK + FAIL_EXIST_RESULT));
 	}

@@ -40,6 +40,13 @@ public class VehicleServiceMethod {
 		}
 		return vList;
 	}
+//		public List<VehicleListResDTO> convertToList2(List<IVehicleListResDTO> list) {
+//		List<VehicleListResDTO> vList = new ArrayList<>();
+//		for (IVehicleListResDTO iVehicleListResDTO : list) {
+//			vList.add(new VehicleListResDTO().of2(iVehicleListResDTO, setPathToList(iVehicleListResDTO.getVehicle().getId())));
+//		}
+//		return vList;
+//	}
 
 	public List<VehiclePagingResDTO> convertToPaging(List<IVehiclePagingResDTO> list) {
 		List<VehiclePagingResDTO> vList = new ArrayList<>();

@@ -24,4 +24,11 @@ public interface IVehicleListResDTO {
 	String getEmpNo();
 
 	String getName();
+
+	Integer getCount();
+
+	Integer getMonth();
+
+	Integer getDay();
+
 }

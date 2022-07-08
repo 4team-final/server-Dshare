@@ -2,6 +2,7 @@ package com.douzone.server.dto.room;
 
 import com.douzone.server.entity.MeetingRoom;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class RoomResDTO {
 	private List<RoomImgResDTO> roomImgResDTOList = new ArrayList<>();
 
 	@Builder
+	@QueryProjection
 	public RoomResDTO(Long roomId, String content, String categoryName, Integer roomNo, Integer capacity, LocalDateTime modifiedAt, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList) {
 		this.roomId = roomId;
 		this.content = content;
