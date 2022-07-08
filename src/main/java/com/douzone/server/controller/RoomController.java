@@ -60,11 +60,7 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> recentReservation(@RequestParam(value = "limit") @Valid int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RECENT, roomService.recentReservation(limit)));
 	}
-	@GetMapping("/read/ttt")
-	public ResponseEntity<ResponseDTO> readTeam() {
-		System.out.println("fff");
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_READ_TEAM, employeeService.readTeamInfo()));
-	}
+
 
 	@GetMapping("/reservation/soon/my/time")
 	public ResponseEntity<ResponseDTO> soonAndIngReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -148,6 +144,11 @@ public class RoomController {
 	@PutMapping("/my/update/{id}")
 	public ResponseEntity<ResponseDTO> updateReservation(@Validated(updateRes.class) @RequestBody RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVATION_UPDATE, roomService.update(registReservationReqDto, id)));
+	}
+
+	@GetMapping(value = "/team/read")
+	public ResponseEntity<ResponseDTO> readTeam() {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_READ_TEAM, employeeService.readTeamInfo()));
 	}
 
 	/**
