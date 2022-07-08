@@ -1,5 +1,6 @@
 package com.douzone.server.service;
 
+import com.douzone.server.dto.employee.EmpTeamDTO;
 import com.douzone.server.dto.employee.EmpTestDTO;
 import com.douzone.server.dto.employee.ProfileRes;
 import com.douzone.server.dto.room.RoomBookmarkResDTO;
@@ -29,6 +30,7 @@ public class EmployeeService {
 	private final RoomImgRepository roomImgRepository;
 	private final RoomObjectRepository roomObjectRepository;
 	private final RoomServiceMethod roomServiceMethod;
+	private final TeamRepository teamRepository;
 
 	@Transactional
 	public List<EmpTestDTO> queryDSLTest(long positionId) {
@@ -75,5 +77,12 @@ public class EmployeeService {
 			roomBookmarkRepository.save(RoomBookmark.builder().meetingRoom(MeetingRoom.builder().id(roomId).build()).employee(Employee.builder().id(empId).build()).build()).getId();
 			return 1L;
 		}
+	}
+
+	@Transactional
+	public List<EmpTeamDTO> readTeamInfo() {
+		return teamRepository.findAll().stream().map(team -> {
+			return EmpTeamDTO.builder().id(team.getId()).name(team.getName()).deptId(team.getDepartment().getId()).build();
+		}).collect(Collectors.toList());
 	}
 }

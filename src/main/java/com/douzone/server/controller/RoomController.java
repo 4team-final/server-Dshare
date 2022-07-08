@@ -8,6 +8,7 @@ import com.douzone.server.dto.reservation.RegistReservationReqDto;
 import com.douzone.server.dto.reservation.registRes;
 import com.douzone.server.dto.reservation.updateRes;
 import com.douzone.server.dto.room.RoomReservationSearchDTO;
+import com.douzone.server.service.EmployeeService;
 import com.douzone.server.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,11 +50,20 @@ import javax.validation.Valid;
 public class RoomController {
 
 	private final RoomService roomService;
+	private final EmployeeService employeeService;
+
+
+
 
 
 	@GetMapping("/reservation/recent")
 	public ResponseEntity<ResponseDTO> recentReservation(@RequestParam(value = "limit") @Valid int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RECENT, roomService.recentReservation(limit)));
+	}
+	@GetMapping("/read/ttt")
+	public ResponseEntity<ResponseDTO> readTeam() {
+		System.out.println("fff");
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_READ_TEAM, employeeService.readTeamInfo()));
 	}
 
 	@GetMapping("/reservation/soon/my/time")
