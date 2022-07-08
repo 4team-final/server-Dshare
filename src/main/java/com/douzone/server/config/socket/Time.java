@@ -35,9 +35,8 @@ public class Time {
 
 	private Integer roomId;
 
-	public void updateIsSeat(Integer isSeat, String empNo, Integer roomId) {
+	public void updateIsSeat(Integer isSeat, String empNo) {
 		this.isSeat = isSeat;
 		this.empNo = empNo;
-		this.roomId = roomId;
 	}
 }
