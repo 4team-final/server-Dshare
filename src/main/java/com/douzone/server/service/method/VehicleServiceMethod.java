@@ -107,12 +107,16 @@ public class VehicleServiceMethod {
 	public void convertToTimeAndResetIsSeat(LocalDateTime s, LocalDateTime e, Long vId, String empNo) {
 		String start = s.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		String end = e.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		String startTime = s.format(DateTimeFormatter.ofPattern("HH:mm"));
+		String endTime = e.format(DateTimeFormatter.ofPattern("HH:mm"));
+		if (startTime.charAt(0) == '0') startTime = startTime.substring(1);
+		if (endTime.charAt(0) == '0') endTime = endTime.substring(1);
 
 		if (start.equals(end)) {
-			vehicleSocketService.resetIsSeat(vId, start, empNo);
+			vehicleSocketService.resetIsSeat(vId, start, empNo, startTime, endTime);
 		} else {
-			vehicleSocketService.resetIsSeat(vId, start, empNo);
-			vehicleSocketService.resetIsSeat(vId, end, empNo);
+			vehicleSocketService.resetIsSeat(vId, start, empNo, startTime, 0);
+			vehicleSocketService.resetIsSeat(vId, end, empNo, endTime, 1);
 		}
 	}
 }

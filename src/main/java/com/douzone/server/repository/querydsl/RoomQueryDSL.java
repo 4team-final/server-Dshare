@@ -216,7 +216,7 @@ public class RoomQueryDSL {
 	}
 
 
-	public List<RoomReservation> selectByVariousColumns(RoomReservationSearchDTO search) {
+	public List<RoomReservation> selectByVariousColumns(RoomReservationSearchDTO search, long page, int limit) {
 		Long deptId = search.getDeptId();
 		return jpaQueryFactory
 				.select(roomReservation)
@@ -230,7 +230,20 @@ public class RoomQueryDSL {
 						empNoEq(search.getEmpNo()),
 						empNameEq(search.getEmpName())
 				)
-				.orderBy(roomReservation.modifiedAt.desc())
+				.orderBy(roomReservation.modifiedAt.desc(), roomReservation.id.desc())
+				.limit(limit)
+				.offset((page-1)*limit)
 				.fetch();
 	}
+//	public List<RoomReservation> selectAllReservationPage2(long page, int limit){
+//		List<RoomReservation> roomList = jpaQueryFactory
+//				.select(roomReservation)
+//				.from(roomReservation)
+//				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
+//				.orderBy(roomReservation.modifiedAt.desc(),roomReservation.id.desc())//플젝 시작하면 앞에 createdAt정렬을 먼저 해줘야함
+//				.limit(limit)
+//				.offset((page-1)*limit)
+//				.fetch();
+//		return roomList;
+//	}
 }

@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -449,7 +450,26 @@ public class RoomService {
 	@Transactional
 	public Long deleteRes(long id) {
 
-		//타임테이블 0으로 바꿔주고 empno null
+		Optional.of(id)
+				.map(roomReservationRepository::findById)
+				.filter(Optional::isPresent)
+				.map(res -> {
+					String start = res.get().getStartedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+					String end = res.get().getEndedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+					String startTime = res.get().getStartedAt().format(DateTimeFormatter.ofPattern("HH:mm"));
+					String endTime = res.get().getEndedAt().format(DateTimeFormatter.ofPattern("HH:mm"));
+					if (startTime.charAt(0) == '0') startTime = startTime.substring(1);
+					if (endTime.charAt(0) == '0') endTime = endTime.substring(1);
+
+					if (start.equals(end)) {
+						timeService.resetIsSeat((int) (long) res.get().getMeetingRoom().getId(), start, res.get().getEmployee().getEmpNo(), startTime, endTime);
+					} else {
+						timeService.resetIsSeat((int) (long) res.get().getMeetingRoom().getId(), start, res.get().getEmployee().getEmpNo(), startTime, 0);
+						timeService.resetIsSeat((int) (long) res.get().getMeetingRoom().getId(), end, res.get().getEmployee().getEmpNo(), endTime, 1);
+					}
+					return res.get().getId();
+				}).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
+
 		RoomReservation roomReservation = roomReservationRepository.findById(id).orElseThrow(() -> new reservationNotFoundException(ErrorCode.RES_NOT_FOUND));
 		roomReservationRepository.deleteById(id);
 		return roomReservation.getId();
