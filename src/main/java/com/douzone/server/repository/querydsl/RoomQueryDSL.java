@@ -93,6 +93,7 @@ public class RoomQueryDSL{
 	public long countReservation() {
 		return jpaQueryFactory.select(roomReservation).from(roomReservation).stream().count();
 	}
+
 	//내거 카운트 조회
 	public long countReservation(long Id) {
 		return jpaQueryFactory.select(roomReservation).from(roomReservation).where(roomReservation.employee.id.eq(Id)).stream().count();
@@ -183,9 +184,9 @@ public class RoomQueryDSL{
 		return empNo != null ? roomReservation.employee.empNo.eq(empNo) : null;
 	}
 
-	private BooleanExpression empNameEq(String empName) {
+	private BooleanExpression empNameContain(String empName) {
 		return empName != null ? roomReservation
-				.employee.name.eq(empName) : null;
+				.employee.name.contains(empName) : null;
 	}
 
 
@@ -201,13 +202,26 @@ public class RoomQueryDSL{
 						deptIdEq(search.getDeptId()),
 						teamIdEq(search.getTeamId()),
 						empNoEq(search.getEmpNo()),
-						empNameEq(search.getEmpName())
+						empNameContain(search.getEmpName())
 				)
 				.orderBy(roomReservation.modifiedAt.desc(), roomReservation.id.desc())
 				.limit(limit)
 				.offset((page-1)*limit)
 				.fetch();
 	}
+//	이것의 카운트
+	public long countReservation(RoomReservationSearchDTO search) {
+		return jpaQueryFactory.select(roomReservation).from(roomReservation)
+				.where(
+					positionIdEq(search.getPositionId()),
+					deptIdEq(search.getDeptId()),
+					teamIdEq(search.getTeamId()),
+					empNoEq(search.getEmpNo()),
+						empNameContain(search.getEmpName())
+				)
+				.stream().count();
+	}
+
 //	public List<RoomReservation> selectAllReservationPage2(long page, int limit){
 //		List<RoomReservation> roomList = jpaQueryFactory
 //				.select(roomReservation)
