@@ -5,6 +5,7 @@ import com.douzone.server.config.security.handler.DecodeEncodeHandler;
 import com.douzone.server.config.utils.ResponseDTO;
 import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
+import com.douzone.server.dto.employee.EmpTeamDTO;
 import com.douzone.server.dto.employee.SignModReqDTO;
 import com.douzone.server.dto.reservation.ReservationResDTO;
 import com.douzone.server.dto.room.RoomImgResDTO;
@@ -13,6 +14,7 @@ import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.dto.vehicle.VehicleImgDTO;
 import com.douzone.server.dto.vehicle.VehicleUpdateDTO;
 import com.douzone.server.entity.Employee;
+import com.douzone.server.entity.Team;
 import com.douzone.server.entity.Vehicle;
 import com.douzone.server.entity.VehicleImg;
 import com.douzone.server.exception.*;
@@ -222,9 +224,9 @@ public class AdminService {
 	}
 
 	@Transactional
-	public List<ReservationResDTO> searchVarious(RoomReservationSearchDTO search) {
+	public List<ReservationResDTO> searchVarious(RoomReservationSearchDTO search, long page, int limit) {
 		log.info("search : {} , {}, {}, {}", search.getTeamId(), search.getDeptId(), search.getEmpNo(), search.getEmpName());
-		List<ReservationResDTO> list = roomQueryDSL.selectByVariousColumns(search).stream().map(roomReservation -> {
+		List<ReservationResDTO> list = roomQueryDSL.selectByVariousColumns(search, page, limit).stream().map(roomReservation -> {
 			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
 			return reservationResDTO;
@@ -244,4 +246,5 @@ public class AdminService {
 			uploadUtils.delete(paths);
 		}
 	}
+
 }
