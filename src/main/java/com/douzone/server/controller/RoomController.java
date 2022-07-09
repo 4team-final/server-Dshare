@@ -108,6 +108,10 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> selectAllReservationPage(@PathVariable("lastId") long lastId, @PathVariable("limit") int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation(lastId, limit)));
 	}
+	@GetMapping("/reservation/all2/{page}/{limit}")
+	public ResponseEntity<ResponseDTO> selectAllReservationPage2(@PathVariable("page") long page, @PathVariable("limit") int limit) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation2(page, limit)));
+	}
 
 	@PostMapping("/reservation/roomNo-capacity-time")
 	public ResponseEntity<ResponseDTO> selectByRoomNoElseCapacityElseReservation(@RequestBody RoomReservationSearchDTO search) {
@@ -146,10 +150,7 @@ public class RoomController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVATION_UPDATE, roomService.update(registReservationReqDto, id)));
 	}
 
-	@GetMapping(value = "/team/read")
-	public ResponseEntity<ResponseDTO> readTeam() {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_READ_TEAM, employeeService.readTeamInfo()));
-	}
+
 
 	/**
 	 * 6/19 18:51 회의실 예약 삭제 오윤성
