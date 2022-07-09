@@ -113,13 +113,66 @@ public class VehicleSocketService {
 	}
 
 	@Transactional
-	public void resetIsSeat(Long vid, String uid, String empNo) {
+	public void resetIsSeat(Long vid, String uid, String empNo, String startTime, String endTime) {
 		Optional.ofNullable(uid)
 				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vid))
 				.filter(Optional::isPresent)
 				.map(res -> {
+					int s = 0, e = 0;
 					for (int i = 0; i < res.get().size(); i++) {
-						res.get().get(i).updateTimeVehicle(0, empNo);
+						if (res.get().get(i).getTime().equals(startTime)) {
+							s = i;
+							break;
+						}
+					}
+					for (int i = res.get().size() - 1; i >= 0; i--) {
+						if (res.get().get(i).getTime().equals(endTime)) {
+							e = i;
+							break;
+						}
+					}
+					for (int i = s; i < e; i++) {
+						if (res.get().get(i).getEmpNo().equals(empNo)) {
+							res.get().get(i).updateTimeVehicle(0, "");
+						}
+					}
+					return res.get();
+				})
+				.orElseThrow(() -> new VehicleSocketServerException(TIME_TABLE_UPDATE_ERROR));
+	}
+
+	@Transactional
+	public void resetIsSeat(Long vid, String uid, String empNo, String time, int k) {
+		Optional.ofNullable(uid)
+				.map(v -> timeVehicleRepository.selectByUidAndVid(uid, vid))
+				.filter(Optional::isPresent)
+				.map(res -> {
+					if (k == 0) {
+						int j = 0;
+						for (int i = 0; i < res.get().size(); i++) {
+							if (res.get().get(i).getTime().equals(time)) {
+								j = i;
+								break;
+							}
+						}
+						for (int i = j; i < res.get().size(); i++) {
+							if (res.get().get(i).getEmpNo().equals(empNo)) {
+								res.get().get(i).updateTimeVehicle(0, "");
+							}
+						}
+					} else if (k == 1) {
+						int j = 0;
+						for (int i = res.get().size() - 1; i >= 0; i--) {
+							if (res.get().get(i).getTime().equals(time)) {
+								j = i;
+								break;
+							}
+						}
+						for (int i = j; i >= 0; i--) {
+							if (res.get().get(i).getEmpNo().equals(empNo)) {
+								res.get().get(i).updateTimeVehicle(0, "");
+							}
+						}
 					}
 					return res.get();
 				})
