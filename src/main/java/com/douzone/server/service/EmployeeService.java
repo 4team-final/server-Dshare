@@ -80,8 +80,8 @@ public class EmployeeService {
 	}
 
 	@Transactional
-	public List<EmpTeamDTO> readTeamInfo() {
-		return teamRepository.findAll().stream().map(team -> {
+	public List<EmpTeamDTO> readTeamInfo(long deptId) {
+		return teamRepository.findByDeptId(deptId).stream().map(team -> {
 			return EmpTeamDTO.builder().id(team.getId()).name(team.getName()).deptId(team.getDepartment().getId()).build();
 		}).collect(Collectors.toList());
 	}
