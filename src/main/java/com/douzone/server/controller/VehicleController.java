@@ -77,6 +77,11 @@ public class VehicleController {
 		log.info(METHOD_NAME + "- findByPaginationReservation");
 		return ResponseEntity.ok().body(vehicleService.findByPaginationReservation(id));
 	}
+	@GetMapping(path = "/list/reservation/paging2")
+	public ResponseEntity<ResponseDTO> findByPaginationReservation2(@RequestParam("id") Long id) {
+		log.info(METHOD_NAME + "- findByPaginationReservation");
+		return ResponseEntity.ok().body(vehicleService.findByPaginationReservation2(id));
+	}
 
 	@GetMapping(path = "/list/stock")
 	public ResponseEntity<ResponseDTO> findByAllNotReservation() {

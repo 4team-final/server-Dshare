@@ -28,6 +28,23 @@ public class EmployeeController {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
 				Msg.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
 	}
+	/**
+	 * 부서, 팀, 포지션 조회
+	 */
+	@GetMapping("/team/read")
+	public ResponseEntity<ResponseDTO> teamRead() {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_EMP_PROFILE, employeeService.readTeamInfo()));
+	}
+	@GetMapping("/dept/read")
+	public ResponseEntity<ResponseDTO> deptRead() {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_EMP_PROFILE, employeeService.readDeptInfo()));
+	}
+	@GetMapping("/position/read")
+	public ResponseEntity<ResponseDTO> positionRead() {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_EMP_PROFILE, employeeService.readPositionInfo()));
+	}
+
+
 
 	/**
 	 * 사원 이미지 수정, 사원 + 관리자 모두 가능
@@ -57,7 +74,7 @@ public class EmployeeController {
 	}
 
 
-	/**
+	/**:
 	 * 6/17 19:55 나의 즐겨찾기 테이블 조회(회의실, 사원정보까지 줄줄이 소세지)
 	 */
 	@GetMapping("/my/bookmark")

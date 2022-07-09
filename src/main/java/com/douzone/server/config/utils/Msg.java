@@ -4,6 +4,9 @@ package com.douzone.server.config.utils;
  * 컨트롤러,필터 성공/실패 MSG
  */
 public interface Msg {
+	String SUCCESS_READ_TEAM = "팀 전체 조회에 성공했습니다.";
+	String SUCCESS_READ_DEPT = "부서 전체 조회에 성공했습니다.";
+	String SUCCESS_READ_POSITION = "포지션 전체 조회에 성공했습니다.";
 
 	String SUCCESS_CREATE_ROOM = "날짜방 생성에 성공하였습니다.";
 	String SUCCESS_LIST_ROOM = "날짜방 목록 조회에 성공하였습니다.";

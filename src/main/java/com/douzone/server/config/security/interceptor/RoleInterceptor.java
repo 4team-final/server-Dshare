@@ -50,6 +50,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		log.info(METHOD_NAME + "- preHandle() ...");
+		System.out.println(request.getRequestURI());
 		boolean result = false;
 		try {
 			if (request.getRequestURI().equals("/emp/vehicle/chat") || request.getRequestURI().equals("/ws/room")) {

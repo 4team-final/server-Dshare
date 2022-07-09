@@ -8,6 +8,7 @@ import com.douzone.server.dto.reservation.RegistReservationReqDto;
 import com.douzone.server.dto.reservation.registRes;
 import com.douzone.server.dto.reservation.updateRes;
 import com.douzone.server.dto.room.RoomReservationSearchDTO;
+import com.douzone.server.service.EmployeeService;
 import com.douzone.server.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,12 +50,13 @@ import javax.validation.Valid;
 public class RoomController {
 
 	private final RoomService roomService;
-
+	private final EmployeeService employeeService;
 
 	@GetMapping("/reservation/recent")
 	public ResponseEntity<ResponseDTO> recentReservation(@RequestParam(value = "limit") @Valid int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RECENT, roomService.recentReservation(limit)));
 	}
+
 
 	@GetMapping("/reservation/soon/my/time")
 	public ResponseEntity<ResponseDTO> soonAndIngReservationMyTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -102,6 +104,10 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> selectAllReservationPage(@PathVariable("lastId") long lastId, @PathVariable("limit") int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation(lastId, limit)));
 	}
+	@GetMapping("/reservation/all2/{page}/{limit}")
+	public ResponseEntity<ResponseDTO> selectAllReservationPage2(@PathVariable("page") long page, @PathVariable("limit") int limit) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_FIND_ALL, roomService.selectAllReservation2(page, limit)));
+	}
 
 	@PostMapping("/reservation/roomNo-capacity-time")
 	public ResponseEntity<ResponseDTO> selectByRoomNoElseCapacityElseReservation(@RequestBody RoomReservationSearchDTO search) {
@@ -139,6 +145,8 @@ public class RoomController {
 	public ResponseEntity<ResponseDTO> updateReservation(@Validated(updateRes.class) @RequestBody RegistReservationReqDto registReservationReqDto, @PathVariable("id") long id) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RESERVATION_UPDATE, roomService.update(registReservationReqDto, id)));
 	}
+
+
 
 	/**
 	 * 6/19 18:51 회의실 예약 삭제 오윤성

@@ -255,6 +255,19 @@ public class RoomService {
 	}
 
 	@Transactional
+	public List<ReservationPagingRes> selectAllReservation2(long page, int limit) {
+		long total = roomQueryDSL.countReservation();
+		List<ReservationPagingRes> reservationPagingResList = roomQueryDSL.selectAllReservationPage2(page, limit).stream().map(roomReservation -> {
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
+					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
+			return new ReservationPagingRes().of(reservationResDTO, total, limit, page);
+		}).collect(Collectors.toList());
+		//총갯수 추가
+		return reservationPagingResList;
+	}
+
+	@Transactional
 	public List<ReservationResDTO> selectByRoomNoElseCapacityElseReservation(RoomReservationSearchDTO search) {
 
 		return roomQueryDSL.selectByRoomNoElseCapacityElseReservation(search).stream().map(roomReservation -> {
