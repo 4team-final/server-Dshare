@@ -52,10 +52,6 @@ public class RoomController {
 	private final RoomService roomService;
 	private final EmployeeService employeeService;
 
-
-
-
-
 	@GetMapping("/reservation/recent")
 	public ResponseEntity<ResponseDTO> recentReservation(@RequestParam(value = "limit") @Valid int limit) {
 		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_ROOM_RECENT, roomService.recentReservation(limit)));

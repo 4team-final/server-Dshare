@@ -253,6 +253,7 @@ public class RoomService {
 		//총갯수 추가
 		return reservationPagingResList;
 	}
+
 	@Transactional
 	public List<ReservationPagingRes> selectAllReservation2(long page, int limit) {
 		long total = roomQueryDSL.countReservation();
