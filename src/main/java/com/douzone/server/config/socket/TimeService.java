@@ -19,7 +19,7 @@ public class TimeService {
 		List<Time> timeList = timeRepository.findByCalendar_UidAndRoomId(uid, roomId);
 		for (int i = 0; i < timeList.size(); i++) {
 			if (time[i] == 0) continue;
-			timeList.get(i).updateIsSeat(time[i], empNo, roomId);
+			timeList.get(i).updateIsSeat(time[i], empNo);
 		}
 		log.info("updateTime - success");
 	}
