@@ -7,6 +7,7 @@ import com.douzone.server.config.utils.UploadDTO;
 import com.douzone.server.config.utils.UploadUtils;
 import com.douzone.server.dto.employee.EmpTeamDTO;
 import com.douzone.server.dto.employee.SignModReqDTO;
+import com.douzone.server.dto.reservation.ReservationPagingRes;
 import com.douzone.server.dto.reservation.ReservationResDTO;
 import com.douzone.server.dto.room.RoomImgResDTO;
 import com.douzone.server.dto.room.RoomObjectResDTO;
@@ -34,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -223,15 +225,22 @@ public class AdminService {
 		return employee.getId();
 	}
 
-	@Transactional
-	public List<ReservationResDTO> searchVarious(RoomReservationSearchDTO search, long page, int limit) {
-		log.info("search : {} , {}, {}, {}", search.getTeamId(), search.getDeptId(), search.getEmpNo(), search.getEmpName());
-		List<ReservationResDTO> list = roomQueryDSL.selectByVariousColumns(search, page, limit).stream().map(roomReservation -> {
-			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
-			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation, (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
-			return reservationResDTO;
-		}).collect(Collectors.toList());
+	public LocalDateTime timeDiff(LocalDateTime startedAt, LocalDateTime endedAt) {
+		long diffMinute = ChronoUnit.MINUTES.between(startedAt, endedAt);
+		LocalDateTime now = LocalDateTime.now();
+		return LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), (int) ((diffMinute % 1440) / 60), (int) (diffMinute % 60));
+	}
 
+	@Transactional
+	public List<ReservationPagingRes> searchVarious(RoomReservationSearchDTO search, long page, int limit) {
+		log.info("search : {} , {}, {}, {}", search.getTeamId(), search.getDeptId(), search.getEmpNo(), search.getEmpName());
+		long total = roomQueryDSL.countReservation();
+		List<ReservationPagingRes> list = roomQueryDSL.selectByVariousColumns(search, page, limit).stream().map(roomReservation -> {
+			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
+			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
+					timeDiff(roomReservation.getStartedAt(), roomReservation.getEndedAt()), (List<RoomObjectResDTO>) twoList.get(0), (List<RoomImgResDTO>) twoList.get(1));
+			return new ReservationPagingRes().of(reservationResDTO, total, limit, page);
+		}).collect(Collectors.toList());
 		return list;
 	}
 
