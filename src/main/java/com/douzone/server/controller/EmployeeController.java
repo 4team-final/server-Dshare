@@ -31,9 +31,9 @@ public class EmployeeController {
 	/**
 	 * 부서, 팀, 포지션 조회
 	 */
-	@GetMapping("/team/read")
-	public ResponseEntity<ResponseDTO> teamRead() {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_EMP_PROFILE, employeeService.readTeamInfo()));
+	@GetMapping("/team/read/{deptId}")
+	public ResponseEntity<ResponseDTO> teamRead(@PathVariable("deptId")long deptId) {
+		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK, Msg.SUCCESS_EMP_PROFILE, employeeService.readTeamInfo(deptId)));
 	}
 	@GetMapping("/dept/read")
 	public ResponseEntity<ResponseDTO> deptRead() {
