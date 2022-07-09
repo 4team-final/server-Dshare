@@ -111,6 +111,17 @@ public class VehicleService {
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + lastId, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
+	@Transactional(readOnly = true)
+	public ResponseDTO findByPaginationReservation2(Long page) {
+		log.info(METHOD_NAME + "- findByPaginationReservation");
+		Long page2 = (page-1)*10;
+		return Optional.of(new ResponseDTO())
+				.map(v -> vehicleServiceMethod.convertToPaging(vehicleRepository.findByPaginationReservation2(page2)))
+				.map(u -> (page < 0) ?
+						ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_REQUEST_PARAMETER) :
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + page, u))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
+	}
 
 	@Transactional(readOnly = true)
 	public ResponseDTO findByAllNotReservation() {

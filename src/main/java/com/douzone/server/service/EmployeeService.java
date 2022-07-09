@@ -1,7 +1,6 @@
 package com.douzone.server.service;
 
-import com.douzone.server.dto.employee.EmpTestDTO;
-import com.douzone.server.dto.employee.ProfileRes;
+import com.douzone.server.dto.employee.*;
 import com.douzone.server.dto.room.RoomBookmarkResDTO;
 import com.douzone.server.dto.room.RoomResDTO;
 import com.douzone.server.entity.Employee;
@@ -29,6 +28,9 @@ public class EmployeeService {
 	private final RoomImgRepository roomImgRepository;
 	private final RoomObjectRepository roomObjectRepository;
 	private final RoomServiceMethod roomServiceMethod;
+	private final TeamRepository teamRepository;
+	private final DeptRepository deptRepository;
+	private final PositionRepository positionRepository;
 
 	@Transactional
 	public List<EmpTestDTO> queryDSLTest(long positionId) {
@@ -75,5 +77,24 @@ public class EmployeeService {
 			roomBookmarkRepository.save(RoomBookmark.builder().meetingRoom(MeetingRoom.builder().id(roomId).build()).employee(Employee.builder().id(empId).build()).build()).getId();
 			return 1L;
 		}
+	}
+
+	@Transactional
+	public List<EmpTeamDTO> readTeamInfo() {
+		return teamRepository.findAll().stream().map(team -> {
+			return EmpTeamDTO.builder().id(team.getId()).name(team.getName()).deptId(team.getDepartment().getId()).build();
+		}).collect(Collectors.toList());
+	}
+	@Transactional
+	public List<EmpDeptDTO> readDeptInfo() {
+		return deptRepository.findAll().stream().map(dept -> {
+			return EmpDeptDTO.builder().id(dept.getId()).name(dept.getName()).build();
+		}).collect(Collectors.toList());
+	}
+	@Transactional
+	public List<EmpPositionDTO> readPositionInfo() {
+		return positionRepository.findAll().stream().map(position -> {
+			return EmpPositionDTO.builder().id(position.getId()).name(position.getName()).build();
+		}).collect(Collectors.toList());
 	}
 }

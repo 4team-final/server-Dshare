@@ -39,7 +39,7 @@ public class RoomQueryDSL {
 				.select(roomReservation)
 				.from(roomReservation)
 				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
-				.orderBy(roomReservation.createdAt.desc(), roomReservation.id.desc())
+				.orderBy(roomReservation.modifiedAt.desc(), roomReservation.id.desc())
 				.fetch();
 	}
 
@@ -49,10 +49,22 @@ public class RoomQueryDSL {
 				.from(roomReservation)
 				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
 				.where(roomReservationIdLt(lastId))
-				.orderBy(roomReservation.createdAt.desc(), roomReservation.id.desc())//플젝 시작하면 앞에 createdAt정렬을 먼저 해줘야함
+				.orderBy(roomReservation.modifiedAt.desc(), roomReservation.id.desc())//플젝 시작하면 앞에 createdAt정렬을 먼저 해줘야함
 				.limit(limit)
 				.fetch();
 
+		return roomList;
+	}
+
+	public List<RoomReservation> selectAllReservationPage2(long page, int limit) {
+		List<RoomReservation> roomList = jpaQueryFactory
+				.select(roomReservation)
+				.from(roomReservation)
+				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
+				.orderBy(roomReservation.modifiedAt.desc(), roomReservation.id.desc())//플젝 시작하면 앞에 createdAt정렬을 먼저 해줘야함
+				.limit(limit)
+				.offset((page - 1) * limit)
+				.fetch();
 		return roomList;
 	}
 
@@ -64,7 +76,7 @@ public class RoomQueryDSL {
 				.join(roomReservation.meetingRoom, meetingRoom).fetchJoin()
 				.join(roomReservation.employee, employee).fetchJoin()
 				.where(employee.id.eq(Id), roomReservationIdLt(lastId))
-				.orderBy(roomReservation.createdAt.desc(), roomReservation.id.asc())
+				.orderBy(roomReservation.modifiedAt.desc(), roomReservation.id.asc())
 				.limit(limit)
 				.fetch();
 		return roomList;
@@ -154,7 +166,7 @@ public class RoomQueryDSL {
 				.join(roomReservation.meetingRoom, meetingRoom)
 				.where(roomReservation.startedAt.goe(LocalDateTime.parse(startTime))
 						.and(roomReservation.endedAt.loe(LocalDateTime.parse(endTime))))
-				.groupBy(meetingRoom.roomNo,roomReservation.startedAt.dayOfMonth())
+				.groupBy(meetingRoom.roomNo, roomReservation.startedAt.dayOfMonth())
 				.orderBy(roomReservation.startedAt.asc())
 				.fetch();
 	}
