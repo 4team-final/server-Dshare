@@ -323,7 +323,6 @@ public class VehicleService {
 				.filter(u -> (id != null))
 				.map(u -> vehicleReservationRepository.findById(id))
 				.filter(Optional::isPresent)
-				.filter(res -> res.get().getEmployee().getId().equals(empId))
 				.map(res -> {
 					vehicleServiceMethod.convertToTimeAndResetIsSeat(
 							res.get().getStartedAt(),
