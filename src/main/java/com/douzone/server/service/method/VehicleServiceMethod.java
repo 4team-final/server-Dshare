@@ -1,9 +1,10 @@
 package com.douzone.server.service.method;
 
 import com.douzone.server.config.socket.vehicle.VehicleSocketService;
+import com.douzone.server.dto.bookmark.BookmarkResDTO;
+import com.douzone.server.dto.bookmark.IBookMarkResDTO;
 import com.douzone.server.dto.vehicle.impl.*;
 import com.douzone.server.dto.vehicle.jpainterface.*;
-import com.douzone.server.entity.Vehicle;
 import com.douzone.server.repository.VehicleImgRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -64,10 +65,10 @@ public class VehicleServiceMethod {
 		return vList;
 	}
 
-	public List<VehicleResDTO> convertToVehicleOne(List<Vehicle> list) {
-		List<VehicleResDTO> vList = new ArrayList<>();
-		for (Vehicle vehicle : list) {
-			vList.add(new VehicleResDTO().of(vehicle, setPathToList(vehicle.getId())));
+	public List<BookmarkResDTO> convertToVehicleOne(List<IBookMarkResDTO> list) {
+		List<BookmarkResDTO> vList = new ArrayList<>();
+		for (IBookMarkResDTO i : list) {
+			vList.add(new BookmarkResDTO().of(i, setPathToList(i.getVehicle().getId())));
 		}
 		return vList;
 	}
