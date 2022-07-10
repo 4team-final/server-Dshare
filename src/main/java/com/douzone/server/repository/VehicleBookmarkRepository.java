@@ -21,5 +21,7 @@ public interface VehicleBookmarkRepository extends JpaRepository<VehicleBookmark
 			"group by vb.vehicle order by vcount DESC")
 	List<IBookMarkResDTO> selectByBookMarkTop3Vehicle(Pageable pageable);
 
+//	boolean existsByVehicle_IdAndEmployee_Id(Long vId, Long empId);
+
 	boolean existsByVehicle_IdAndEmployee_Id(Long vId, Long empId);
 }
