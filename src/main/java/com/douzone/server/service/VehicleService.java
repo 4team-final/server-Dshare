@@ -271,6 +271,7 @@ public class VehicleService {
 										.name(vehicleBookmark.getVehicle().getName())
 										.color(vehicleBookmark.getVehicle().getColor())
 										.capacity(vehicleBookmark.getVehicle().getCapacity())
+												.number(vehicleBookmark.getVehicle().getNumber())
 										.model(vehicleBookmark.getVehicle().getModel())
 										.build(),
 								imgList,
