@@ -234,7 +234,7 @@ public class AdminService {
 	@Transactional
 	public List<ReservationPagingRes> searchVarious(RoomReservationSearchDTO search, long page, int limit) {
 		log.info("search : {} , {}, {}, {}", search.getTeamId(), search.getDeptId(), search.getEmpNo(), search.getEmpName());
-		long total = roomQueryDSL.countReservation();
+		long total = roomQueryDSL.countReservation(search);
 		List<ReservationPagingRes> list = roomQueryDSL.selectByVariousColumns(search, page, limit).stream().map(roomReservation -> {
 			List<List<?>> twoList = roomServiceMethod.RoomImgListAndRoomObjectList(roomReservation);
 			ReservationResDTO reservationResDTO = ReservationResDTO.builder().build().of(roomReservation,
