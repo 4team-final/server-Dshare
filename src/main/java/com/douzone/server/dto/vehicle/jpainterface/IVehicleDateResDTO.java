@@ -7,5 +7,7 @@ import java.time.LocalDateTime;
 public interface IVehicleDateResDTO {
 	LocalDateTime getEndedAt();
 
+	LocalDateTime getModifiedAt();
+
 	Vehicle getVehicle();
 }

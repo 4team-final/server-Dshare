@@ -29,9 +29,12 @@ public class RoomResDTO {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private List<RoomImgResDTO> roomImgResDTOList = new ArrayList<>();
 
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private long count = 0;
+
 	@Builder
 	@QueryProjection
-	public RoomResDTO(Long roomId, String content, String categoryName, Integer roomNo, Integer capacity, LocalDateTime modifiedAt, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList) {
+	public RoomResDTO(Long roomId, String content, String categoryName, Integer roomNo, Integer capacity, LocalDateTime modifiedAt, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList, long count) {
 		this.roomId = roomId;
 		this.content = content;
 		this.categoryName = categoryName;
@@ -40,6 +43,7 @@ public class RoomResDTO {
 		this.modifiedAt = modifiedAt;
 		this.roomObjectResDTOList = roomObjectResDTOList;
 		this.roomImgResDTOList = roomImgResDTOList;
+		this.count = count;
 	}
 
 
@@ -66,4 +70,19 @@ public class RoomResDTO {
 				.roomImgResDTOList(roomImgResDTOList)
 				.build();
 	}
+
+	public RoomResDTO of(MeetingRoom room, List<RoomObjectResDTO> roomObjectResDTOList, List<RoomImgResDTO> roomImgResDTOList,long count) {
+		return RoomResDTO.builder()
+				.roomId(room.getId())
+				.content(room.getContent())
+				.categoryName(room.getCategoryName())
+				.roomNo(room.getRoomNo())
+				.capacity(room.getCapacity())
+				.modifiedAt(room.getModifiedAt())
+				.roomObjectResDTOList(roomObjectResDTOList)
+				.roomImgResDTOList(roomImgResDTOList)
+				.count(count)
+				.build();
+	}
+
 }

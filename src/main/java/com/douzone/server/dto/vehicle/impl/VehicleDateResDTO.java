@@ -14,11 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 public class VehicleDateResDTO implements IVehicleDateResDTO {
 	private LocalDateTime endedAt;
+	private LocalDateTime modifiedAt;
 	private Vehicle vehicle;
 	private List<String> imgList;
 
 	public VehicleDateResDTO of(IVehicleDateResDTO i, List<String> list) {
 		return VehicleDateResDTO.builder()
+				.modifiedAt(i.getModifiedAt())
 				.endedAt(i.getEndedAt())
 				.vehicle(i.getVehicle())
 				.imgList(list)

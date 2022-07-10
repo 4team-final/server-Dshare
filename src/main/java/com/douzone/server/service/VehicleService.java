@@ -14,6 +14,7 @@ import com.douzone.server.repository.querydsl.VehicleQueryDSL;
 import com.douzone.server.service.method.VehicleServiceMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -268,7 +269,7 @@ public class VehicleService {
 	public ResponseDTO findByRecentReservedVehicle() {
 		log.info(METHOD_NAME + "- findByRecentReservedVehicle");
 		return Optional.of(new ResponseDTO())
-				.map(v -> vehicleServiceMethod.convertToDate(vehicleRepository.findByRecentReservedVehicle().stream().limit(5).collect(Collectors.toList())))
+				.map(v -> vehicleServiceMethod.convertToDate(vehicleRepository.findByRecentReservedVehicle(LocalDateTime.now()).stream().limit(5).collect(Collectors.toList())))
 				.map(u -> ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_RECENT, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_RECENT + FAIL_EXIST_RESULT));
 	}

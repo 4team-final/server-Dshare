@@ -298,7 +298,11 @@ public class RoomService {
 		List<RoomBookmarkResDTO> roomBookmarkResDTOList = roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
 		return roomServiceMethod.RoomImgListAndRoomObjectList(roomBookmarkResDTOList);
 	}
-
+@Transactional
+	public List<RoomResDTO> selectByLimitBookmark2(int limit) {
+		List<RoomBookmarkResDTO> roomBookmarkResDTOList = roomQueryDSL.selectTop3BookmarkMeetingRoom(limit);
+		return roomServiceMethod.RoomImgListAndRoomObjectList(roomBookmarkResDTOList);
+	}
 	@Transactional
 	public Long register(List<MultipartFile> files, RoomReqDTO roomReqDTO) {
 		String basePath = "room/";

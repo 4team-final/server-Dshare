@@ -44,7 +44,7 @@ public class RoomServiceMethod {
 			}).collect(Collectors.toList());
 			;
 
-			meetingRoomList.add(new RoomResDTO().of(meetingRoom, roomObjectResList, roomImgResList));
+			meetingRoomList.add(new RoomResDTO().of(meetingRoom, roomObjectResList, roomImgResList,roomBookmarkResDTOList.get(i).getCount()));
 		}
 		return meetingRoomList;
 	}

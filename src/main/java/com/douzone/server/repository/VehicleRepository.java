@@ -124,11 +124,11 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 	List<IVehicleWeekTimeDTO> weekstartMostReservedTime(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 
-	@Query("select vr.endedAt as endedAt, v as vehicle " +
+	@Query("select vr.endedAt as endedAt,vr.modifiedAt as modifiedAt, v as vehicle " +
 			"from Vehicle v " +
 			"left join fetch VehicleReservation vr on v.id = vr.vehicle.id " +
-			"where endedAt is not null order by vr.modifiedAt desc")
-	List<IVehicleDateResDTO> findByRecentReservedVehicle();
+			"where vr.startedAt> :start  order by vr.modifiedAt desc")
+	List<IVehicleDateResDTO> findByRecentReservedVehicle(@Param("start")LocalDateTime start);
 
 
 	@Query("select vr.id as id, vr.startedAt as startedAt, vr.endedAt as endedAt, " +
