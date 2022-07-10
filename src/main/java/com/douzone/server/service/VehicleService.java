@@ -122,6 +122,7 @@ public class VehicleService {
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
 
+
 	@Transactional(readOnly = true)
 	public ResponseDTO findByAllNotReservation() {
 		log.info(METHOD_NAME + "- findByAllNotReservation");
@@ -415,6 +416,24 @@ public class VehicleService {
 				.map(v -> {
 					for (VehicleVariousDTO vehicleVariousDTO : v) {
 						vehicleVariousDTO.setImgList(vehicleServiceMethod.setPathToList(vehicleVariousDTO.getVId()));
+					}
+					return v;
+				})
+				.map(v -> v.isEmpty() ?
+						ResponseDTO.fail(HttpStatus.OK, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_EXIST_RESULT) :
+						ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_VARIOUS_COLUMNS, v))
+				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_FIND_RESULT));
+	}
+	@Transactional(readOnly = true)
+	public ResponseDTO selectByVariousColumns(VehicleSearchDTO vehicleSearchDTO, long page) {
+		log.info(METHOD_NAME + "- selectByVariousColumns");
+		long total = vehicleQueryDSL.countReservation(vehicleSearchDTO);
+		return Optional.of(new ResponseDTO())
+				.map(v ->  vehicleQueryDSL.selectByVariousColumns(vehicleSearchDTO, page))
+				.map(v -> {
+					for (VehicleVariousDTO vehicleVariousDTO : v) {
+						vehicleVariousDTO.setImgList(vehicleServiceMethod.setPathToList(vehicleVariousDTO.getVId()));
+						vehicleVariousDTO.setTotal(total);
 					}
 					return v;
 				})

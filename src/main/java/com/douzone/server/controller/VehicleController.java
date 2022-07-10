@@ -83,6 +83,7 @@ public class VehicleController {
 		return ResponseEntity.ok().body(vehicleService.findByPaginationReservation2(id));
 	}
 
+
 	@GetMapping(path = "/list/stock")
 	public ResponseEntity<ResponseDTO> findByAllNotReservation() {
 		log.info(METHOD_NAME + "- findByAllNotReservation");
@@ -210,6 +211,11 @@ public class VehicleController {
 	public ResponseEntity<ResponseDTO> selectByVariousColumns(@RequestBody VehicleSearchDTO vehicleSearchDTO) {
 		log.info(METHOD_NAME + "- selectByVariousColumns");
 		return ResponseEntity.ok().body(vehicleService.selectByVariousColumns(vehicleSearchDTO));
+	}
+	@PostMapping("/list/reservation/various/{page}")
+	public ResponseEntity<ResponseDTO> selectByVariousColumns(@RequestBody VehicleSearchDTO vehicleSearchDTO, @PathVariable("page")long page) {
+		log.info(METHOD_NAME + "- selectByVariousColumns");
+		return ResponseEntity.ok().body(vehicleService.selectByVariousColumns(vehicleSearchDTO, page));
 	}
 
 	@GetMapping("/list/vehicle/all")
