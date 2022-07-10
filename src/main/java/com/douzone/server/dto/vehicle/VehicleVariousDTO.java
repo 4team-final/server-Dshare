@@ -1,6 +1,7 @@
 package com.douzone.server.dto.vehicle;
 
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,12 +11,14 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class VehicleVariousDTO {
 	private Long id, vId;
 	private String reason, title, vName, vNumber, model, color, empNo, eName, email, tel, profileImg, team, position;
 	private LocalDateTime startedAt, endedAt, createdAt, modifiedAt, birthday;
 	private Integer capacity;
 	private List<String> imgList;
+	private long total;
 
 	@Builder
 	@QueryProjection

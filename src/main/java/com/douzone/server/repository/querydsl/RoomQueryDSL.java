@@ -14,12 +14,14 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.douzone.server.entity.QEmployee.employee;
 import static com.douzone.server.entity.QMeetingRoom.meetingRoom;
 import static com.douzone.server.entity.QRoomBookmark.roomBookmark;
 import static com.douzone.server.entity.QRoomReservation.roomReservation;
+import static com.douzone.server.entity.QVehicleReservation.vehicleReservation;
 
 @Repository
 @RequiredArgsConstructor
@@ -215,6 +217,20 @@ public class RoomQueryDSL {
 				.employee.name.contains(empName) : null;
 	}
 
+	//시간 검색 추가
+	private BooleanExpression startAtEq(String startedAt) {
+		if (startedAt != null) {
+			LocalDateTime test = LocalDateTime.parse(startedAt, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			return roomReservation.startedAt.after(test);
+		} else return null;
+	}
+
+	private BooleanExpression endedAtEq(String endedAt) {
+		if (endedAt != null) {
+			return roomReservation.endedAt.before(LocalDateTime.parse(endedAt, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		} else return null;
+	}
+
 
 	public List<RoomReservation> selectByVariousColumns(RoomReservationSearchDTO search, long page, int limit) {
 		Long deptId = search.getDeptId();
@@ -228,7 +244,9 @@ public class RoomQueryDSL {
 						deptIdEq(search.getDeptId()),
 						teamIdEq(search.getTeamId()),
 						empNoEq(search.getEmpNo()),
-						empNameContain(search.getEmpName())
+						empNameContain(search.getEmpName()),
+						startAtEq(search.getStartedAt()),
+						endedAtEq(search.getEndedAt())
 				)
 				.orderBy(roomReservation.modifiedAt.desc(), roomReservation.id.desc())
 				.limit(limit)
@@ -243,7 +261,9 @@ public class RoomQueryDSL {
 					deptIdEq(search.getDeptId()),
 					teamIdEq(search.getTeamId()),
 					empNoEq(search.getEmpNo()),
-						empNameContain(search.getEmpName())
+						empNameContain(search.getEmpName()),
+						startAtEq(search.getStartedAt()),
+						endedAtEq(search.getEndedAt())
 				)
 				.stream().count();
 	}

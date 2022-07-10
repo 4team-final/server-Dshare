@@ -1,5 +1,6 @@
 package com.douzone.server.repository.querydsl;
 
+import com.douzone.server.dto.room.RoomReservationSearchDTO;
 import com.douzone.server.dto.vehicle.QVehicleVariousDTO;
 import com.douzone.server.dto.vehicle.VehicleSearchDTO;
 import com.douzone.server.dto.vehicle.VehicleVariousDTO;
@@ -13,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.douzone.server.entity.QEmployee.employee;
+import static com.douzone.server.entity.QRoomReservation.roomReservation;
 import static com.douzone.server.entity.QVehicle.vehicle;
 import static com.douzone.server.entity.QVehicleReservation.vehicleReservation;
 
@@ -94,5 +96,61 @@ public class VehicleQueryDSL {
 				)
 				.orderBy(vehicleReservation.modifiedAt.desc())
 				.fetch();
+	}
+	public List<VehicleVariousDTO> selectByVariousColumns(VehicleSearchDTO search,long page) {
+		return jpaQueryFactory
+				.select(new QVehicleVariousDTO(
+						vehicleReservation.id,
+						vehicle.id.as("vId"),
+						vehicleReservation.reason,
+						vehicleReservation.title,
+						vehicle.name.as("vName"),
+						vehicle.number.as("vNumber"),
+						vehicle.model,
+						vehicle.color,
+						employee.empNo,
+						employee.name.as("eName"),
+						employee.email,
+						employee.tel,
+						employee.profileImg,
+						employee.team.name.as("team"),
+						employee.position.name.as("position"),
+						vehicleReservation.startedAt,
+						vehicleReservation.endedAt,
+						vehicleReservation.createdAt,
+						vehicleReservation.modifiedAt,
+						employee.birthday,
+						vehicle.capacity
+				))
+				.from(vehicleReservation)
+				.leftJoin(vehicleReservation.vehicle, vehicle)
+				.leftJoin(vehicleReservation.employee, employee)
+				.where(
+						vehicleIdEq(search.getVehicleId()),
+						capacityEq(search.getCapacity()),
+						positionIdEq(search.getPositionId()),
+						teamIdEq(search.getTeamId()),
+						empNoEq(search.getEmpNo()),
+						startAtEq(search.getStartedAt()),
+						endedAtEq(search.getEndedAt())
+				)
+				.orderBy(vehicleReservation.modifiedAt.desc())
+				.limit(10)
+				.offset((page-1)*10)
+				.fetch();
+	}
+//	이것의 카운트
+	public long countReservation(VehicleSearchDTO search) {
+		return jpaQueryFactory.select(vehicleReservation).from(vehicleReservation)
+				.where(
+						vehicleIdEq(search.getVehicleId()),
+						capacityEq(search.getCapacity()),
+						positionIdEq(search.getPositionId()),
+						teamIdEq(search.getTeamId()),
+						empNoEq(search.getEmpNo()),
+						startAtEq(search.getStartedAt()),
+						endedAtEq(search.getEndedAt())
+				)
+				.stream().count();
 	}
 }
