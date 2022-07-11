@@ -120,19 +120,19 @@ public class VehicleSocketService {
 				.map(res -> {
 					int s = 0, e = 0;
 					for (int i = 0; i < res.get().size(); i++) {
-						if (res.get().get(i).getTime().equals(startTime)) {
+						if (res.get().get(i).getVehicleId() == vid && res.get().get(i).getTime().equals(startTime)) {
 							s = i;
 							break;
 						}
 					}
 					for (int i = res.get().size() - 1; i >= 0; i--) {
-						if (res.get().get(i).getTime().equals(endTime)) {
+						if (res.get().get(i).getVehicleId() == vid && res.get().get(i).getTime().equals(endTime)) {
 							e = i;
 							break;
 						}
 					}
 					for (int i = s; i < e; i++) {
-						if (res.get().get(i).getEmpNo().equals(empNo)) {
+						if (res.get().get(i).getVehicleId() == vid && res.get().get(i).getEmpNo().equals(empNo)) {
 							res.get().get(i).updateTimeVehicle(0, "");
 						}
 					}
@@ -150,26 +150,26 @@ public class VehicleSocketService {
 					if (k == 0) {
 						int j = 0;
 						for (int i = 0; i < res.get().size(); i++) {
-							if (res.get().get(i).getTime().equals(time)) {
+							if (res.get().get(i).getVehicleId() == vid && res.get().get(i).getTime().equals(time)) {
 								j = i;
 								break;
 							}
 						}
 						for (int i = j; i < res.get().size(); i++) {
-							if (res.get().get(i).getEmpNo().equals(empNo)) {
+							if (res.get().get(i).getVehicleId() == vid && res.get().get(i).getEmpNo().equals(empNo)) {
 								res.get().get(i).updateTimeVehicle(0, "");
 							}
 						}
 					} else if (k == 1) {
 						int j = 0;
 						for (int i = res.get().size() - 1; i >= 0; i--) {
-							if (res.get().get(i).getTime().equals(time)) {
+							if (res.get().get(i).getVehicleId() == vid && res.get().get(i).getTime().equals(time)) {
 								j = i;
 								break;
 							}
 						}
 						for (int i = j; i >= 0; i--) {
-							if (res.get().get(i).getEmpNo().equals(empNo)) {
+							if (res.get().get(i).getVehicleId() == vid && res.get().get(i).getEmpNo().equals(empNo)) {
 								res.get().get(i).updateTimeVehicle(0, "");
 							}
 						}
