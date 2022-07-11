@@ -23,11 +23,11 @@ public class EmployeeController {
 	private final EmployeeService employeeService;
 	private final AdminService adminService;
 
-	@GetMapping("/test")
-	public ResponseEntity<ResponseDTO> queryDSLTest(@RequestParam(value = "positionId") long positionId) {
-		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
-				Msg.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
-	}
+//	@GetMapping("/test")
+//	public ResponseEntity<ResponseDTO> queryDSLTest(@RequestParam(value = "positionId") long positionId) {
+//		return ResponseEntity.ok().body(ResponseDTO.of(HttpStatus.OK,
+//				Msg.SUCCESS_ADMIN_REGISTER, employeeService.queryDSLTest(positionId)));
+//	}
 	/**
 	 * 부서, 팀, 포지션 조회
 	 */
