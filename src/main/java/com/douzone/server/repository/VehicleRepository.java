@@ -127,7 +127,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 	@Query("select vr.endedAt as endedAt,vr.modifiedAt as modifiedAt, v as vehicle " +
 			"from Vehicle v " +
 			"left join fetch VehicleReservation vr on v.id = vr.vehicle.id " +
-			"where vr.startedAt> :start  order by vr.modifiedAt desc")
+			"where vr.startedAt> :start order by vr.modifiedAt desc")
 	List<IVehicleDateResDTO> findByRecentReservedVehicle(@Param("start")LocalDateTime start);
 
 

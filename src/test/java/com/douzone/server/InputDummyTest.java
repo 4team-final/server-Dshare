@@ -1,43 +1,45 @@
-//package com.douzone.server;
-//
-//
-//import com.douzone.server.config.socket.Calendar;
-//import com.douzone.server.config.socket.Time;
-//import com.douzone.server.config.socket.TimeRepository;
-//import com.douzone.server.dto.reservation.RegistReservationReqDto;
-//import com.douzone.server.dto.vehicle.VehicleParseDTO;
-//import com.douzone.server.entity.Employee;
-//import com.douzone.server.entity.Vehicle;
-//import com.douzone.server.repository.EmployeeRepository;
-//import com.douzone.server.repository.VehicleRepository;
-//import com.douzone.server.service.EmployeeService;
-//import com.douzone.server.service.RoomService;
-//import com.douzone.server.service.VehicleService;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.annotation.Rollback;
-//import org.springframework.transaction.annotation.Transactional;
-//
-//import java.time.LocalDateTime;
-//import java.time.format.DateTimeFormatter;
-//import java.util.List;
-//
-//@SpringBootTest
-//@Transactional
-//public class InputDummyTest {
-//	@Autowired
-//	EmployeeRepository employeeRepository;
-//	@Autowired
-//	EmployeeService employeeService;
-//	@Autowired
-//	RoomService roomService;
-//	@Autowired
-//	TimeRepository timeRepository;
-//	@Autowired
-//	VehicleRepository vehicleRepository;
-//	@Autowired
-//	VehicleService vehicleService;
+package com.douzone.server;
+
+
+import com.douzone.server.config.socket.TimeRepository;
+import com.douzone.server.repository.EmployeeRepository;
+import com.douzone.server.repository.RoomReservationRepository;
+import com.douzone.server.repository.VehicleRepository;
+import com.douzone.server.repository.VehicleReservationRepository;
+import com.douzone.server.service.EmployeeService;
+import com.douzone.server.service.RoomService;
+import com.douzone.server.service.VehicleService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
+
+@SpringBootTest
+@Transactional
+public class InputDummyTest {
+	@Autowired
+	EmployeeRepository employeeRepository;
+	@Autowired
+	EmployeeService employeeService;
+	@Autowired
+	RoomService roomService;
+	@Autowired
+	TimeRepository timeRepository;
+	@Autowired
+	VehicleRepository vehicleRepository;
+	@Autowired
+	VehicleService vehicleService;
+
+	@Autowired
+	RoomReservationRepository roomReservationRepository;
+
+	@Autowired
+	VehicleReservationRepository vehicleReservationRepository;
 //
 //	/**
 //	 * 이름 바꾸기
@@ -268,4 +270,45 @@
 //			}
 //		}
 //	}
-//}
+
+	// modifiedAt 넣기
+//	@Test
+////	@Rollback(false)
+//	void InputModifiedAtRoom() {
+//
+//		for (int i = 1; i <= 622; i++) {
+//			String startedAt = roomReservationRepository.TestStartedAt((long) i);
+//			if(startedAt == null || startedAt.equals("")|| startedAt==null)continue;
+//			Random random = new Random();
+//			long minusTemp = random.nextInt(5);
+//			long minusTemp2 = random.nextInt(7);
+//			long minusTemp3 = random.nextInt(59);
+//			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+//
+//			LocalDateTime aa = LocalDateTime.parse(startedAt, format).minusDays(minusTemp).minusHours(minusTemp2).minusMinutes((minusTemp3));
+//
+//			roomReservationRepository.TestUpdateModified(aa, aa, (long) i);
+//		}
+////		String startedAt = vehicleReservationRepository.TestStartedAt((2L));
+////		String startedAt2 = vehicleReservationRepository.TestStartedAt((1L));
+////		System.out.println("asdas");
+////		System.out.println(startedAt);
+////		System.out.println(startedAt2);
+//	System.out.println("asdas");
+//		for (int i = 1; i <= 1000; i++) {
+//
+//			String startedAt = vehicleReservationRepository.TestStartedAt((long) i);
+//			System.out.println();
+//			if(startedAt == null || startedAt.equals("") || startedAt.equals(null))continue;
+//			Random random = new Random();
+//			long minusTemp = random.nextInt(5);
+//			long minusTemp2 = random.nextInt(7);
+//			long minusTemp3 = random.nextInt(59);
+//
+//			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+//			LocalDateTime aa = LocalDateTime.parse(startedAt, format).minusDays(minusTemp).minusHours(minusTemp2).minusMinutes((minusTemp3));
+//
+//			vehicleReservationRepository.TestUpdateModified(aa, aa, (long) i);
+//		}
+//	}
+}
