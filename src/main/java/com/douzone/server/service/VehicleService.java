@@ -76,13 +76,7 @@ public class VehicleService {
 		return Optional.of(new ResponseDTO())
 				.filter(u -> empId > 0)
 				.filter(v -> vId > 0)
-				.map(res -> vehicleBookmarkRepository.existsByVehicle_IdAndEmployee_Id(vId, empId))
 				.map(res -> {
-					if (res) {
-						deleteByMyBookMark(vId);
-						return ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_BOOKMARK_FIND);
-					}
-
 					vehicleBookmarkRepository.save(
 							VehicleBookmark.builder()
 									.vehicle(Vehicle.builder().id(vId).build())
@@ -112,10 +106,11 @@ public class VehicleService {
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_VEHICLE_FIND_ALL + " 페이지번호 : " + lastId, u))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_VEHICLE_FIND_ALL + FAIL_EXIST_RESULT));
 	}
+
 	@Transactional(readOnly = true)
 	public ResponseDTO findByPaginationReservation2(Long page) {
 		log.info(METHOD_NAME + "- findByPaginationReservation");
-		Long page2 = (page-1)*10;
+		Long page2 = (page - 1) * 10;
 		return Optional.of(new ResponseDTO())
 				.map(v -> vehicleServiceMethod.convertToPaging(vehicleRepository.findByPaginationReservation2(page2)))
 				.map(u -> (page < 0) ?
@@ -288,7 +283,7 @@ public class VehicleService {
 										.name(vehicleBookmark.getVehicle().getName())
 										.color(vehicleBookmark.getVehicle().getColor())
 										.capacity(vehicleBookmark.getVehicle().getCapacity())
-												.number(vehicleBookmark.getVehicle().getNumber())
+										.number(vehicleBookmark.getVehicle().getNumber())
 										.model(vehicleBookmark.getVehicle().getModel())
 										.build(),
 								imgList,
@@ -340,7 +335,6 @@ public class VehicleService {
 				.filter(u -> (id != null))
 				.map(u -> vehicleReservationRepository.findById(id))
 				.filter(Optional::isPresent)
-				.filter(res -> res.get().getEmployee().getId().equals(empId))
 				.map(res -> {
 					vehicleServiceMethod.convertToTimeAndResetIsSeat(
 							res.get().getStartedAt(),
@@ -442,12 +436,13 @@ public class VehicleService {
 						ResponseDTO.of(HttpStatus.OK, SUCCESS_SELECT_VARIOUS_COLUMNS, v))
 				.orElseGet(() -> ResponseDTO.fail(HttpStatus.BAD_REQUEST, FAIL_SELECT_VARIOUS_COLUMNS + FAIL_FIND_RESULT));
 	}
+
 	@Transactional(readOnly = true)
 	public ResponseDTO selectByVariousColumns(VehicleSearchDTO vehicleSearchDTO, long page) {
 		log.info(METHOD_NAME + "- selectByVariousColumns");
 		long total = vehicleQueryDSL.countReservation(vehicleSearchDTO);
 		return Optional.of(new ResponseDTO())
-				.map(v ->  vehicleQueryDSL.selectByVariousColumns(vehicleSearchDTO, page))
+				.map(v -> vehicleQueryDSL.selectByVariousColumns(vehicleSearchDTO, page))
 				.map(v -> {
 					for (VehicleVariousDTO vehicleVariousDTO : v) {
 						vehicleVariousDTO.setImgList(vehicleServiceMethod.setPathToList(vehicleVariousDTO.getVId()));

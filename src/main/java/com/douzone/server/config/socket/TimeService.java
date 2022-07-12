@@ -42,21 +42,25 @@ public class TimeService {
 				.map(v -> timeRepository.selectByUidAndVid(uid, rid))
 				.filter(Optional::isPresent)
 				.map(res -> {
+					System.out.println(res.get().get(0).toString());
 					int s = 0, e = 0;
 					for (int i = res.get().size() - 1; i >= 0; i--) {
-						if (res.get().get(i).getTime().equals(endTime)) {
+						if (res.get().get(i).getRoomId() == rid && res.get().get(i).getTime().equals(endTime)) {
+							System.out.println(res.get().get(i).getRoomId());
 							e = i;
 							break;
 						}
 					}
 					for (int i = 0; i < res.get().size(); i++) {
-						if (res.get().get(i).getTime().equals(startTime)) {
+						if (res.get().get(i).getRoomId() == rid && res.get().get(i).getTime().equals(startTime)) {
+							System.out.println(res.get().get(i).getRoomId());
 							s = i;
 							break;
 						}
 					}
 					for (int i = s; i < e; i++) {
-						if (res.get().get(i).getEmpNo().equals(empNo)) {
+						if (res.get().get(i).getRoomId() == rid && res.get().get(i).getEmpNo().equals(empNo)) {
+							System.out.println(res.get().get(i).getRoomId());
 							res.get().get(i).updateIsSeat(0, "");
 						}
 					}
@@ -74,26 +78,27 @@ public class TimeService {
 					if (k == 0) {
 						int j = 0;
 						for (int i = 0; i < res.get().size(); i++) {
-							if (res.get().get(i).getTime().equals(time)) {
+							if (res.get().get(i).getRoomId() == rid && res.get().get(i).getTime().equals(time)) {
 								j = i;
 								break;
 							}
 						}
 						for (int i = j; i < res.get().size(); i++) {
-							if (res.get().get(i).getEmpNo().equals(empNo)) {
+							if (res.get().get(i).getRoomId() == rid && res.get().get(i).getEmpNo().equals(empNo)) {
 								res.get().get(i).updateIsSeat(0, "");
 							}
 						}
 					} else if (k == 1) {
 						int j = 0;
 						for (int i = res.get().size() - 1; i >= 0; i--) {
-							if (res.get().get(i).getTime().equals(time)) {
+							if (res.get().get(i).getRoomId() == rid && res.get().get(i).getTime().equals(time)) {
 								j = i;
 								break;
 							}
 						}
 						for (int i = j; i >= 0; i--) {
-							if (res.get().get(i).getEmpNo().equals(empNo)) {
+							if (res.get().get(i).getRoomId() == rid && res.get().get(i).getEmpNo().equals(empNo)) {
+								System.out.println(res.get().get(i));
 								res.get().get(i).updateIsSeat(0, "");
 							}
 						}
